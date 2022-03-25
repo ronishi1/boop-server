@@ -56,7 +56,7 @@ server.start().then(res => {
 
 mongoose.connect(MONGO_URI, {useNewUrlParser: true , useUnifiedTopology: true})
         .then(() => {
-            app.listen({ port: BACKEND_PORT }, CLIENT_LOCAL_ORIGIN, () => {
+            app.listen({ port: process.env.PORT || 4000 }, CLIENT_LOCAL_ORIGIN, () => {
                 console.log(`Server ready at ${SERVER_LOCAL_DOMAIN}:${BACKEND_PORT}`);
             })
         })
