@@ -1,2 +1,2 @@
-client: npm start --prefix client
+web: npm start --prefix client
 api: node api/index.js
