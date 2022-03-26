@@ -14,10 +14,21 @@ const typeDefs = gql`
   # clients can execute, along with the return type for each. In this
   # case, the "books" query returns an array of zero or more Books (defined above).
   type Query {
-        getUser(email: String!): User
+    getCurrentUser(email: String!): User
   }
   type Mutation {
-      register(email: String!, username: String!, password: String!): User
+    login(username: String!, password: String!): User
+    logout: Boolean
+    register(email: String!, username: String!, password: String!): User
+    updateUsername(email:String!, username: String!): Boolean
+    updatePassword(email:String!, oldPassword: String!, newPassword: String!): Boolean
+    updateEmail(oldEmail: String!, newEmail: String!, password: String!): Boolean
+    
+    #TODO
+    updateProfilePicture: Boolean
+
+    deleteAccount(email: String!): Boolean
+    updateBio(email: String!, newBio: String!): Boolean
   }
 `;
 
