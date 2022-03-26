@@ -6,11 +6,11 @@ const userSchema = new Schema(
 			type: ObjectId,
 			required: true
 		},
-		name: {
+		email: {
 			type: String,
 			required: true
 		},
-		email: {
+		username: {
 			type: String,
 			required: true
 		},
