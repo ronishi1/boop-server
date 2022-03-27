@@ -1,16 +1,16 @@
 const { model, Schema, ObjectId } = require('mongoose');
 
-const forumSchema = new Schema(
+const forumPostSchema = new Schema(
 	{
         _id: {
 			type: ObjectId,
 			required: true
 		},
-        post_title: {
+        title: {
 			type: String,
 			required: true
 		},
-        post_content: {
+        content: {
 			type: String,
 			required: true
 		},
@@ -46,6 +46,6 @@ const forumSchema = new Schema(
 		},
     }
     );
-    
-const Forum = model('Forum', forumSchema);
-module.exports = Forum;
+
+const ForumPost = model('ForumPost', forumPostSchema);
+module.exports = ForumPost;

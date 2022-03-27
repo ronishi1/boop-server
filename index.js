@@ -23,6 +23,7 @@ const { typeDefs }  = require('./typedefs/root-def');
 const serverOptions = require('./server-config');
 require('dotenv').config();
 const { MONGO_URI, BACKEND_PORT, CLIENT_LOCAL_ORIGIN, SERVER_LOCAL_DOMAIN } = process.env;
+const { DateTimeTypeDefinition } = require("graphql-scalars");
 
 // create express server handling our middleware
 const app = express();
@@ -45,7 +46,7 @@ app.use(corsPolicy);
 serverOptions(app);
 
 const server = new ApolloServer({
-    typeDefs: typeDefs,
+    typeDefs: [typeDefs,DateTimeTypeDefinition],
 	resolvers: resolvers,
 	context: ({req, res}) => ({ req, res })
 });
