@@ -41,15 +41,15 @@ const typeDefs = gql`
     login(username: String!, password: String!): User
     logout: Boolean
     register(email: String!, username: String!, password: String!): User
-    updateUsername(email:String!, username: String!): Boolean
-    updatePassword(email:String!, oldPassword: String!, newPassword: String!): Boolean
-    updateEmail(oldEmail: String!, newEmail: String!, password: String!): Boolean
+    updateUsername(username: String!): Boolean
+    updatePassword(oldPassword: String!, newPassword: String!): Boolean
+    updateEmail(newEmail: String!, password: String!): Boolean
     
     #TODO
     updateProfilePicture: Boolean
 
-    deleteAccount(email: String!): Boolean
-    updateBio(email: String!, newBio: String!): Boolean
+    deleteAccount: Boolean
+    updateBio(newBio: String!): Boolean
   }
 `;
 
