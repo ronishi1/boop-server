@@ -1,5 +1,5 @@
 const ObjectId = require('mongoose').Types.ObjectId;
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const User = require('../models/user-model');
 const tokens = require('../utils/tokens');
@@ -120,6 +120,7 @@ module.exports = {
             return true;
         },
         updatePassword: async(_, args, { res }) => {
+            console.log(res.userId)
             const { email, oldPassword, newPassword} = args;
             const foundUser = await User.findOne({email: email});
             const valid = await bcrypt.compare(oldPassword, foundUser.password);
