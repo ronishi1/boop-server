@@ -14,10 +14,11 @@ const typeDefs = gql`
     user_stories: [ID]
   }
   type Query {
-    getUserProfile(username: String!): Profile
+    getUserProfile(_id: ID!): Profile
   }
   type Mutation {
-    followUser: Boolean
+    followUser(followID: ID!): Boolean
+    unfollowUser(followID: ID!): Boolean
   }
 `;
 
