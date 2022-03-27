@@ -112,6 +112,19 @@ module.exports = {
             const updatedPassword = await User.updateOne({_id: foundUser._id}, {password: hashed});
             return true
         },
+        passwordReset: async(_, args, { res}) => {
+            const { email, newPassword } = args;
+            const foundUser = await User.findOne({email: email});
+            if(!foundUser) {
+                throw new Error(
+                    "Email Not Registered"
+                )
+            }
+            const hashed = await bcrypt.hash(newPassword, 10);
+            const resetPassword = await User.updateOne({email: email, password: hashed});
+            return true
+
+        },
         updateEmail: async(_, args, { res, req }) => {
             const { newEmail, password } = args;
             const userId = new ObjectId(req.userId);
