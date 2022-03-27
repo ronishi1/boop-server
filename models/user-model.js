@@ -6,18 +6,66 @@ const userSchema = new Schema(
 			type: ObjectId,
 			required: true
 		},
-		email: {
+		profile_pic: {
 			type: String,
-			required: true
 		},
 		username: {
 			type: String,
 			required: true
 		},
+		email: {
+			type: String,
+			required: true
+		},
+		user_bio: {
+			type: String,
+		},
 		password: {
 			type: String,
 			required: true
-		}
+		},
+		favorite_comics: {
+			type: [ObjectId],
+		},
+		favorite_stories: {
+			type: [ObjectId],
+		},
+		read_later_comics: {
+			type: [ObjectId],
+		},
+		read_later_stories: {
+			type: [ObjectId],
+		},
+		following: {
+			type: [ObjectId],
+		},
+		followers: {
+			type: [ObjectId],
+		},
+		forum_posts: {
+			type: [ObjectId],
+		},
+		user_comics: {
+			type: [ObjectId],
+		},
+		user_stories: {
+			type: [ObjectId],
+		},
+		recent_comics: {
+			type: [ObjectId],
+		},
+		recent_stories: {
+			type: [ObjectId],
+		},
+		rated_comics: {type: [{
+			comic: {type: ObjectId, required: true},
+			rating: {type: Number, required: true}
+		}]},
+		rated_stories: {type: [{
+			story: {type: ObjectId, required: true},
+			rating: {type: Number, required: true}
+		}]},
+	 
 	},
 );
 
