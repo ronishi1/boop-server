@@ -6,11 +6,37 @@ const typeDefs = gql`
     email: String!
     username: String!
     password: String!
+    bio: String
+    profile_pic: String
+    favorite_comics: [ID]
+    favorite_stories: [ID]
+    read_later_comics: [ID]
+    read_later_stories: [ID]
+    following: [ID]
+    followers: [ID]
+    forum_posts: [ID]
+    user_comics: [ID]
+    user_stories: [ID]
+    recent_comics: [ID]
+    recent_stories: [ID]
+    rated_comics: [ratedComics]
+    rated_stories: [ratedStories]
   }
 
+  type ratedComics {
+    comic: ID
+    rating: Int
+  }
+
+  type ratedStories {
+    story: ID
+    rating: Int
+  }
+  
   type Query {
     getCurrentUser(email: String!): User
   }
+
   type Mutation {
     login(username: String!, password: String!): User
     logout: Boolean

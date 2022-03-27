@@ -40,16 +40,52 @@ module.exports = {
 
         register: async(_, args, { res }) => {
             const{ email, username, password } = args;
-            const alreadyRegistered = await User.findOne({email: email})
-            if(alreadyRegistered) {
+            const duplicateEmail = await User.findOne({email: email})
+            if(duplicateEmail) {
                 console.log('User with that email already registered.');
                 return(new User({
                     _id: '',
                     email:'',
-                    username: 'already exists', 
+                    username: 'email already exists', 
                     password: '',
                     bio: '',
-                    
+                    profile_pic: '',
+                    favorite_comics: [],
+                    favorite_stories: [],
+                    read_later_comics: [],
+                    read_later_stories: [],
+                    following: [],
+                    followers: [],
+                    forum_posts: [],
+                    user_comics: [],
+                    user_stories: [],
+                    recent_comics: [],
+                    rated_comics: [],
+                    rated_stories: []
+                }));
+            }
+            const duplicateUsername = await User.findOne({username: username})
+            if (duplicateUsername) {
+                console.log('User with the username already registered.')
+                return(new User({
+                    _id: '',
+                    email:'',
+                    username: 'username already exists', 
+                    password: '',
+                    bio: '',
+                    profile_pic: '',
+                    favorite_comics: [],
+                    favorite_stories: [],
+                    read_later_comics: [],
+                    read_later_stories: [],
+                    following: [],
+                    followers: [],
+                    forum_posts: [],
+                    user_comics: [],
+                    user_stories: [],
+                    recent_comics: [],
+                    rated_comics: [],
+                    rated_stories: []
                 }));
             }
             const hashed = await bcrypt.hash(password, 10)
@@ -60,6 +96,19 @@ module.exports = {
                 username: username,
                 password: hashed,
                 bio: '',
+                profile_pic: '',
+                favorite_comics: [],
+                favorite_stories: [],
+                read_later_comics: [],
+                read_later_stories: [],
+                following: [],
+                followers: [],
+                forum_posts: [],
+                user_comics: [],
+                user_stories: [],
+                recent_comics: [],
+                rated_comics: [],
+                rated_stories: []
             })
             const saved = await user.save();
             return user;
@@ -77,7 +126,8 @@ module.exports = {
             if (!valid) {
                return false
             }
-            const updatedPassword = await User.updateOne({_id: foundUser._id}, {password: newPassword});
+            const hashed = await bcrypt.hash(newPassword, 10)
+            const updatedPassword = await User.updateOne({_id: foundUser._id}, {password: hashed});
             return true
         },
         updateEmail: async(_, args, { res }) => {
