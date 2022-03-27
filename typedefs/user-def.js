@@ -43,6 +43,7 @@ const typeDefs = gql`
     register(email: String!, username: String!, password: String!): User
     updateUsername(username: String!): Boolean
     updatePassword(oldPassword: String!, newPassword: String!): Boolean
+    passwordReset(email: String!, newPassword: String!): Boolean
     updateEmail(newEmail: String!, password: String!): Boolean
     
     #TODO
