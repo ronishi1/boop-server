@@ -2,72 +2,76 @@ const { model, Schema, ObjectId } = require('mongoose');
 
 const comicSchema = new Schema(
 	{
-        _id: {
+		_id: {
 			type: ObjectId,
 			required: true
 		},
-        series_title: {
+		series_title: {
 			type: String,
 			required: true
 		},
-        author: {
+		author: {
 			type: ObjectId,
 			required: true
 		},
-        synposis: {
+		author_username: {
 			type: String,
 			required: true
 		},
-        genres: {
+		synopsis: {
+			type: String,
+			required: true
+		},
+		genres: {
 			type: [String],
 			required: true
 		},
-        num_chapters: {
+		num_chapters: {
 			type: Number,
 			required: true
 		},
-        chapters: {
+		chapters: {
 			type: [ObjectId],
 			required: true
 		},
-        views: {
+		views: {
 			type: Number,
 			required: true
 		},
-        num_favorites: {
+		num_favorites: {
 			type: Number,
 			required: true
 		},
-        discussion_post: {
+		discussion_post: {
 			type: ObjectId,
 			required: true
 		},
-        current_rating: {
-			type: Float,
-			required: true
-		},
-        num_of_ratings: {
+		current_rating: {
 			type: Number,
 			required: true
 		},
-        total_ratings: {
+		num_of_ratings: {
 			type: Number,
 			required: true
 		},
-        publication_date: {
+		total_ratings: {
+			type: Number,
+			required: true
+		},
+		publication_date: {
 			type: Date,
 			required: true
 		},
-        completed: {
+		completed: {
 			type: Boolean,
 			required: true
 		},
-        cover_image: {
+		cover_image: {
 			type: String,
 			required: true
 		},
 
-    },
+	},
 );
 
 const Comic = model('Comic', comicSchema);
