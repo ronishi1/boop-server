@@ -6,22 +6,22 @@ const forumTopicSchema = new Schema(
 			type: ObjectId,
 			required: true
 		},
-        topic_name: {
+        name: {
 			type: String,
 			required: true
 		},
-        topic_posts: {
+        posts: {
 			type: [ObjectId],
 		},
-        topic_description: {
+        description: {
 			type: String,
 		},
         category: {
 			type: String,
 		},
-       
+
     }
     );
-    
+
 const ForumTopic = model('ForumTopic', forumTopicSchema);
 module.exports = ForumTopic;

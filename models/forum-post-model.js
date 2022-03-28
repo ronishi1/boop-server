@@ -2,50 +2,55 @@ const { model, Schema, ObjectId } = require('mongoose');
 
 const forumPostSchema = new Schema(
 	{
-        _id: {
+		_id: {
 			type: ObjectId,
 			required: true
 		},
-        title: {
+		title: {
 			type: String,
 			required: true
 		},
-        content: {
+		content: {
 			type: String,
 			required: true
 		},
-        linked_comic: {
+		linked_comic: {
 			type: ObjectId,
 		},
-        linked_story: {
+		linked_story: {
 			type: ObjectId,
 		},
-        tags: {
+		tags: {
 			type: [String],
 		},
-        author: {
+		author: {
 			type: ObjectId,
 			required: true
 		},
-        replies: {type: [{
-            author: {type: ObjectId, required: true},
-            message: {type: String, required: true},
-            timestamp: {type: Date, required: true}
-        }]},
-        num_replies: {
+		replies: {type: [{
+			_id: {type: ObjectId, required: true},
+			author: {type: ObjectId, required: true},
+			content: {type: String, required: true},
+			timestamp: {type: Date, required: true}
+		}]},
+		num_replies: {
 			type: Number,
 			required: true
 		},
-        views: {
+		views: {
 			type: Number,
 			required: true
 		},
-        timestamp: {
+		topic: {
+			type: ObjectId,
+			required: true
+		},
+		timestamp: {
 			type: Date,
 			required: true
 		},
-    }
-    );
+	}
+);
 
 const ForumPost = model('ForumPost', forumPostSchema);
 module.exports = ForumPost;

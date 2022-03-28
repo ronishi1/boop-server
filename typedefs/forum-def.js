@@ -9,15 +9,16 @@ const typeDefs = gql`
     linked_story: ID
     tags: [String]
     author: ID
-    replies: [ForumReplies]
+    replies: [ForumReply]
     num_replies: Int
     views: Int
     timestamp: DateTime
+    topic: ID
   }
-  type ForumReplies {
+  type ForumReply {
     author: String
     content: String
-    timestamp: Int
+    timestamp: DateTime
   }
   type ForumTopic {
     _id: ID
@@ -43,6 +44,11 @@ const typeDefs = gql`
   }
   type Mutation {
     createPost(forumPost: ForumPostInput): ForumPost
+    editPost(postID: ID, content:String, tags: [String]): Boolean
+    deletePost(postID: ID): Boolean
+    createReply(postID: ID, content: String): Boolean
+    editReply(postID: ID, content: String, replyID: ID): Boolean
+    deleteReply(postID: ID, replyID: ID): Boolean
   }
 `;
 
