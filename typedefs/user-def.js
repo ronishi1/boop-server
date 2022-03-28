@@ -32,9 +32,9 @@ const typeDefs = gql`
     story: ID
     rating: Int
   }
-  
+
   type Query {
-    getCurrentUser(email: String!): User
+    getCurrentUser: User
   }
 
   type Mutation {
@@ -45,7 +45,7 @@ const typeDefs = gql`
     updatePassword(oldPassword: String!, newPassword: String!): Boolean
     passwordReset(email: String!, newPassword: String!): Boolean
     updateEmail(newEmail: String!, password: String!): Boolean
-    
+
     #TODO
     updateProfilePicture: Boolean
 
