@@ -6,6 +6,76 @@ const ForumTopic = require('../models/forum-topic-model');
 
 module.exports = {
   Query: {
+    getGeneralPosts: async () => {
+      const generalForumTopic = await ForumTopic.find({category: "General"});
+
+      //sort ForumPosts in ForumTopics by timestamp and set posts to the 3 most recent posts
+      generalForumTopic.forEach((forumTopic) => {
+        forumTopic.posts.sort((a, b) => (a.timestamp < b.timestamp) ? 1 : -1);
+        forumTopic.posts = forumTopic.posts.splice(3);
+      });
+
+      return generalForumTopic;
+    },
+    getComicPosts: async () => {
+      const comicForumTopic = await ForumTopic.find({category: "Comics"});
+
+      //sort ForumPosts in ForumTopics by timestamp and set posts to the 3 most recent posts
+      comicForumTopic.forEach((forumTopic) => {
+        forumTopic.posts.sort((a, b) => (a.timestamp < b.timestamp) ? 1 : -1);
+        forumTopic.posts = forumTopic.posts.splice(3);
+      });
+
+      return comicForumTopic;
+    },
+    getStoryPosts: async () => {
+      const storyForumTopic = await ForumTopic.find({category: "Stories"});
+
+      //sort ForumPosts in ForumTopics by timestamp and set posts to the 3 most recent posts
+      storyForumTopic.forEach((forumTopic) => {
+        forumTopic.posts.sort((a, b) => (a.timestamp < b.timestamp) ? 1 : -1);
+        forumTopic.posts = forumTopic.posts.splice(3);
+      });
+
+      return storyForumTopic;
+    },
+    getPopularPosts: async () => {
+      //get list of top 5 viewed posts
+      const posts = await ForumPost.find().sort({views:-1}).limit(5);
+      return posts;
+    },
+    getRecentPosts: async () => {
+      //get list of top 5 newest posts
+      const posts = await ForumPost.find().sort({timestamp:-1}).limit(5);
+      return posts;
+    },
+    getOldestPosts: async () => {
+      //get all posts sorted by timestamp in ascending order 
+      const posts = await ForumPost.find().sort({timestamp:1});
+      return posts;
+    },
+    getTopicPosts: async (_,args) => {
+      const id = new ObjectId(args.topicId);
+      //find all forum posts whose topic fields match the provided ForumTopic id
+      const forumTopicPosts = ForumPost.find({topic:id});
+      return forumTopicPosts;
+    }
+    ,
+    getMostRepliedPosts: async () => {
+      //get all posts sorted by num_replies in descending order 
+      const posts = await ForumPost.find().sort({num_replies:-1});
+      return posts;
+    },
+    getPost: async (_,args) => {
+      const id = new ObjectId(args.postId);
+      const post = await ForumPost.findById(id);
+      return post;
+    },
+    getMyPosts: async (_,__,{req}) => {
+      const userId = new ObjectId(req.userId);
+      const posts = ForumPost.find({author: userId});
+      return posts;
+    },
   },
   Mutation: {
     createPost: async (_, args, { req,res }) => {

@@ -9,6 +9,7 @@ const typeDefs = gql`
     linked_story: ID
     tags: [String]
     author: ID
+    author_name: String
     replies: [ForumReply]
     num_replies: Int
     views: Int
@@ -23,9 +24,14 @@ const typeDefs = gql`
   type ForumTopic {
     _id: ID
     name: String
-    posts: [ID]
+    posts: [ForumTopicPost]
     description: String
     category: String
+  }
+  type ForumTopicPost{
+    title: String
+    author: String
+    timestamp: DateTime
   }
   type Link {
     title: String
@@ -49,6 +55,18 @@ const typeDefs = gql`
     createReply(postID: ID, content: String): Boolean
     editReply(postID: ID, content: String, replyID: ID): Boolean
     deleteReply(postID: ID, replyID: ID): Boolean
+  }
+  type Query {
+    getGeneralPosts: [ForumTopic]
+    getComicPosts: [ForumTopic]
+    getStoryPosts: [ForumTopic]
+    getPopularPosts: [ForumPost]
+    getRecentPosts: [ForumPost]
+    getOldestPosts: [ForumPost]
+    getTopicPosts(topicId: ID): [ForumPost] 
+    getMostRepliedPosts: [ForumPost]
+    getPost(postId: ID): ForumPost
+    getMyPosts: [ForumPost]
   }
 `;
 

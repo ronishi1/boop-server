@@ -11,7 +11,11 @@ const forumTopicSchema = new Schema(
 			required: true
 		},
         posts: {
-			type: [ObjectId],
+			type: [{
+				title: {type: String, required: true},
+				author: {type: String, required: true},
+				timestamp: {type: Date, required: true}
+			}]
 		},
         description: {
 			type: String,
