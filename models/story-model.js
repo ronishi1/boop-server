@@ -14,7 +14,11 @@ const storySchema = new Schema(
 			type: ObjectId,
 			required: true
 		},
-        synposis: {
+		author: {
+			type: String,
+			required: true
+		},
+        synopsis: {
 			type: String,
 			required: true
 		},
@@ -43,7 +47,7 @@ const storySchema = new Schema(
 			required: true
 		},
         current_rating: {
-			type: Float,
+			type: Number,
 			required: true
 		},
         num_of_ratings: {

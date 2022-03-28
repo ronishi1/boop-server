@@ -12,6 +12,7 @@ const storyboardSchema = new Schema(
 		},
         characters:{ type:[
             {
+                _id: {type: ObjectId, requred: true},
                 character_name: {
                     type: String,
                     required: true
@@ -27,6 +28,7 @@ const storyboardSchema = new Schema(
         ]},
         plot_points:{ type:[
             {
+                _id: {type: ObjectId, requred: true},
                 plot_point_name: {
                     type: String,
                     required: true
