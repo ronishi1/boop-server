@@ -80,6 +80,7 @@ module.exports = {
         linked_comic: comicId,
         linked_story: null,
         author: autoModID,
+        author_name: "AutoModerator",
         replies: [],
         num_replies: 0,
         views: 0,
@@ -129,6 +130,39 @@ module.exports = {
 
       topic.posts = topic.posts.filter(p => p.toString() !== post._id.toString());
       await ForumTopic.updateOne({_id:post.topic},{posts:topic.posts});
+    },
+    rateComic: async (_, args, { req,res }) => {
+      const {comicID, rating} = args;
+      const comicObjId = new ObjectId(comicID);
+      const comic = await Comic.findOne({_id:comicObjId});
+      const userObjId = new ObjectId(req.userId);
+      const user = await User.findOne({_id:userObjId});
+      const rated = user.rated_comics.filter(comic => comic.comic.toString() == comicID);
+      if(rated.length == 0){
+        comic.num_of_ratings++;
+        comic.total_ratings += rating;
+        comic.current_rating = comic.total_ratings / comic.num_of_ratings;
+        user.rated_comics.push({comic:comicObjId,rating: rating});
+      }
+      else {
+        comic.total_ratings = comic.total_ratings + rating - rated[0].rating;
+        comic.current_rating = comic.total_ratings / comic.num_of_ratings;
+        user.rated_comics.forEach((ratedComic,i) => {
+          if(ratedComic.comic.toString() == comicID){
+            user.rated_comics[i] = {comic:comicObjId,rating: rating};
+          }
+        })
+      }
+      await User.updateOne({_id:userObjId},{rated_comics:user.rated_comics});
+
+      await Comic.updateOne({_id:comicObjId},
+        {
+          num_of_ratings:comic.num_of_ratings,
+          total_ratings:comic.total_ratings,
+          current_rating:comic.current_rating
+        }
+      );
+      return true;
     }
   }
 };

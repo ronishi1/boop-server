@@ -29,6 +29,7 @@ const typeDefs = gql`
     createComic(comicInput: ComicInput): Comic
     editComic(comicID: ID, comicInput: ComicInput): Boolean
     deleteComic(comicID: ID): Boolean
+    rateComic(comicID: ID, rating: Int): Boolean
   }
 `;
 
