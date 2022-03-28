@@ -112,7 +112,11 @@ module.exports = {
             const updatedPassword = await User.updateOne({_id: foundUser._id}, {password: hashed});
             return true
         },
-        passwordReset: async(_, args, { res}) => {
+        // Might change it later as we need another library to send the link to the email
+        //  Then the email link redirects to the reset password page. 
+        //  User enters new password and then enters their new password. 
+        //  Page should have email and password to pass into mutation. 
+        passwordReset: async(_, args, { res }) => {
             const { email, newPassword } = args;
             const foundUser = await User.findOne({email: email});
             if(!foundUser) {
@@ -123,7 +127,6 @@ module.exports = {
             const hashed = await bcrypt.hash(newPassword, 10);
             const resetPassword = await User.updateOne({email: email, password: hashed});
             return true
-
         },
         updateEmail: async(_, args, { res, req }) => {
             const { newEmail, password } = args;
