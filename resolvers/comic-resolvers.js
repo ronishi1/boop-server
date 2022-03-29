@@ -164,6 +164,14 @@ module.exports = {
         }
       );
       return true;
+    },
+    addComicToReadList: async (_, args, { req,res }) => {
+      const {comicID} = args;
+      const comicObjId = new ObjectId(comicID);
+      const userObjId = new ObjectId(req.userId);
+      const user = await User.findOne({_id:userObjId});
+      user.read_list_comics.push(comicObjId);
+      await User.updateOne({_id:userObjId},{read_list_comics:user.read_list_comics});
     }
   }
 };

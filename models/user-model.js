@@ -30,10 +30,10 @@ const userSchema = new Schema(
 		favorite_stories: {
 			type: [ObjectId],
 		},
-		read_later_comics: {
+		read_list_comics: {
 			type: [ObjectId],
 		},
-		read_later_stories: {
+		read_list_stories: {
 			type: [ObjectId],
 		},
 		following: {
@@ -65,7 +65,7 @@ const userSchema = new Schema(
 			story: {type: ObjectId, required: true},
 			rating: {type: Number, required: true}
 		}]},
-	 
+
 	},
 );
 

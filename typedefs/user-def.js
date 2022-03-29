@@ -10,8 +10,8 @@ const typeDefs = gql`
     profile_pic: String
     favorite_comics: [ID]
     favorite_stories: [ID]
-    read_later_comics: [ID]
-    read_later_stories: [ID]
+    read_list_comics: [ID]
+    read_list_stories: [ID]
     following: [ID]
     followers: [ID]
     forum_posts: [ID]

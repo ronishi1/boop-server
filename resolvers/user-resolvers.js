@@ -10,13 +10,13 @@ const tokens = require('../utils/tokens');
 module.exports = {
     Query: {
         getCurrentUser: async(_, args, { req }) => {
-            userId = new ObjectId(req.userId) 
+            userId = new ObjectId(req.userId)
             const user = await User.findOne({_id:userId});
             return user;
         }
     },
     Mutation: {
-        login: async (_, args, { res }) => {	
+        login: async (_, args, { res }) => {
 			const { username, password } = args;
 
 			const user = await User.findOne({username: username});
@@ -29,14 +29,14 @@ module.exports = {
 
 			const valid = await bcrypt.compare(password, user.password);
 			if(!valid) {
-                throw new Error( 
+                throw new Error(
                     "Invalid Password"
                 )
             }
 			// Set tokens if login info was valid
 			const accessToken = tokens.generateAccessToken(user);
 			const refreshToken = tokens.generateRefreshToken(user);
-			res.cookie('refresh-token', refreshToken, { httpOnly: true , sameSite: 'None', secure: true}); 
+			res.cookie('refresh-token', refreshToken, { httpOnly: true , sameSite: 'None', secure: true});
 			res.cookie('access-token', accessToken, { httpOnly: true , sameSite: 'None', secure: true})
 			return user;
 		},
@@ -72,8 +72,8 @@ module.exports = {
                 profile_pic: '',
                 favorite_comics: [],
                 favorite_stories: [],
-                read_later_comics: [],
-                read_later_stories: [],
+                read_list_comics: [],
+                read_list_stories: [],
                 following: [],
                 followers: [],
                 forum_posts: [],
@@ -113,9 +113,9 @@ module.exports = {
             return true
         },
         // Might change it later as we need another library to send the link to the email
-        //  Then the email link redirects to the reset password page. 
-        //  User enters new password and then enters their new password. 
-        //  Page should have email and password to pass into mutation. 
+        //  Then the email link redirects to the reset password page.
+        //  User enters new password and then enters their new password.
+        //  Page should have email and password to pass into mutation.
         passwordReset: async(_, args, { res }) => {
             const { email, newPassword } = args;
             const foundUser = await User.findOne({email: email});
