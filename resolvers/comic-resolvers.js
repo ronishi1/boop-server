@@ -130,6 +130,7 @@ module.exports = {
 
       topic.posts = topic.posts.filter(p => p.toString() !== post._id.toString());
       await ForumTopic.updateOne({_id:post.topic},{posts:topic.posts});
+      return true;
     },
     rateComic: async (_, args, { req,res }) => {
       const {comicID, rating} = args;

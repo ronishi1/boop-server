@@ -19,7 +19,7 @@ const typeDefs = gql`
     cover_image: String
     storyboard: ID
   }
-  
+
   input StoryInput {
     series_title: String
     synopsis: String
@@ -47,6 +47,8 @@ const typeDefs = gql`
 
   type Mutation {
     createStory(storyInput: StoryInput): Story
+    editStory(storyID: String, storyInput: StoryInput): Boolean
+    deleteStory(storyID: String): Boolean
   }
 `;
 

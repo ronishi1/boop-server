@@ -41,7 +41,7 @@ module.exports = {
 			return user;
 		},
 
-        logout:(_, __, { res }) => {
+        logout:(_, __, { res, req }) => {
 			res.clearCookie('refresh-token');
 			res.clearCookie('access-token');
 			return true;
