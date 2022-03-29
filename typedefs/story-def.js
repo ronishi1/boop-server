@@ -2,6 +2,7 @@ const { gql } = require('apollo-server');
 
 const typeDefs = gql`
   type Story {
+    _id: ID
     series_title: String
     author: ID
     author_username: String
@@ -47,9 +48,9 @@ const typeDefs = gql`
 
   type Mutation {
     createStory(storyInput: StoryInput): Story
-    editStory(storyID: String, storyInput: StoryInput): Boolean
-    deleteStory(storyID: String): Boolean
-    rateStory(storyID: String, rating: Int): Boolean
+    editStory(storyID: ID, storyInput: StoryInput): Boolean
+    deleteStory(storyID: ID): Boolean
+    rateStory(storyID: ID, rating: Int): Boolean
   }
 `;
 

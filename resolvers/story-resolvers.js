@@ -63,8 +63,8 @@ module.exports = {
                 title: discussionTitle,
                 content: discussionContent,
                 tags: ["Discussion"],
-                linked_comic: storyId,
-                linked_story: null,
+                linked_comic: null,
+                linked_story: storyId,
                 author: autoModID,
                 author_name: "AutoModerator",
                 replies: [],
@@ -101,21 +101,21 @@ module.exports = {
             await ForumPost.updateOne({_id:story.discussion_post}, {title:newTitle, content:newContent});
             return true;
         },
-        deleteStory: async (_, args, { req, res }) => {
+        deleteStory: async (_, args, { req, res }) => {            
             const { storyID } = args;
             const storyObjId = new ObjectId(storyID);
             const story = await Story.findOne({_id:storyObjId});
-            const user = await Story.findOne({_id:story.author});
+            const user = await User.findOne({_id:story.author});
             const post = await ForumPost.findOne({_id:story.discussion_post});
             const topic = await ForumTopic.findOne({_id:post.topic});
 
             await Story.deleteOne({_id:storyObjId});
-            await ForumPost.deleteOne({_id:comic.discussion_post});
+            await ForumPost.deleteOne({_id:story.discussion_post});
 
-            story.user_stories = user.user_stories.filder(c => c.toString() !== comicID);
+            story.user_stories = user.user_stories.filter(s => s.toString() !== storyID);
             await Story.updateOne({_id:story.author}, {user_stories:user.user_stories});
 
-            topic.posts = topic.posts.filder(p => p.toString() !== post._id.toString());
+            topic.posts = topic.posts.filter(p => p.toString() !== post._id.toString());
             await ForumTopic.updateOne({_id:post.topic}, {posts:topic.posts});
             return true;
         },
@@ -124,7 +124,9 @@ module.exports = {
             const storyObjId = new ObjectId(storyID);
             const story = await Story.findOne({_id:storyObjId});
             const userObjId = new ObjectId(req.userId);
-            const user = await Story.findOne({_id:userObjId});
+            console.log(userObjId)
+            const user = await User.findOne({_id:userObjId});
+            console.log(user)
             const rated = user.rated_stories.filter(story => story.story.toString() == storyID);
             if(rated.length == 0) {
                 story.num_of_ratings++;
@@ -142,12 +144,12 @@ module.exports = {
                 })
             }
             await User.updateOne({_id:userObjId}, {rated_stories:user.rated_stories});
-
+            console.log(story)
             await Story.updateOne({_id:storyObjId},
                 {
                     num_of_ratings:story.num_of_ratings,
                     total_ratings:story.total_ratings,
-                    current_rating:comic.current_rating
+                    current_rating:story.current_rating
                 }
             );
             return true
