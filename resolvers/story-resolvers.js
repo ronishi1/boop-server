@@ -5,6 +5,7 @@ const Story = require('../models/story-model');
 const StoryBoard = require("../models/storyboard-model");
 const ForumPost = require('../models/forum-post-model');
 const ForumTopic = require('../models/forum-topic-model');
+const constants = require('../utils/constants.js')
 
 module.exports = {
     Query: {
@@ -12,7 +13,10 @@ module.exports = {
     },
     Mutation: {
         createStory: async(_, args, { req, res }) => {
-            console.log("ASDADSA")
+            // console.log("DISCUSSION")
+            // console.log(constants.discussionTopicId);
+            // console.log("AUTOMOD")
+            // console.log(constants.autoModID);
             const { storyInput } = args;
             const userId = new ObjectId(req.userId);
             const forumId = new ObjectId();
@@ -62,6 +66,7 @@ module.exports = {
                 linked_comic: storyId,
                 linked_story: null,
                 author: autoModID,
+                author_name: "AutoModerator",
                 replies: [],
                 num_replies: 0,
                 views: 0,
@@ -113,6 +118,39 @@ module.exports = {
             topic.posts = topic.posts.filder(p => p.toString() !== post._id.toString());
             await ForumTopic.updateOne({_id:post.topic}, {posts:topic.posts});
             return true;
+        },
+        rateStory: async (_, args, { req, res }) => {
+            const { storyID, rating } = args;
+            const storyObjId = new ObjectId(storyID);
+            const story = await Story.findOne({_id:storyObjId});
+            const userObjId = new ObjectId(req.userId);
+            const user = await Story.findOne({_id:userObjId});
+            const rated = user.rated_stories.filter(story => story.story.toString() == storyID);
+            if(rated.length == 0) {
+                story.num_of_ratings++;
+                story.total_ratings += rating;
+                story.current_rating = story.total_ratings / story.num_of_ratings;
+                user.rated_stories.push({story:storyObjId, rating:rating});
+            }
+            else {
+                story.total_ratings = story.total_ratings + rating - rated[0].rating;
+                story.current_rating = story.total_ratings / story.num_of_ratings;
+                user.rated_stories.forEach((ratedStory, i) => {
+                    if(ratedStory.story.toString() == storyID) {
+                        user.rated_stories[i] = {story:storyObjId, rating: rating};
+                    }
+                })
+            }
+            await User.updateOne({_id:userObjId}, {rated_stories:user.rated_stories});
+
+            await Story.updateOne({_id:storyObjId},
+                {
+                    num_of_ratings:story.num_of_ratings,
+                    total_ratings:story.total_ratings,
+                    current_rating:comic.current_rating
+                }
+            );
+            return true
         }
 
     }

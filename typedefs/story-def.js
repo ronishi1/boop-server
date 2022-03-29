@@ -49,6 +49,7 @@ const typeDefs = gql`
     createStory(storyInput: StoryInput): Story
     editStory(storyID: String, storyInput: StoryInput): Boolean
     deleteStory(storyID: String): Boolean
+    rateStory(storyID: String, rating: Int): Boolean
   }
 `;
 
