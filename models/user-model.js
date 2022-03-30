@@ -57,6 +57,18 @@ const userSchema = new Schema(
 		recent_stories: {
 			type: [ObjectId],
 		},
+		recent_activity: {type: [{
+			activity_type: {type: String, required: true},
+			content_ID: {type: ObjectId, required: true}
+		}]},
+		replies_to_my_post: {type: [{
+			reply_ID: {type: ObjectId, required: true},
+			author: {type: ObjectId, required: true},
+			author_name: {type: String, required: true},
+			post: {type: ObjectId, required: true},
+			post_name: {type: String, required: true},
+			timestamp: {type: Date, required: true}
+		}]},
 		rated_comics: {type: [{
 			comic: {type: ObjectId, required: true},
 			rating: {type: Number, required: true}

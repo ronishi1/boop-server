@@ -34,6 +34,7 @@ const forumPostSchema = new Schema(
 		replies: {type: [{
 			_id: {type: ObjectId, required: true},
 			author: {type: ObjectId, required: true},
+			author_name: {type: String, required: true},
 			content: {type: String, required: true},
 			timestamp: {type: Date, required: true}
 		}]},

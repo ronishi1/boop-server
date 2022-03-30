@@ -18,6 +18,7 @@ const typeDefs = gql`
   }
   type ForumReply {
     author: String
+    author_name: String
     content: String
     timestamp: DateTime
   }
@@ -31,6 +32,7 @@ const typeDefs = gql`
   type ForumTopicPost{
     title: String
     author: String
+    author_name: String
     timestamp: DateTime
   }
   type Link {
@@ -63,7 +65,7 @@ const typeDefs = gql`
     getPopularPosts: [ForumPost]
     getRecentPosts: [ForumPost]
     getOldestPosts: [ForumPost]
-    getTopicPosts(topicId: ID): [ForumPost] 
+    getTopicPosts(topicId: ID): [ForumPost]
     getMostRepliedPosts: [ForumPost]
     getPost(postId: ID): ForumPost
     getMyPosts: [ForumPost]

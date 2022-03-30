@@ -81,7 +81,9 @@ module.exports = {
                 user_stories: [],
                 recent_comics: [],
                 rated_comics: [],
-                rated_stories: []
+                rated_stories: [],
+                recent_activity: [],
+                replies_to_my_post: [],
             })
             const saved = await user.save();
             return user;

@@ -9,35 +9,68 @@ module.exports = {
     getGeneralPosts: async () => {
       const generalForumTopic = await ForumTopic.find({category: "General"});
 
-      //sort ForumPosts in ForumTopics by timestamp and set posts to the 3 most recent posts
-      generalForumTopic.forEach((forumTopic) => {
-        forumTopic.posts.sort((a, b) => (a.timestamp < b.timestamp) ? 1 : -1);
-        forumTopic.posts = forumTopic.posts.splice(3);
-      });
-
-      return generalForumTopic;
+      let topics = [];
+      for(const forumTopic of generalForumTopic){
+        let posts = [];
+        let temp = forumTopic.posts.slice(-3);
+        for(const topicPost of temp){
+          let post = await ForumPost.findOne({_id:topicPost});
+          posts.push(post);
+        }
+        let topic = {
+          _id: forumTopic._id,
+          name: forumTopic.name,
+          posts: posts,
+          description: forumTopic.description,
+          category: forumTopic.category
+        }
+        topics.push(topic);
+      }
+      return topics;
     },
     getComicPosts: async () => {
-      const comicForumTopic = await ForumTopic.find({category: "Comics"});
+      const generalForumTopic = await ForumTopic.find({category: "Comics"});
 
-      //sort ForumPosts in ForumTopics by timestamp and set posts to the 3 most recent posts
-      comicForumTopic.forEach((forumTopic) => {
-        forumTopic.posts.sort((a, b) => (a.timestamp < b.timestamp) ? 1 : -1);
-        forumTopic.posts = forumTopic.posts.splice(3);
-      });
-
-      return comicForumTopic;
+      let topics = [];
+      for(const forumTopic of generalForumTopic){
+        let posts = [];
+        let temp = forumTopic.posts.slice(-3);
+        for(const topicPost of temp){
+          let post = await ForumPost.findOne({_id:topicPost});
+          posts.push(post);
+        }
+        let topic = {
+          _id: forumTopic._id,
+          name: forumTopic.name,
+          posts: posts,
+          description: forumTopic.description,
+          category: forumTopic.category
+        }
+        topics.push(topic);
+      }
+      return topics;
     },
     getStoryPosts: async () => {
-      const storyForumTopic = await ForumTopic.find({category: "Stories"});
+      const generalForumTopic = await ForumTopic.find({category: "Stories"});
 
-      //sort ForumPosts in ForumTopics by timestamp and set posts to the 3 most recent posts
-      storyForumTopic.forEach((forumTopic) => {
-        forumTopic.posts.sort((a, b) => (a.timestamp < b.timestamp) ? 1 : -1);
-        forumTopic.posts = forumTopic.posts.splice(3);
-      });
-
-      return storyForumTopic;
+      let topics = [];
+      for(const forumTopic of generalForumTopic){
+        let posts = [];
+        let temp = forumTopic.posts.slice(-3);
+        for(const topicPost of temp){
+          let post = await ForumPost.findOne({_id:topicPost});
+          posts.push(post);
+        }
+        let topic = {
+          _id: forumTopic._id,
+          name: forumTopic.name,
+          posts: posts,
+          description: forumTopic.description,
+          category: forumTopic.category
+        }
+        topics.push(topic);
+      }
+      return topics;
     },
     getPopularPosts: async () => {
       //get list of top 5 viewed posts
@@ -50,7 +83,7 @@ module.exports = {
       return posts;
     },
     getOldestPosts: async () => {
-      //get all posts sorted by timestamp in ascending order 
+      //get all posts sorted by timestamp in ascending order
       const posts = await ForumPost.find().sort({timestamp:1});
       return posts;
     },
@@ -59,10 +92,9 @@ module.exports = {
       //find all forum posts whose topic fields match the provided ForumTopic id
       const forumTopicPosts = ForumPost.find({topic:id});
       return forumTopicPosts;
-    }
-    ,
+    },
     getMostRepliedPosts: async () => {
-      //get all posts sorted by num_replies in descending order 
+      //get all posts sorted by num_replies in descending order
       const posts = await ForumPost.find().sort({num_replies:-1});
       return posts;
     },
@@ -86,6 +118,10 @@ module.exports = {
       const userId = new ObjectId(req.userId)
       const topicObjID = new ObjectId(postInput.topic_ID);
       // Build out forum post object to push to DB
+
+      // Find the user and add the forum post to their list of posts
+      const foundUser = await User.findOne({_id:userId});
+      foundUser.forum_posts.push(_id);
       const forumPost = new ForumPost ({
         _id: _id,
         title: postInput.title,
@@ -94,22 +130,20 @@ module.exports = {
         linked_comic: postInput.linked_comic,
         linked_story: postInput.linked_story,
         author: userId,
+        author_name: foundUser.username,
         replies: [],
         num_replies: 0,
         views: 0,
         timestamp: timestamp,
         topic: topicObjID
       });
-      // Find the user and add the forum post to their list of posts
-      const foundUser = await User.findOne({_id:userId});
-      foundUser.forum_posts.push(forumPost._id);
 
       // Find the topic and add the forum post to its list of posts
       const foundTopic = await ForumTopic.findOne({_id:topicObjID});
       foundTopic.posts.push(forumPost._id);
 
       // Push all changes made to the DB
-      await ForumTopic.updateOne({_id:topicObjID},{posts: foundTopic.topic_posts});
+      await ForumTopic.updateOne({_id:topicObjID},{posts: foundTopic.posts});
       await User.updateOne({_id:userId},{forum_posts:foundUser.forum_posts});
       await forumPost.save();
       return forumPost;
@@ -128,8 +162,10 @@ module.exports = {
       const foundUser = await User.findOne({_id:foundPost.author});
       foundUser.forum_posts.filter(p => p.toString !== postObjectId.toString());
       foundTopic.posts = foundTopic.posts.filter(p => p.toString() !== postObjectId.toString());
+
+      foundUser.replies_to_my_post = foundUser.replies_to_my_post.filter(reply => reply.post.toString() !== postID);
       await ForumTopic.updateOne({_id:foundPost.topic},{posts:foundTopic.posts});
-      await User.updateOne({_id:foundPost.author},{forum_posts: foundUser.forum_posts});
+      await User.updateOne({_id:foundPost.author},{forum_posts: foundUser.forum_posts,replies_to_my_post:foundUser.replies_to_my_post});
       await ForumPost.deleteOne({_id:postObjectId});
       return true;
     },
@@ -139,15 +175,40 @@ module.exports = {
       const foundPost = await ForumPost.findOne({_id:postObjectId});
       let timestamp = Date.now();
       const userId = new ObjectId(req.userId)
+      const user = await User.findOne({_id:userId});
       const _id = new mongoose.Types.ObjectId();
       let replyObj = {
         _id: _id,
         author: userId,
+        author_name: user.username,
         content: content,
         timestamp: timestamp
       }
       foundPost.replies.push(replyObj);
       foundPost.num_replies++;
+      let activityObj = {
+        activity_type:"reply",
+        content_ID: postObjectId
+      }
+      user.recent_activity.push(activityObj);
+      if(user.recent_activity.length > 10){
+        user.recent_activity.shift();
+      }
+      const postAuthor = await User.findOne({_id:foundPost.author});
+      let authorReplyObj = {
+        reply_ID: _id,
+        author: userId,
+        author_name: user.username,
+        post: postObjectId,
+        post_name: foundPost.title,
+        timestamp: timestamp
+      }
+      postAuthor.replies_to_my_post.push(authorReplyObj);
+      if(postAuthor.replies_to_my_post.length > 10){
+        postAuthor.replies_to_my_post.shift();
+      }
+      await User.updateOne({_id:foundPost.author},{replies_to_my_post:postAuthor.replies_to_my_post});
+      await User.updateOne({_id: userId}, {recent_activity: user.recent_activity});
       await ForumPost.updateOne({_id:postObjectId},{replies:foundPost.replies,num_replies:foundPost.num_replies});
       return true;
     },
@@ -167,6 +228,9 @@ module.exports = {
       const foundPost = await ForumPost.findOne({_id:postObjectId});
       foundPost.replies = foundPost.replies.filter(r => r._id.toString() !== replyID);
       foundPost.num_replies--;
+      const postAuthor = await User.findOne({_id:foundPost.author});
+      postAuthor.replies_to_my_post = postAuthor.replies_to_my_post.filter(reply => reply.reply_ID.toString() !== replyID);
+      await User.updateOne({_id:foundPost.author},{replies_to_my_post:postAuthor.replies_to_my_post});
       await ForumPost.updateOne({_id:postObjectId},{replies: foundPost.replies,num_replies: foundPost.num_replies});
       return true;
     }

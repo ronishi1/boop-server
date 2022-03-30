@@ -19,24 +19,34 @@ const typeDefs = gql`
     user_stories: [ID]
     recent_comics: [ID]
     recent_stories: [ID]
-    rated_comics: [ratedComics]
-    rated_stories: [ratedStories]
+    rated_comics: [RatedComics]
+    rated_stories: [RatedStories]
+    recent_activity: [Activity]
+    replies_to_my_post: [Reply]
   }
-
-  type ratedComics {
+  type RatedComics {
     comic: ID
     rating: Int
   }
-
-  type ratedStories {
+  type RatedStories {
     story: ID
     rating: Int
   }
-
+  type Activity {
+    activity_type: String
+    content_ID: ID
+  }
+  type Reply {
+    reply_ID: ID
+    author: ID
+    author_name: String
+    post: ID
+    post_name: String
+    timestamp: DateTime
+  }
   type Query {
     getCurrentUser: User
   }
-
   type Mutation {
     login(username: String!, password: String!): User
     logout: Boolean

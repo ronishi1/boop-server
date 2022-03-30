@@ -2,30 +2,27 @@ const { model, Schema, ObjectId } = require('mongoose');
 
 const forumTopicSchema = new Schema(
 	{
-        _id: {
+		_id: {
 			type: ObjectId,
 			required: true
 		},
-        name: {
+		name: {
 			type: String,
 			required: true
 		},
-        posts: {
-			type: [{
-				title: {type: String, required: true},
-				author: {type: String, required: true},
-				timestamp: {type: Date, required: true}
-			}]
+		posts: {
+			type: [ObjectId],
+			required: true
 		},
-        description: {
+		description: {
 			type: String,
 		},
-        category: {
+		category: {
 			type: String,
 		},
 
-    }
-    );
+	}
+);
 
 const ForumTopic = model('ForumTopic', forumTopicSchema);
 module.exports = ForumTopic;
