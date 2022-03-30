@@ -14,7 +14,7 @@ const storySchema = new Schema(
 			type: ObjectId,
 			required: true
 		},
-		author: {
+		author_username: {
 			type: String,
 			required: true
 		},

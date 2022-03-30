@@ -48,6 +48,7 @@ module.exports = {
 		},
 
         register: async(_, args, { res }) => {
+            console.log(args)
             const{ email, username, password } = args;
             const duplicateEmail = await User.findOne({email: email})
             if(duplicateEmail) {
