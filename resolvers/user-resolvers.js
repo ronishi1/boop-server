@@ -148,10 +148,11 @@ module.exports = {
         deleteAccount: async(_, args,{ res, req }) => {
             const userId = new ObjectId(req.userId);
             console.log(req);
-            // const deleted = await User.deleteOne({_id: userId})
+            const deleted = await User.deleteOne({_id: userId})
             return true
         },
         updateBio: async(_, args, { res, req }) => {
+            const { newBio } = args;
             const userId = new ObjectId(req.userId);
             const updatedBio = await User.updateOne({_id: userId}, {bio: newBio});
             return true
