@@ -19,6 +19,7 @@ const forumTopicSchema = new Schema(
 		},
 		category: {
 			type: String,
+            enum: ['General','Comics','Stories'],
 		},
 
 	}
