@@ -123,7 +123,7 @@ module.exports = {
                 )
             }
             const hashed = await bcrypt.hash(newPassword, 10);
-            const resetPassword = await User.updateOne({email: email, password: hashed});
+            const resetPassword = await User.updateOne({_id:foundUser._id},{email: email, password: hashed});
             return true
         },
         updateEmail: async(_, args, { res, req }) => {
