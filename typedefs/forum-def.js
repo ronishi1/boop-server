@@ -27,7 +27,7 @@ const typeDefs = gql`
     name: String
     posts: [ForumTopicPost]
     description: String
-    category: String
+    category: Category
   }
   type ForumTopicPost{
     title: String
@@ -49,6 +49,11 @@ const typeDefs = gql`
     linked_content: ID
     topic_ID: ID
   }
+  enum Category {
+    General
+    Comics
+    Stories
+  }
   type Mutation {
     createPost(forumPost: ForumPostInput): ForumPost
     editPost(postID: ID, content:String, tags: [String]): Boolean
@@ -58,7 +63,7 @@ const typeDefs = gql`
     deleteReply(postID: ID, replyID: ID): Boolean
   }
   type Query {
-    getCategoryPosts(category: String): [ForumTopic]
+    getCategoryPosts(category: Category): [ForumTopic]
     getPopularPosts: [ForumPost]
     getRecentPosts: [ForumPost]
     getOldestPosts: [ForumPost]
