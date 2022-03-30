@@ -70,7 +70,12 @@ const contentSchema = new Schema(
 			type: String,
 			required: true
 		},
-
+		storyboard: {
+			type: ObjectId
+		},
+		content_type: {
+			type: String
+		}
 	},
 );
 

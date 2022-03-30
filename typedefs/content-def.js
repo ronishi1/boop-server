@@ -1,7 +1,7 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
-  type Comic {
+  type Content {
     _id: ID
     series_title: String
     author: ID
@@ -18,19 +18,21 @@ const typeDefs = gql`
     publication_date: DateTime
     completed: Boolean
     cover_image: String
+    content_type: String
   }
-  input ComicInput {
+  input ContentInput {
     series_title: String
     synopsis: String
     genres: [String]
     cover_image: String
+    content_type: String
   }
   type Mutation {
-    createComic(comicInput: ComicInput): Comic
-    editComic(comicID: ID, comicInput: ComicInput): Boolean
-    deleteComic(comicID: ID): Boolean
-    rateComic(comicID: ID, rating: Int): Boolean
-    addComicToReadList(comicID: ID): Boolean
+    createContent(contentInput: ContentInput): Content
+    editContent(contentID: ID, contentInput: ContentInput): Boolean
+    deleteContent(contentID: ID): Boolean
+    rateContent(contentID: ID, rating: Int): Boolean
+    addContentToReadList(contentID: ID): Boolean
   }
 `;
 

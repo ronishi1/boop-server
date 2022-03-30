@@ -1,35 +1,26 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
-
   type User {
+    _id: ID
     email: String!
     username: String!
     password: String!
     bio: String
     profile_pic: String
-    favorite_comics: [ID]
-    favorite_stories: [ID]
-    read_list_comics: [ID]
-    read_list_stories: [ID]
+    favorites: [ID]
+    read_list: [ID]
     following: [ID]
     followers: [ID]
     forum_posts: [ID]
-    user_comics: [ID]
-    user_stories: [ID]
-    recent_comics: [ID]
-    recent_stories: [ID]
-    rated_comics: [RatedComics]
-    rated_stories: [RatedStories]
+    user_content: [ID]
+    recent_content: [ID]
+    rated_content: [RatedContent]
     recent_activity: [Activity]
     replies_to_my_post: [Reply]
   }
-  type RatedComics {
-    comic: ID
-    rating: Int
-  }
-  type RatedStories {
-    story: ID
+  type RatedContent {
+    content_ID: ID
     rating: Int
   }
   type Activity {

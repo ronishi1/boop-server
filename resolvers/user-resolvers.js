@@ -71,18 +71,14 @@ module.exports = {
                 password: hashed,
                 bio: '',
                 profile_pic: '',
-                favorite_comics: [],
-                favorite_stories: [],
-                read_list_comics: [],
-                read_list_stories: [],
+                favorites: [],
+                read_list: [],
                 following: [],
                 followers: [],
                 forum_posts: [],
-                user_comics: [],
-                user_stories: [],
-                recent_comics: [],
-                rated_comics: [],
-                rated_stories: [],
+                user_content: [],
+                recent_content: [],
+                rated_content: [],
                 recent_activity: [],
                 replies_to_my_post: [],
             })
@@ -152,7 +148,8 @@ module.exports = {
         },
         deleteAccount: async(_, args,{ res, req }) => {
             const userId = new ObjectId(req.userId);
-            const deleted = await User.deleteOne({_id: userId})
+            console.log(req);
+            // const deleted = await User.deleteOne({_id: userId})
             return true
         },
         updateBio: async(_, args, { res, req }) => {

@@ -24,16 +24,10 @@ const userSchema = new Schema(
 			type: String,
 			required: true
 		},
-		favorite_comics: {
+		favorites: {
 			type: [ObjectId],
 		},
-		favorite_stories: {
-			type: [ObjectId],
-		},
-		read_list_comics: {
-			type: [ObjectId],
-		},
-		read_list_stories: {
+		read_list: {
 			type: [ObjectId],
 		},
 		following: {
@@ -45,21 +39,16 @@ const userSchema = new Schema(
 		forum_posts: {
 			type: [ObjectId],
 		},
-		user_comics: {
+		user_content: {
 			type: [ObjectId],
 		},
-		user_stories: {
-			type: [ObjectId],
-		},
-		recent_comics: {
-			type: [ObjectId],
-		},
-		recent_stories: {
+		recent_content: {
 			type: [ObjectId],
 		},
 		recent_activity: {type: [{
 			activity_type: {type: String, required: true},
-			content_ID: {type: ObjectId, required: true}
+			content_ID: {type: ObjectId, required: true},
+			reply_ID: {type: ObjectId}
 		}]},
 		replies_to_my_post: {type: [{
 			reply_ID: {type: ObjectId, required: true},
@@ -69,15 +58,10 @@ const userSchema = new Schema(
 			post_name: {type: String, required: true},
 			timestamp: {type: Date, required: true}
 		}]},
-		rated_comics: {type: [{
-			comic: {type: ObjectId, required: true},
+		rated_content: {type: [{
+			content_ID: {type: ObjectId, required: true},
 			rating: {type: Number, required: true}
 		}]},
-		rated_stories: {type: [{
-			story: {type: ObjectId, required: true},
-			rating: {type: Number, required: true}
-		}]},
-
 	},
 );
 

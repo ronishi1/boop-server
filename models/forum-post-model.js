@@ -14,10 +14,7 @@ const forumPostSchema = new Schema(
 			type: String,
 			required: true
 		},
-		linked_comic: {
-			type: ObjectId,
-		},
-		linked_story: {
+		linked_content: {
 			type: ObjectId,
 		},
 		tags: {

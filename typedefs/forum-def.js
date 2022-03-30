@@ -46,8 +46,7 @@ const typeDefs = gql`
     title: String
     content: String
     tags: [String]
-    linked_comic: ID
-    linked_story: ID
+    linked_content: ID
     topic_ID: ID
   }
   type Mutation {
@@ -59,9 +58,7 @@ const typeDefs = gql`
     deleteReply(postID: ID, replyID: ID): Boolean
   }
   type Query {
-    getGeneralPosts: [ForumTopic]
-    getComicPosts: [ForumTopic]
-    getStoryPosts: [ForumTopic]
+    getCategoryPosts(category: String): [ForumTopic]
     getPopularPosts: [ForumPost]
     getRecentPosts: [ForumPost]
     getOldestPosts: [ForumPost]
