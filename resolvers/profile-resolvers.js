@@ -5,11 +5,9 @@ const User = require('../models/user-model');
 module.exports = {
   Query: {
     getUserProfile: async(_, args, { req }) => {
-      console.log("KAHFILWHFLJWL")
       const { _id } = args;
       const objId = new ObjectId(_id);
       const user = await User.findOne({_id:objId});
-      console.log(user);
       // STRIP USER OBJECT POTENTIALLY BUT ONLY NECSESARY FIELDS MAY BE GRABBED AUTOMATICALLY
       return user;
     }
