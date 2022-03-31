@@ -1,6 +1,6 @@
 const { model, Schema, ObjectId } = require('mongoose');
 
-const comicChapterSchema = new Schema(
+const ChapterSchema = new Schema(
 	{
         _id: {
 			type: ObjectId,
@@ -18,12 +18,8 @@ const comicChapterSchema = new Schema(
 			type: Number,
 			required: true
 		},
-        chapter_number: {
-			type: Number,
-			required: true
-		},
-        comic_chapter_content: {
-			type: [ObjectId],
+        chapter_content: {
+			type: [String],
 			required: true
 		},
         publication_date: {
@@ -33,5 +29,5 @@ const comicChapterSchema = new Schema(
     }
 );
 
-const ComicChapter = model('ComicChapter', comicChapterSchema);
-module.exports = ComicChapter;
+const Chapter = model('Chapter', ChapterSchema);
+module.exports = Chapter;

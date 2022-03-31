@@ -2,6 +2,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const mongoose = require('mongoose');
 const User = require('../models/user-model');
 const Content = require('../models/content-model');
+const Chapter = require('../models/chapter-model');
 const ForumPost = require('../models/forum-post-model');
 const ForumTopic = require('../models/forum-topic-model');
 const StoryBoard = require("../models/storyboard-model");
@@ -229,5 +230,141 @@ module.exports = {
       await User.updateOne({_id:userObjId},{favorites:user.favorites});
       return true;
     },
+    createChapter: async (_, args, { req, res }) => {
+      const { contentID, chapter_title } = args;
+      const contentObjId = new ObjectId(contentID);
+      const content = await Content.findOne({_id:contentID})
+      const chapterId = new ObjectId();
+      let chapterInputObj = {
+        _id: chapterId,
+        series_id: contentObjId,
+        chapter_title: chapter_title,
+        num_pages: 0,
+        chapter_content: [],
+        publication_date: 0
+      }
+
+      let chapterObj = new Chapter(chapterInputObj);
+      await chapterObj.save()
+      content.chapters.push(chapterId);
+      await Content.updateOne({_id:contentID}, {chapters:content.chapters})
+
+      return chapterObj;
+    },
+    editChapter: async (_, args, { req, res }) => {
+      const { chapterID, chapterInput } = args;
+      const chapter = await Chapter.findOne({_id:chapterID});
+      await Chapter.updateOne({_id:chapterID},
+      {
+        chapter_title: chapterInput.chapter_title,
+        num_pages: chapterInput.num_pages,
+        chapter_content: chapterInput.chapter_content,
+        publication_date: chapterInput.publication_date
+      });
+      return true;
+    },
+    deleteChapter: async (_, args, { req, res }) => {
+      const { chapterID } = args;
+      const chapterObjId = new ObjectId(chapterID);
+      const chapter = await Chapter.findOne({_id:chapterObjId})
+      const contentObjId = new ObjectId(chapter.series_id)
+      const content = await Content.findOne({_id:contentObjId})
+
+      // Remove the chapter from the content
+      content.chapters = content.chapters.filter(chapter => chapter.toString() !== chapterID)
+      await Content.updateOne({_id: contentObjId}, {chapters:content.chapters})
+
+      // Delete the actual chapter
+      await Chapter.deleteOne({_id: chapterObjId})
+
+      return true;
+    },
+    publishChapter: async (_, args, { req, res }) => {
+      const { chapterID } = args;
+      const chapterObjId = new ObjectId(chapterID);
+      const chapter = await Chapter.findOne({_id:chapterObjId});
+      chapter.publication_date = Date.now()
+      await Chapter.updateOne({_id: chapterObjId}, {publication_date: chapter.publication_date})
+      
+      return true;
+    },
+    createCharacter: async (_, args, { req, res }) => {
+      const { storyboardID, characterInput } = args;
+      const storyboardObjID = new ObjectId(storyboardID);
+      const storyboard = await StoryBoard.findOne({_id:storyboardObjID});
+      const characterId = new ObjectId();
+      let characterObj =  {
+        _id: characterId,
+        character_name: characterInput.character_name,
+        notes: characterInput.notes,
+        character_image: characterInput.character_image
+      }
+      storyboard.characters.push(characterObj);
+      await StoryBoard.updateOne({_id: storyboardObjID}, {characters: storyboard.characters})
+      return characterObj
+    },
+    editCharacter: async (_, args, { req, res }) => {
+      const { storyboardID, characterInput } = args;
+      const storyboardObjID = new ObjectId(storyboardID);
+      const storyboard = await StoryBoard.findOne({_id: storyboardObjID});
+      storyboard.characters.forEach((character) => {
+        if (character._id == characterInput._id) {
+          character.character_name = characterInput.character_name
+          character.notes = characterInput.notes
+          character.character_image = characterInput.character_image
+        }
+      })
+      await StoryBoard.updateOne({_id:storyboardObjID}, {characters:storyboard.characters})
+      
+      return true;
+    },
+    deleteCharacter: async (_, args, { req, res }) => {
+      const { storyboardID, characterID } = args;
+      const storyboardObjID = new ObjectId(storyboardID);
+      const storyboard = await StoryBoard.findOne({_id: storyboardObjID});
+      storyboard.characters = storyboard.characters.filter(character => character._id.toString() !== characterID )
+      await StoryBoard.updateOne({_id:storyboardObjID}, {characters: storyboard.characters})
+      return true
+    },
+    createPlotPoint: async (_, args, { req, res }) => {
+      const { storyboardID, plotpointInput } = args;
+      const storyboardObjID = new ObjectId(storyboardID);
+      const storyboard = await StoryBoard.findOne({_id:storyboardObjID});
+      const plotpointId = new ObjectId();
+      let plotpointObj =  {
+        _id: plotpointId,
+        plot_point_name: plotpointInput.plot_point_name,
+        notes: plotpointInput.notes,
+        plot_point_image: plotpointInput.plot_point_image
+      }
+      storyboard.plot_points.push(plotpointObj);
+      await StoryBoard.updateOne({_id: storyboardObjID}, {plot_points: storyboard.plot_points})
+      return plotpointObj
+    },
+    editPlotPoint: async (_, args, { req, res }) => {
+      const { storyboardID, plotpointInput } = args;
+      const storyboardObjID = new ObjectId(storyboardID);
+      const storyboard = await StoryBoard.findOne({_id: storyboardObjID});
+      storyboard.plot_points.forEach((plotpoint) => {
+        if (plotpoint._id == plotpointInput._id) {
+          plotpoint.plot_point_name = plotpointInput.plot_point_name
+          plotpoint.notes = plotpointInput.notes
+          plotpoint.plot_point_image = plotpointInput.plot_point_image
+        }
+      })
+      await StoryBoard.updateOne({_id:storyboardObjID}, {plot_points:storyboard.plot_points})
+      
+      return true;
+    },
+    deletePlotPoint: async (_, args, { req, res }) => {
+      const { storyboardID, plotpointID } = args;
+      const storyboardObjID = new ObjectId(storyboardID);
+      const storyboard = await StoryBoard.findOne({_id: storyboardObjID});
+      storyboard.plot_points = storyboard.plot_points.filter(plotpoint => plotpoint._id.toString() !== plotpointID )
+      await StoryBoard.updateOne({_id:storyboardObjID}, {plot_points: storyboard.plot_points})
+      return true
+    }
+
+    
   }
 };
