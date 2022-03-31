@@ -1,7 +1,7 @@
 require('isomorphic-fetch');
 
 test('Get General Posts', async () => {
-    const registerReturn = [
+    const generalReturn = [
         {
             "_id": "6242195e4b2619473abf93ae"
           },
@@ -17,7 +17,7 @@ test('Get General Posts', async () => {
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
             query: `query {
-                getCategoryPosts(category: "General") {
+                getCategoryPosts(category: General) {
                     _id
                 }
             }`
@@ -27,11 +27,11 @@ test('Get General Posts', async () => {
     const upResp = await response.json()
     //console.log(upResp.data.getGeneralPosts)
 
-    expect(upResp.data.getCategoryPosts).toStrictEqual(registerReturn)
+    expect(upResp.data.getCategoryPosts).toStrictEqual(generalReturn)
 })
 
 test('Get Comic Posts', async () => {
-    const registerReturn = [
+    const comicReturn = [
         {
             "_id": "6240df65172c648d223659cf"
           },
@@ -47,7 +47,7 @@ test('Get Comic Posts', async () => {
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
             query: `query {
-                getCategoryPosts(category: "Comics") {
+                getCategoryPosts(category: Comics) {
                     _id
                 }
             }`
@@ -57,11 +57,11 @@ test('Get Comic Posts', async () => {
     const upResp = await response.json()
 
 
-    expect(upResp.data.getCategoryPosts).toStrictEqual(registerReturn)
+    expect(upResp.data.getCategoryPosts).toStrictEqual(comicReturn)
 })
 
 test('Get Story Posts', async () => {
-    const registerReturn = [
+    const storyReturn = [
         {
             "_id": "624217ffdd90b5c46c5e24d3"
           },
@@ -77,7 +77,7 @@ test('Get Story Posts', async () => {
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
             query: `query {
-                getCategoryPosts(category: "Stories") {
+                getCategoryPosts(category: Stories) {
                     _id
                 }
             }`
@@ -87,11 +87,11 @@ test('Get Story Posts', async () => {
     const upResp = await response.json()
 
 
-    expect(upResp.data.getCategoryPosts).toStrictEqual(registerReturn)
+    expect(upResp.data.getCategoryPosts).toStrictEqual(storyReturn)
 })
 
 test('Get Popular Posts', async () => {
-    const registerReturn = [
+    const poplularReturn = [
         {
            
             "_id": "6243bbcfa10ad7e85f74ccdb"
@@ -124,11 +124,11 @@ test('Get Popular Posts', async () => {
     const upResp = await response.json()
 
 
-    expect(upResp.data.getPopularPosts).toStrictEqual(registerReturn)
+    expect(upResp.data.getPopularPosts).toStrictEqual(poplularReturn)
 })
 
 test('Get Recent Posts', async () => {
-    const registerReturn = [
+    const recentReturn = [
         {
             "_id": "6244de1a0dceb55e5759ab64"
           },
@@ -160,11 +160,11 @@ test('Get Recent Posts', async () => {
     const upResp = await response.json()
 
 
-    expect(upResp.data.getRecentPosts).toStrictEqual(registerReturn)
+    expect(upResp.data.getRecentPosts).toStrictEqual(recentReturn)
 })
 
 test('Get Oldest Posts', async () => {
-    const registerReturn = [
+    const oldestReturn = [
         {
             "_id": "6243aecec8dd2ba5a3ca215e"
           },
@@ -196,11 +196,11 @@ test('Get Oldest Posts', async () => {
     const upResp = await response.json()
 
 
-    expect(upResp.data.getOldestPosts).toStrictEqual(registerReturn)
+    expect(upResp.data.getOldestPosts).toStrictEqual(oldestReturn)
 })
 
 test('Get Most Replied Posts', async () => {
-    const registerReturn = [
+    const repliedrReturn = [
         {
             "_id": "6243aecec8dd2ba5a3ca215e"
         },
@@ -232,11 +232,11 @@ test('Get Most Replied Posts', async () => {
     const upResp = await response.json()
 
 
-    expect(upResp.data.getMostRepliedPosts).toStrictEqual(registerReturn)
+    expect(upResp.data.getMostRepliedPosts).toStrictEqual(repliedrReturn)
 })
 
 test('Get Topic Posts', async () => {
-    const registerReturn = [
+    const topicReturn = [
         {
             "_id": "6244de1a0dceb55e5759ab64"
           }
@@ -256,11 +256,11 @@ test('Get Topic Posts', async () => {
     const upResp = await response.json()
 
 
-    expect(upResp.data.getTopicPosts).toStrictEqual(registerReturn)
+    expect(upResp.data.getTopicPosts).toStrictEqual(topicReturn)
 })
 
 test('Get Post', async () => {
-    const registerReturn = {"_id": "6244de1a0dceb55e5759ab64"}
+    const postReturn = {"_id": "6244de1a0dceb55e5759ab64"}
           
       
     const response = await fetch("http://localhost:4000/graphql", {
@@ -278,5 +278,22 @@ test('Get Post', async () => {
     const upResp = await response.json()
 
 
-    expect(upResp.data.getPost).toStrictEqual(registerReturn)
+    expect(upResp.data.getPost).toStrictEqual(postReturn)
 })
+
+// test('get My Posts', async () => {
+//     const registerReturn = 'Will'
+//     const response = await fetch("http://localhost:4000/graphql", {
+//         method: 'POST',
+//         headers: {'Content-Type' : 'application/json'},
+//         body: JSON.stringify({
+//             query: `mutation {
+//                 register(email: "TestingFromJes", username: "Will", password: "Rock") {
+//                     username
+//                 }
+//             }`
+//         }),
+//     })
+//     const resp = await response.json()
+//     return expect(resp.data.register.username).toStrictEqual(registerReturn);
+// })
