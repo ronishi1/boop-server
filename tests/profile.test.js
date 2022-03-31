@@ -22,6 +22,12 @@ beforeAll(async () => {
     await mongoose.connect(process.env.MONGO_URI, 
         { useNewUrlParser: true, useUnifiedTopology: true }).catch(error => console.error(error));;
 
+    /*DELETE ANY USERS WITH TEST CRITERIA */
+    await User.deleteMany({email: "followertest@email.com"});
+    await User.deleteMany({email: "followedtest@email.com"});
+    await User.deleteMany({username: "followertest"});
+    await User.deleteMany({username: "followedtest"});
+
     /*CREATE FOLLOWER USER AND FOLLOWED USER */
     await registerReq(followerInfo.email, followerInfo.username, followerInfo.password);
     await registerReq(followedInfo.email, followedInfo.username, followedInfo.password);
