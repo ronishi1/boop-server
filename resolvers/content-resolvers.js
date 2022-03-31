@@ -164,6 +164,14 @@ module.exports = {
 
       return true;
     },
+    publishContent: async (_, args, { req, res }) => {
+      const { contentID } = args;
+      const contentObjId = new ObjectId(contentID);
+      const content = await Content.findOne({_id:contentObjId});
+      content.publication_date = Date.now()
+      await Content.updateOne({_id: contentObjId}, {publication_date: content.publication_date});
+      return true;
+    },
     rateContent: async (_, args, { req,res }) => {
       const {contentID, rating} = args;
       const contentObjId = new ObjectId(contentID);
