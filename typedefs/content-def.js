@@ -66,24 +66,29 @@ const typeDefs = gql`
     notes: String
     plot_point_image: String
   }
+  type Query {
+    getPopularContent(content_type: String): [Content]
+    getTopRatedContent(content_type: String): [Content]
+    getRecentContent(content_type: String): [Content]
+  }
   type Mutation {
-    createContent(contentInput: ContentInput): Content
-    editContent(contentID: ID, contentInput: ContentInput): Boolean
+    createContent(contentInput: ContentInput): ID
+    editContent(contentID: ID, contentInput: ContentInput): ID
     deleteContent(contentID: ID): Boolean
     rateContent(contentID: ID, rating: Int): Boolean
     addContentToReadList(contentID: ID): Boolean
     addContentToFavorites(contentID: ID): Boolean
     removeContentFromReadList(contentID: ID): Boolean
     removeContentFromFavorites(contentID: ID): Boolean
-    createChapter(contentID: ID, chapter_title: String): Chapter
-    editChapter(chapterID: ID, chapterInput: ChapterInput): Boolean
+    createChapter(contentID: ID, chapter_title: String): ID
+    editChapter(chapterID: ID, chapterInput: ChapterInput): ID
     deleteChapter(chapterID: ID): Boolean
     publishChapter(chapterID:ID): Boolean
-    createCharacter(storyboardID: ID, characterInput: CharacterInput): Character
-    editCharacter(storyboardID: ID, characterInput: CharacterInput): Boolean
+    createCharacter(storyboardID: ID, characterInput: CharacterInput): ID
+    editCharacter(storyboardID: ID, characterInput: CharacterInput): ID
     deleteCharacter(storyboardID: ID, characterID: ID): Boolean
-    createPlotPoint(storyboardID: ID, plotpointInput: PlotPointInput): PlotPoint
-    editPlotPoint(storyboardID: ID, plotpointInput: PlotPointInput): Boolean
+    createPlotPoint(storyboardID: ID, plotpointInput: PlotPointInput): ID
+    editPlotPoint(storyboardID: ID, plotpointInput: PlotPointInput): ID
     deletePlotPoint(storyboardID: ID, plotpointID: ID): Boolean
   }
 `;
