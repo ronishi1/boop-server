@@ -13,8 +13,19 @@ const typeDefs = gql`
     user_comics: [ID]
     user_stories: [ID]
   }
+  type WorkCard {
+    title: String
+    cover_image: String
+  }
+  type Activity {
+    activity_type: String
+    content_ID: ID
+  }
   type Query {
     getUserProfile(_id: ID!): Profile
+    getUserPublished(_id:ID): [WorkCard]
+    getUserFavorites(_id:ID): [WorkCard]
+    getUserActivityFeed(_id:ID): [Activity]
   }
   type Mutation {
     followUser(followID: ID!): Boolean

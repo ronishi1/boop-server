@@ -63,9 +63,15 @@ module.exports = {
     },
     getMyPosts: async (_,__,{req}) => {
       const userId = new ObjectId(req.userId);
-      const posts = ForumPost.find({author: userId});
-      return posts;
+      const foundUser = await User.findOne({_id: userId});
+      const userPosts = await ForumPost.find({_id: {$in: foundUser.forum_posts}});
+      return userPosts;
     },
+    getRepliesToMyPost: async (_,__,{req}) => {
+      const userId = new ObjectId(req.userId);
+      const foundUser = await User.findOne({_id: userId});
+      return foundUser.replies_to_my_post;
+    }
   },
   Mutation: {
     createPost: async (_, args, { req,res }) => {

@@ -1,6 +1,7 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const mongoose = require('mongoose');
 const User = require('../models/user-model');
+const Content = require('../models/content-model');
 
 module.exports = {
   Query: {
@@ -10,6 +11,33 @@ module.exports = {
       const user = await User.findOne({_id:objId});
       // STRIP USER OBJECT POTENTIALLY BUT ONLY NECSESARY FIELDS MAY BE GRABBED AUTOMATICALLY
       return user;
+    },
+    getUserPublished: async(_, args, {req}) => {
+      const { _id } = args;
+      const userObjId = new ObjectId(_id);
+      const user = await User.findOne({_id:userObjId});
+      const userContent = await Content.find({_id: {$in: user.user_content}, publication_date: { $ne: new Date(null)} });
+      let userWorks = userContent.map((content) => {
+        return {title: content.series_title,cover_image: content.cover_image};
+      });
+      return userWorks;
+    },
+    getUserFavorites: async(_, args, {req}) => {
+      const { _id } = args;
+      const userObjId = new ObjectId(_id);
+      const user = await User.findOne({_id:userObjId});
+      const userFavorites = await Content.find({_id: {$in: user.favorites}});
+      let userFavoriteWorks = userFavorites.map((content) => {
+        return {title: content.series_title,cover_image: content.cover_image};
+      });
+      return userFavoriteWorks;
+    },
+    getUserActivityFeed: async(_, args, {req}) => {
+      const { _id } = args;
+      const userObjId = new ObjectId(_id);
+      const user = await User.findOne({_id:userObjId});
+      console.log(user.recent_activity);
+      return user.recent_activity;
     }
   },
   Mutation: {
@@ -20,7 +48,7 @@ module.exports = {
       const currentUserID = new ObjectId(req.userId);
       const followUser = await User.findOne({_id:followUserID});
       const currentUser = await User.findOne({_id:currentUserID});
-      
+
       // Add the current user as a follower to the other user
       followUser.followers.push(currentUser._id);
       // Add the followed user as a following for the current user

@@ -16,6 +16,19 @@ const typeDefs = gql`
     timestamp: DateTime
     topic: ID
   }
+  type ManagementPost {
+    _id: ID
+    title: String
+    timestamp: DateTime
+    tags: [String]
+  }
+  type ManagementReply {
+    author: ID
+    author_name: String
+    post: ID
+    post_name: String
+    timestamp: DateTime
+  }
   type ForumReply {
     author: String
     author_name: String
@@ -70,7 +83,8 @@ const typeDefs = gql`
     getTopicPosts(topicId: ID): [ForumPost]
     getMostRepliedPosts: [ForumPost]
     getPost(postId: ID): ForumPost
-    getMyPosts: [ForumPost]
+    getMyPosts: [ManagementPost]
+    getRepliesToMyPost: [ManagementReply]
   }
 `;
 
