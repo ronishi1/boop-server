@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('../models/user-model');
+const { loginReq, registerReq } = require('./shortcuts');
 
 /*SETUP TEST USER INFO */
 const followerInfo = {
@@ -20,6 +21,7 @@ const followedInfo = {
 beforeAll(async () => {
     await mongoose.connect(process.env.MONGO_URI, 
         { useNewUrlParser: true, useUnifiedTopology: true }).catch(error => console.error(error));;
+
     /*DELETE ANY USERS WITH TEST CRITERIA */
     await User.deleteMany({email: "followertest@email.com"});
     await User.deleteMany({email: "followedtest@email.com"});
@@ -27,28 +29,8 @@ beforeAll(async () => {
     await User.deleteMany({username: "followedtest"});
 
     /*CREATE FOLLOWER USER AND FOLLOWED USER */
-    await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {'Content-Type' : 'application/json'},
-        body: JSON.stringify({
-            query: `mutation {
-                register(email: "${followerInfo.email}", username: "${followerInfo.username}", password: "${followerInfo.password}") {
-                    username
-                }
-            }`
-        }),
-    });
-    await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {'Content-Type' : 'application/json'},
-        body: JSON.stringify({
-            query: `mutation {
-                register(email: "${followedInfo.email}", username: "${followedInfo.username}", password: "${followedInfo.password}") {
-                    username
-                }
-            }`
-        }),
-    })
+    await registerReq(followerInfo.email, followerInfo.username, followerInfo.password);
+    await registerReq(followedInfo.email, followedInfo.username, followedInfo.password);
 });
 
 afterAll(async () => {
@@ -79,18 +61,7 @@ test("getUserProfile", async () => {
 
 test('Follow User', async () => {
     // Log in follower
-    const loginRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {'Content-Type' : 'application/json'},
-        body: JSON.stringify({
-            query: `mutation {
-                login(username: "${followerInfo.username}", password: "${followerInfo.password}") {
-                    _id
-                }
-            }`
-        }),
-    });
-
+    const loginRes = await loginReq(followerInfo.username, followerInfo.password);
     const { data: loginResData } = await loginRes.json();
 
     const follower = await User.findById(new ObjectId(loginResData.login._id));
@@ -100,8 +71,7 @@ test('Follow User', async () => {
     const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
     const accessRegex = /(access-token.*?(?=;))/g
     const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
-      
-  
+        
     const following = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
         headers: {
@@ -126,18 +96,7 @@ test('Follow User', async () => {
 
 test('Unfollow User', async () => {
     // Log in follower
-    const loginRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {'Content-Type' : 'application/json'},
-        body: JSON.stringify({
-            query: `mutation {
-                login(username: "${followerInfo.username}", password: "${followerInfo.password}") {
-                    _id
-                }
-            }`
-        }),
-    });
-
+    const loginRes = await loginReq(followerInfo.username, followerInfo.password);
     const { data: loginResData } = await loginRes.json();
 
     const unfollower = await User.findById(new ObjectId(loginResData.login._id));
@@ -147,8 +106,8 @@ test('Unfollow User', async () => {
     const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
     const accessRegex = /(access-token.*?(?=;))/g
     const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
-      
-  
+        
+    
     const unfollowing = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
         headers: {
