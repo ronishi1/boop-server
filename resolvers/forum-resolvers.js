@@ -104,14 +104,14 @@ module.exports = {
       foundTopic.posts.push(forumPost._id);
       await ForumTopic.updateOne({_id:topicObjID},{posts: foundTopic.posts});
 
-      return forumPost;
+      return forumPost._id.toString();
     },
     editPost: async (_, args, { req,res }) => {
       // Update the post with updated content and tags
       const {postID, content, tags} = args;
       const postObjectId = new ObjectId(postID);
       await ForumPost.updateOne({_id:postObjectId},{content: content,tags: tags});
-      return true;
+      return postID;
     },
     deletePost: async (_, args, { req,res }) => {
       const {postID} = args;
@@ -131,7 +131,6 @@ module.exports = {
       foundUser.forum_posts.filter(p => p.toString !== postObjectId.toString());
       foundUser.replies_to_my_post = foundUser.replies_to_my_post.filter(reply => reply.post.toString() !== postID);
       await User.updateOne({_id:foundPost.author},{forum_posts: foundUser.forum_posts,replies_to_my_post:foundUser.replies_to_my_post});
-
 
       return true;
     },
@@ -186,7 +185,7 @@ module.exports = {
       }
       await User.updateOne({_id:foundPost.author},{replies_to_my_post:postAuthor.replies_to_my_post});
 
-      return true;
+      return postID;
     },
     editReply: async (_, args, { req,res }) => {
       const {postID, content, replyID} = args;
@@ -197,7 +196,7 @@ module.exports = {
         if(reply._id.toString() == replyID) reply.content = content;
       })
       await ForumPost.updateOne({_id:postObjectId},{replies:foundPost.replies});
-      return true;
+      return postID;
     },
     deleteReply: async (_, args, { req,res }) => {
       const {postID, replyID} = args;

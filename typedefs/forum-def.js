@@ -55,11 +55,11 @@ const typeDefs = gql`
     Stories
   }
   type Mutation {
-    createPost(forumPost: ForumPostInput): ForumPost
-    editPost(postID: ID, content:String, tags: [String]): Boolean
+    createPost(forumPost: ForumPostInput): ID
+    editPost(postID: ID, content:String, tags: [String]): ID
     deletePost(postID: ID): Boolean
-    createReply(postID: ID, content: String): Boolean
-    editReply(postID: ID, content: String, replyID: ID): Boolean
+    createReply(postID: ID, content: String): ID
+    editReply(postID: ID, content: String, replyID: ID): ID
     deleteReply(postID: ID, replyID: ID): Boolean
   }
   type Query {
