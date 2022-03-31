@@ -71,6 +71,7 @@ module.exports = {
     createPost: async (_, args, { req,res }) => {
       const currentUserID = new ObjectId(req.userId);
       const _id = new mongoose.Types.ObjectId();
+      const userId = new ObjectId(req.userId)
 
       // Find the user and add the forum post to their list of posts and push it
       const foundUser = await User.findOne({_id:userId});
@@ -80,7 +81,6 @@ module.exports = {
       // Build out forum post object to push to DB
       let postInput = args.forumPost;
       let timestamp = Date.now();
-      const userId = new ObjectId(req.userId)
       const topicObjID = new ObjectId(postInput.topic_ID);
       const forumPost = new ForumPost ({
         _id: _id,
