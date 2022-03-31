@@ -121,7 +121,7 @@ test('Login ERROR: Invalid Username', async () => {
 
         body: JSON.stringify({
             query: `mutation {
-                login(username: "a",password:"Rock") {
+                login(username: "aaaaaaaaaaaaaa",password:"Rock") {
                     username
                 }
             }`
