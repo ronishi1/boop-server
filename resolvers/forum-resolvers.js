@@ -70,12 +70,17 @@ module.exports = {
   Mutation: {
     createPost: async (_, args, { req,res }) => {
       const currentUserID = new ObjectId(req.userId);
+      const _id = new mongoose.Types.ObjectId();
+      const userId = new ObjectId(req.userId)
+
+      // Find the user and add the forum post to their list of posts and push it
+      const foundUser = await User.findOne({_id:userId});
+      foundUser.forum_posts.push(_id);
+      await User.updateOne({_id:userId},{forum_posts:foundUser.forum_posts});
 
       // Build out forum post object to push to DB
       let postInput = args.forumPost;
       let timestamp = Date.now();
-      const _id = new mongoose.Types.ObjectId();
-      const userId = new ObjectId(req.userId)
       const topicObjID = new ObjectId(postInput.topic_ID);
       const forumPost = new ForumPost ({
         _id: _id,
@@ -93,10 +98,6 @@ module.exports = {
       });
       await forumPost.save();
 
-      // Find the user and add the forum post to their list of posts and push it
-      const foundUser = await User.findOne({_id:userId});
-      foundUser.forum_posts.push(_id);
-      await User.updateOne({_id:userId},{forum_posts:foundUser.forum_posts});
 
       // Find the topic and add the forum post to its list of posts and push it
       const foundTopic = await ForumTopic.findOne({_id:topicObjID});

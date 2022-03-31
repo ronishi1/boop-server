@@ -93,7 +93,7 @@ test('Registering Account ERROR: Username Already Exists', async () => {
 
 test('Login', async () => {
 
-    const registerReturn = 'Will'
+    const loginReturn = 'Will'
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
         credentials: "include",
@@ -108,12 +108,12 @@ test('Login', async () => {
     })
     const resp = await response.json()
     //console.log(response)
-    return expect(resp.data.login.username).toStrictEqual(registerReturn);
+    return expect(resp.data.login.username).toStrictEqual(loginReturn);
     
 })
 
 test('Login ERROR: Invalid Username', async () => {
-    const registerReturn = 'Invalid Username'
+    const loginReturn = 'Invalid Username'
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
         credentials: "include",
@@ -128,12 +128,12 @@ test('Login ERROR: Invalid Username', async () => {
         }),
     })
     const resp = await response.json()
-    return expect(resp.errors[0].message).toStrictEqual(registerReturn);
+    return expect(resp.errors[0].message).toStrictEqual(loginReturn);
     
 })
 
 test('Login ERROR: Invalid Password', async () => {
-    const registerReturn = 'Invalid Password'
+    const loginReturn = 'Invalid Password'
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
         credentials: "include",
@@ -147,12 +147,12 @@ test('Login ERROR: Invalid Password', async () => {
         }),
     })
     const resp = await response.json()
-    return expect(resp.errors[0].message).toStrictEqual(registerReturn);
+    return expect(resp.errors[0].message).toStrictEqual(loginReturn);
     
 })
 
 test('Update Username ERROR: Username Already Exists', async () => {
-    const registerReturn = 'Username Already Exists'
+    const loginReturn = 'Username Already Exists'
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
@@ -236,7 +236,7 @@ test('Update Username', async () => {
 })
 
 test('Get Current User', async () => {
-    const registerReturn = 'Chris'
+    const currentReturn = 'Chris'
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
@@ -276,7 +276,7 @@ test('Get Current User', async () => {
     const upResp = await updating.json()
     //console.log(upResp)
 
-    expect(upResp.data.getCurrentUser.username).toStrictEqual(registerReturn)
+    expect(upResp.data.getCurrentUser.username).toStrictEqual(currentReturn)
  
 })
 
@@ -318,7 +318,7 @@ test('Update Password ERROR: Invalid Password', async () => {
         }),
     })
     const upResp = await updating.json()
-    console.log(upResp)
+    //console.log(upResp)
 
     expect(upResp.data.updatePassword).toBeFalsy()
  
@@ -362,7 +362,7 @@ test('Update Password ', async () => {
         }),
     })
     const upResp = await updating.json()
-    console.log(upResp)
+    //console.log(upResp)
 
     expect(upResp.data.updatePassword).toBeTruthy()
  
@@ -383,7 +383,7 @@ test('Password Reset ERROR: Email Not Registered', async () => {
         }),
     })
     const upResp = await updating.json()
-    console.log(upResp)
+    //console.log(upResp)
 
     expect(upResp.data.passwordReset).toBeFalsy()
  
@@ -405,7 +405,7 @@ test('Password Reset', async () => {
         }),
     })
     const upResp = await updating.json()
-    console.log(upResp)
+    //console.log(upResp)
 
     expect(upResp.data.passwordReset).toBeTruthy()
  
@@ -450,7 +450,7 @@ test('Update Email ERROR: Email Already Exists', async () => {
         }),
     })
     const upResp = await updating.json()
-    console.log(upResp)
+    //console.log(upResp)
 
     expect(upResp.data.updateEmail).toBeFalsy()
  
@@ -494,7 +494,7 @@ test('Update Email ERROR: Invalid Password', async () => {
         }),
     })
     const upResp = await updating.json()
-    console.log(upResp)
+    //console.log(upResp)
 
     expect(upResp.data.updateEmail).toBeFalsy()
  
@@ -538,7 +538,7 @@ test('Update Email ', async () => {
         }),
     })
     const upResp = await updating.json()
-    console.log(upResp)
+    //console.log(upResp)
 
     expect(upResp.data.updateEmail).toBeTruthy()
  
@@ -582,7 +582,7 @@ test('Update Bio ', async () => {
         }),
     })
     const upResp = await updating.json()
-    console.log(upResp)
+    //console.log(upResp)
 
     expect(upResp.data.updateBio).toBeTruthy()
  
@@ -626,7 +626,7 @@ test('Delete Account', async () => {
         }),
     })
     const upResp = await updating.json()
-    console.log(upResp)
+    //console.log(upResp)
 
     expect(upResp.data.deleteAccount).toBeTruthy()
  
