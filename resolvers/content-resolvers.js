@@ -194,6 +194,40 @@ module.exports = {
       const user = await User.findOne({_id:userObjId});
       user.read_list.push(contentObjId);
       await User.updateOne({_id:userObjId},{read_list:user.read_list});
-    }
+      return true;
+    },
+    addContentToFavorites: async (_, args, { req,res }) => {
+      const {contentID} = args;
+      const contentObjId = new ObjectId(contentID);
+      const userObjId = new ObjectId(req.userId);
+
+      // Find the user and push the content to their read list
+      const user = await User.findOne({_id:userObjId});
+      user.favorites.push(contentObjId);
+      await User.updateOne({_id:userObjId},{favorites:user.favorites});
+      return true;
+    },
+    removeContentFromReadList: async (_, args, { req,res }) => {
+      const {contentID} = args;
+      const contentObjId = new ObjectId(contentID);
+      const userObjId = new ObjectId(req.userId);
+
+      // Find the user and remove the content from their read list
+      const user = await User.findOne({_id:userObjId});
+      user.read_list = user.read_list.filter(content => content.toString() !== contentID);
+      await User.updateOne({_id:userObjId},{read_list:user.read_list});
+      return true;
+    },
+    removeContentFromFavorites: async (_, args, { req,res }) => {
+      const {contentID} = args;
+      const contentObjId = new ObjectId(contentID);
+      const userObjId = new ObjectId(req.userId);
+
+      // Find the user and remove the content from their read list
+      const user = await User.findOne({_id:userObjId});
+      user.favorites = user.favorites.filter(content => content.toString() !== contentID);
+      await User.updateOne({_id:userObjId},{favorites:user.favorites});
+      return true;
+    },
   }
 };
