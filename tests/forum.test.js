@@ -93,21 +93,25 @@ test('Get Story Posts', async () => {
 test('Get Popular Posts', async () => {
     const poplularReturn = [
         {
-           
-            "_id": "6243bbcfa10ad7e85f74ccdb"
-        },
-        {
-        "_id": "6244de1a0dceb55e5759ab64"
-        },
-        {
-        "_id": "6243bbc9a10ad7e85f74cccf"
-        },
-        {
-        "_id": "6243aecec8dd2ba5a3ca215e"
-        },
-        {
-        "_id": "6243bbcca10ad7e85f74ccd5"
-        }
+            "_id": "62450af504ebb09385e639a2",
+            "views": 100
+          },
+          {
+            "_id": "62450ab404ebb09385e6399c",
+            "views": 50
+          },
+          {
+            "_id": "6243aecec8dd2ba5a3ca215e",
+            "views": 25
+          },
+          {
+            "_id": "6244de1a0dceb55e5759ab64",
+            "views": 22
+          },
+          {
+            "_id": "62450a8f04ebb09385e63996",
+            "views": 15
+          }
       ]
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -116,6 +120,7 @@ test('Get Popular Posts', async () => {
             query: `query {
                 getPopularPosts {
                     _id
+                    views
                 }
             }`
         }),
@@ -130,20 +135,20 @@ test('Get Popular Posts', async () => {
 test('Get Recent Posts', async () => {
     const recentReturn = [
         {
-            "_id": "6244de1a0dceb55e5759ab64"
-          },
-          {
-            "_id": "6243bbcfa10ad7e85f74ccdb"
-          },
-          {
-            "_id": "6243bbcca10ad7e85f74ccd5"
-          },
-          {
-            "_id": "6243bbc9a10ad7e85f74cccf"
-          },
-          {
-            "_id": "6243aecec8dd2ba5a3ca215e"
-          }
+            "_id": "62450af504ebb09385e639a2"
+        },
+        {
+            "_id": "62450ab404ebb09385e6399c"
+        },
+        {
+            "_id": "62450a8f04ebb09385e63996"
+        },
+        {
+            "_id": "62450a4304ebb09385e63990"
+        },
+        {
+            "_id": "62450a2613d31f6e07ef4e5a"
+        }
       ]
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -165,7 +170,7 @@ test('Get Recent Posts', async () => {
 
 test('Get Oldest Posts', async () => {
     const oldestReturn = [
-        {
+          {
             "_id": "6243aecec8dd2ba5a3ca215e"
           },
           {
@@ -179,6 +184,21 @@ test('Get Oldest Posts', async () => {
           },
           {
             "_id": "6244de1a0dceb55e5759ab64"
+          },
+          {
+            "_id": "62450a2613d31f6e07ef4e5a"
+          },
+          {
+            "_id": "62450a4304ebb09385e63990"
+          },
+          {
+            "_id": "62450a8f04ebb09385e63996"
+          },
+          {
+            "_id": "62450ab404ebb09385e6399c"
+          },
+          {
+            "_id": "62450af504ebb09385e639a2"
           }
       ]
     const response = await fetch("http://localhost:4000/graphql", {
@@ -201,21 +221,46 @@ test('Get Oldest Posts', async () => {
 
 test('Get Most Replied Posts', async () => {
     const repliedrReturn = [
-        {
-            "_id": "6243aecec8dd2ba5a3ca215e"
-        },
-        {
-            "_id": "6243bbc9a10ad7e85f74cccf"
-        },
-        {
-            "_id": "6243bbcca10ad7e85f74ccd5"
-        },
-        {
-            "_id": "6243bbcfa10ad7e85f74ccdb"
-        },
-        {
-            "_id": "6244de1a0dceb55e5759ab64"
-        }
+        { 
+        "_id": "62450ab404ebb09385e6399c",
+        "num_replies": 3
+      },
+      {
+        "_id": "62450af504ebb09385e639a2",
+        "num_replies": 3
+      },
+      {
+        "_id": "62450a2613d31f6e07ef4e5a",
+        "num_replies": 1
+      },
+      {
+        "_id": "62450a4304ebb09385e63990",
+        "num_replies": 1
+      },
+      {
+        "_id": "62450a8f04ebb09385e63996",
+        "num_replies": 1
+      },
+      {
+        "_id": "6243aecec8dd2ba5a3ca215e",
+        "num_replies": 0
+      },
+      {
+        "_id": "6243bbc9a10ad7e85f74cccf",
+        "num_replies": 0
+      },
+      {
+        "_id": "6243bbcca10ad7e85f74ccd5",
+        "num_replies": 0
+      },
+      {
+        "_id": "6243bbcfa10ad7e85f74ccdb",
+        "num_replies": 0
+      },
+      {
+        "_id": "6244de1a0dceb55e5759ab64",
+        "num_replies": 0
+      }
       ]
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -224,6 +269,7 @@ test('Get Most Replied Posts', async () => {
             query: `query {
                 getMostRepliedPosts {
                     _id
+                    num_replies
                 }
             }`
         }),
