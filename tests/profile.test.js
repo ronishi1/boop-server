@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('../models/user-model');
-const { loginTokenFunc, registerFunc } = require('./shortcuts');
+const { loginTokenFunc, registerFunc } = require('./user-sc');
 
 /*SETUP TEST USER INFO */
 const followerInfo = {
