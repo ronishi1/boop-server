@@ -36,18 +36,18 @@ module.exports = {
       return chapterItemObjs;
     },
     getPopularContent: async (_, args) => {
-      const {content_type} = args;
-      const contents = await Content.find({content_type:content_type}).sort({views:-1}).limit(20);
+      const {contentType} = args;
+      const contents = await Content.find({content_type:contentType}).sort({views:-1}).limit(20);
       return contents;
     },
     getRecentContent: async (_, args) => {
-      const {content_type} = args;
-      const contents = await Content.find({content_type:content_type}).sort({publication_date:-1}).limit(20);
+      const {contentType} = args;
+      const contents = await Content.find({content_type:contentType}).sort({publication_date:-1}).limit(20);
       return contents;
     },
     getTopRatedContent: async (_, args) => {
-      const {content_type} = args;
-      const contents = await Content.find({content_type:content_type}).sort({current_rating:-1}).limit(20);
+      const {contentType} = args;
+      const contents = await Content.find({content_type:contentType}).sort({current_rating:-1}).limit(20);
       return contents;
     },
     getReadList: async (_, args) => {
