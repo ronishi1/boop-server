@@ -92,14 +92,14 @@ module.exports = {
     },
     getFilteredContent: async (_, args) => {
       const {genres, releaseYear, rating, completionStatus, contentType} = args
-      const queryry = {
+      const query = {
         $and: [
           {"content_type": {$eq: contentType}}
         ]
       }
       // Filtering on genres
       if (genres !== undefined && genres !== null) {
-       queryry.$and.push(
+       query.$and.push(
           {"genres": { $all: genres}}
         )
       }
@@ -109,27 +109,27 @@ module.exports = {
         const startYear = new Date(`${releaseYear.toString()}-01-01T00:00:00Z`)
         let nextYear = releaseYear + 1;
         nextYear = new Date(`${nextYear.toString()}-01-01T00:00:00Z`)
-        queryry.$and.push(
+        query.$and.push(
           {"publication_date": { $lte: nextYear, $gte: startYear}}
         )
       }
 
       // Filtering on comics greater than parameter rating
       if (rating !== undefined && rating !== null) {
-        queryry.$and.push(
+        query.$and.push(
           {"current_rating": {$gte: rating}}
         )
       }
 
       // Filtering on completion status
       if (completionStatus !== undefined && completionStatus !== null) {
-        queryry.$and.push(
+        query.$and.push(
           {"completed": {$eq: completionStatus}}
         )
       }
 
       const filteredComics = await Content.find(
-        queryry
+        query
       )
       return filteredComics
     },
