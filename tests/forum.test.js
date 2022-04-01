@@ -1,17 +1,25 @@
 require('isomorphic-fetch');
-const { loginReq, registerReq,createPostFunc,deletePostFunc} = require('./shortcuts');
+const { loginTokenFunc } = require('./user-sc');
+const {createPostFunc, deletePostFunc} = require("./forum-sc")
 const mongoose = require('mongoose');
 const ObjectId = require('mongoose').Types.ObjectId;
 const ForumPost = require('../models/forum-post-model');
+const User = require('../models/user-model');
 require('dotenv').config();
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGO_URI, 
-      { useNewUrlParser: true, useUnifiedTopology: true }).catch(error => console.error(error));;
+    await mongoose.connect(process.env.MONGO_URI, 
+        { useNewUrlParser: true, useUnifiedTopology: true }).catch(error => console.error(error));;
+
+    // delete all posts in account b
+    const b = await User.findOne({username:"b"});
+    b.forum_posts = [];
+    await b.save();
+
 })
 
 afterAll(async () => {
-  await mongoose.connection.close().catch(error => console.error(error));;
+    await mongoose.connection.close().catch(error => console.error(error));;
 });
 
 
@@ -218,9 +226,10 @@ test('Get Most Replied Posts', async () => {
 })
 
 test('Get Topic Posts', async () => {
-  topicPost = await createPostFunc("b","b","topic1","delete topic1","6242239f4b2619473abf93b2")
-  topicPost2 = await createPostFunc("b","b","topic2","delete topic2","6242239f4b2619473abf93b2")
-  topicPost3 = await createPostFunc("b","b","topic3","delete topic3","6242239f4b2619473abf93b2")
+    const { loginRes, refreshToken, accessToken} = await loginTokenFunc("b","b");
+    topicPost = await createPostFunc("topic1","delete topic1","6242239f4b2619473abf93b2",refreshToken,accessToken);
+    topicPost2 = await createPostFunc("topic2","delete topic2","6242239f4b2619473abf93b2",refreshToken,accessToken);
+    topicPost3 = await createPostFunc("topic3","delete topic3","6242239f4b2619473abf93b2",refreshToken,accessToken);
       
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -241,16 +250,16 @@ test('Get Topic Posts', async () => {
     expect(upResp.data.getTopicPosts[lenData-2]._id).toStrictEqual(topicPost2)
     expect(upResp.data.getTopicPosts[lenData-1]._id).toStrictEqual(topicPost3)
 
-    await deletePostFunc("b","b",topicPost)
-    await deletePostFunc("b","b",topicPost2)
-    await deletePostFunc("b","b",topicPost3)
+    await deletePostFunc(topicPost,refreshToken, accessToken)
+    await deletePostFunc(topicPost2,refreshToken, accessToken)
+    await deletePostFunc(topicPost3,refreshToken, accessToken)
 
 })
 
 test('Get Post', async () => {
 
-
-  holdgetPost = await createPostFunc("b","b","testing","delete soon","624218db4b2619473abf93ab")
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("b","b");
+    holdgetPost = await createPostFunc("testing","delete soon","624218db4b2619473abf93ab", refreshToken, accessToken);
           
       
     const response = await fetch("http://localhost:4000/graphql", {
@@ -269,24 +278,18 @@ test('Get Post', async () => {
 
 
     expect(upResp.data.getPost._id).toStrictEqual(holdgetPost)
-    await deletePostFunc("b","b",holdgetPost)
+    await deletePostFunc(holdgetPost,refreshToken, accessToken)
 })
 
 test('get My Posts', async () => {
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("b", "b");
     
-    holdPost = await createPostFunc("b","b","testing","delete soon","624218db4b2619473abf93ab")
-    holdPost2 = await createPostFunc("b","b","testing2","delete comic tho soon","624216a0dd90b5c46c5e24d0")
-    holdPost3 = await createPostFunc("b","b","testing3","delete soon","624218db4b2619473abf93ab")
-    holdPost4 = await createPostFunc("b","b","testing4","delete comic again soon","624216a0dd90b5c46c5e24d0")
-    holdPost5 = await createPostFunc("b","b","testing5","delete soon","624218db4b2619473abf93ab")
+    holdPost = await createPostFunc("testing","delete soon","624218db4b2619473abf93ab",refreshToken,accessToken)
+    holdPost2 = await createPostFunc("testing2","delete comic tho soon","624216a0dd90b5c46c5e24d0",refreshToken,accessToken)
+    holdPost3 = await createPostFunc("testing3","delete soon","624218db4b2619473abf93ab",refreshToken,accessToken)
+    holdPost4 = await createPostFunc("testing4","delete comic again soon","624216a0dd90b5c46c5e24d0",refreshToken,accessToken)
+    holdPost5 = await createPostFunc("testing5","delete soon","624218db4b2619473abf93ab",refreshToken,accessToken)
 
-    const loginRes = await loginReq("b", "b");
-
-    const refreshRegex = /(refresh-token.*?(?=;))/g
-    const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
-    const accessRegex = /(access-token.*?(?=;))/g
-    const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
-    
 
     const updating = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -314,65 +317,62 @@ test('get My Posts', async () => {
     expect(upResp.data.getMyPosts[3]._id).toStrictEqual(holdPost4)
     expect(upResp.data.getMyPosts[4]._id).toStrictEqual(holdPost5)
 
-    await deletePostFunc("b","b",holdPost)
-    await deletePostFunc("b","b",holdPost2)
-    await deletePostFunc("b","b",holdPost3)
-    await deletePostFunc("b","b",holdPost4)
-    await deletePostFunc("b","b",holdPost5)
+    await deletePostFunc(holdPost,refreshToken, accessToken)
+    await deletePostFunc(holdPost2,refreshToken, accessToken)
+    await deletePostFunc(holdPost3,refreshToken, accessToken)
+    await deletePostFunc(holdPost4,refreshToken, accessToken)
+    await deletePostFunc(holdPost5,refreshToken, accessToken)
 })
 
 test('Get Recent Posts', async () => {
 
-  recent1 = await createPostFunc("a","a","Oldest","this is old","624218db4b2619473abf93ab")
-  recent2 = await createPostFunc("a","a","less old","this is less old","624218db4b2619473abf93ab")
-  recent3 = await createPostFunc("a","a","mid old","this is mid old","624218db4b2619473abf93ab")
-  recent4 = await createPostFunc("a","a","less fresh","this is less fresh","624218db4b2619473abf93ab")
-  recent5 = await createPostFunc("a","a","Freshest","this is fresh","624218db4b2619473abf93ab")
+    const { logineRes, refreshToken, accessToken } = await loginTokenFunc("a","a")
+
+    recent1 = await createPostFunc("Oldest","this is old","624218db4b2619473abf93ab",refreshToken, accessToken)
+    recent2 = await createPostFunc("less old","this is less old","624218db4b2619473abf93ab",refreshToken, accessToken)
+    recent3 = await createPostFunc("mid old","this is mid old","624218db4b2619473abf93ab",refreshToken, accessToken)
+    recent4 = await createPostFunc("less fresh","this is less fresh","624218db4b2619473abf93ab",refreshToken, accessToken)
+    recent5 = await createPostFunc("Freshest","this is fresh","624218db4b2619473abf93ab",refreshToken, accessToken)
 
 
 
-  const response = await fetch("http://localhost:4000/graphql", {
-      method: 'POST',
-      headers: {'Content-Type' : 'application/json'},
-      body: JSON.stringify({
-          query: `query {
-              getRecentPosts {
-                  _id
-              }
-          }`
-      }),
-  })
+    const response = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getRecentPosts {
+                    _id
+                }
+            }`
+        }),
+    })
 
-  const upResp = await response.json()
+    const upResp = await response.json()
 
-  //console.log(String(holdrecent))
-  expect(upResp.data.getRecentPosts[0]._id).toStrictEqual(recent5)
-  expect(upResp.data.getRecentPosts[1]._id).toStrictEqual(recent4)
-  expect(upResp.data.getRecentPosts[2]._id).toStrictEqual(recent3)
-  expect(upResp.data.getRecentPosts[3]._id).toStrictEqual(recent2)
-  expect(upResp.data.getRecentPosts[4]._id).toStrictEqual(recent1)
+    //console.log(String(holdrecent))
+    expect(upResp.data.getRecentPosts[0]._id).toStrictEqual(recent5)
+    expect(upResp.data.getRecentPosts[1]._id).toStrictEqual(recent4)
+    expect(upResp.data.getRecentPosts[2]._id).toStrictEqual(recent3)
+    expect(upResp.data.getRecentPosts[3]._id).toStrictEqual(recent2)
+    expect(upResp.data.getRecentPosts[4]._id).toStrictEqual(recent1)
 
-  await deletePostFunc("a","a",recent5)
-  await deletePostFunc("a","a",recent4)
-  await deletePostFunc("a","a",recent3)
-  await deletePostFunc("a","a",recent2)
-  await deletePostFunc("a","a",recent1)
+    await deletePostFunc(recent5,refreshToken, accessToken)
+    await deletePostFunc(recent4,refreshToken, accessToken)
+    await deletePostFunc(recent3,refreshToken, accessToken)
+    await deletePostFunc(recent2,refreshToken, accessToken)
+    await deletePostFunc(recent1,refreshToken, accessToken)
 
-})
+    })
 
 let holdrecent
 
 test('Create Post', async () => {
-  const sampleReturn = {
-    "_id": "62460cbedab0cf6c79ab53ff"
-  }
+    const sampleReturn = {
+        "_id": "62460cbedab0cf6c79ab53ff"
+    }
 
-  const loginRes = await loginReq("a", "a");
-
-  const refreshRegex = /(refresh-token.*?(?=;))/g
-  const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
-  const accessRegex = /(access-token.*?(?=;))/g
-  const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
     const updating = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -403,12 +403,7 @@ test('Create Post', async () => {
 
 test('Edit Post', async () => {
 
-  const loginRes = await loginReq("a", "a");
-
-  const refreshRegex = /(refresh-token.*?(?=;))/g
-  const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
-  const accessRegex = /(access-token.*?(?=;))/g
-  const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
     const updating = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -435,12 +430,7 @@ test('Edit Post', async () => {
 
 test('Create Reply', async () => {
 
-  const loginRes = await loginReq("a", "a");
-
-  const refreshRegex = /(refresh-token.*?(?=;))/g
-  const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
-  const accessRegex = /(access-token.*?(?=;))/g
-  const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
     const updating = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -472,12 +462,7 @@ test('Edit Reply', async () => {
   const replyIDhold = foundPost.replies[0]._id
   //holdReply=replyIDhold
 
-  const loginRes = await loginReq("a", "a");
-
-  const refreshRegex = /(refresh-token.*?(?=;))/g
-  const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
-  const accessRegex = /(access-token.*?(?=;))/g
-  const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
+  const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
     const updating = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -503,12 +488,7 @@ test('Edit Reply', async () => {
 
 test('Get Replies To My Post', async () => {
 
-  const loginRes = await loginReq("a", "a");
-
-  const refreshRegex = /(refresh-token.*?(?=;))/g
-  const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
-  const accessRegex = /(access-token.*?(?=;))/g
-  const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
     const updating = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -546,12 +526,7 @@ test('Delete Reply', async () => {
   //console.log(foundPost)
   const replyIDhold = foundPost.replies[0]._id
 
-  const loginRes = await loginReq("a", "a");
-
-  const refreshRegex = /(refresh-token.*?(?=;))/g
-  const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
-  const accessRegex = /(access-token.*?(?=;))/g
-  const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
+  const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
     const updating = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -579,12 +554,7 @@ test('Delete Reply', async () => {
 
 test('Delete Post', async () => {
 
-  const loginRes = await loginReq("a", "a");
-
-  const refreshRegex = /(refresh-token.*?(?=;))/g
-  const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
-  const accessRegex = /(access-token.*?(?=;))/g
-  const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
     const updating = await fetch("http://localhost:4000/graphql", {
         method: 'POST',

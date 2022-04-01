@@ -9,7 +9,11 @@ const Chapter = require('../models/chapter-model');
 const ForumPost = require('../models/forum-post-model');
 const ForumTopic = require('../models/forum-topic-model');
 const StoryBoard = require("../models/storyboard-model");
-const { loginTokenFunc, registerFunc, createContentFunc } = require('./shortcuts');
+const { loginTokenFunc, registerFunc } = require('./user-sc');
+const { createContentFunc, editContentFunc, deleteContentFunc, 
+    publishContentFunc, rateContentFunc, addToReadListFunc, 
+    addToFavoritesFunc, removeFromReadListFunc, removeFromFavoritesFunc, 
+    createChapterFunc, } = require("./content-sc");
 
 /*SETUP TEST USER INFO */
 const contentTestUser1 = {
@@ -65,26 +69,8 @@ test("createContent test for comic creation", async () => {
     // Log in as test user 1 
     const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
 
-    const createContentRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                createContent(contentInput: {
-                series_title: "${testComic.series_title}",
-                synopsis: "${testComic.synopsis}",
-                genres: [${testComic.genres}],
-                cover_image: "${testComic.cover_image}",
-                content_type: "${testComic.content_type}"
-                })
-            }`
-          }),
-    });
+    // Create a comic
+    const createContentRes = await createContentFunc(testComic, refreshToken, accessToken);
 
     const { data } = await createContentRes.json();
 
@@ -109,26 +95,7 @@ test("createContent test for story creation", async () => {
     // Log in as test user 2 
     const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser2.username, contentTestUser2.password);
 
-    const createContentRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                createContent(contentInput:{
-                series_title: "${testStory.series_title}",
-                synopsis: "${testStory.synopsis}",
-                genres: [${testStory.genres}],
-                cover_image: "${testStory.cover_image}",
-                content_type: "${testStory.content_type}"
-                })
-            }`
-        }),
-    });
+    const createContentRes = await createContentFunc(testStory, refreshToken, accessToken);
 
     const { data } = await createContentRes.json();
 
@@ -165,25 +132,7 @@ test("editContent test for comics", async () => {
         cover_image: "newcoverimage"
     }
     
-    const editContentRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-              query: `mutation {
-                editContent(contentID: "${comic._id}", contentInput:{
-                    synopsis: "${editedValues.synopsis}",
-                    series_title: "${editedValues.series_title}",
-                    genres: ["${editedValues.genres}"],
-                    cover_image: "${editedValues.cover_image}"
-                  })
-              }`
-          }),
-    });
+    const editContentRes = await editContentFunc(comic._id, editedValues, refreshToken, accessToken);
 
     // CHECK RETURN VALUE
     const { data } = await editContentRes.json();
@@ -222,25 +171,8 @@ test("editContent test for stories", async () => {
         cover_image: "newcoverimage"
     }
     
-    const editContentRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-              query: `mutation {
-                editContent(contentID: "${story._id}", contentInput:{
-                    synopsis: "${editedValues.synopsis}",
-                    series_title: "${editedValues.series_title}",
-                    genres: ["${editedValues.genres}"],
-                    cover_image: "${editedValues.cover_image}"
-                  })
-              }`
-          }),
-    });
+    // SEND REQUEST TO EDIT STORY
+    const editContentRes = await editContentFunc(story._id, editedValues, refreshToken, accessToken);
 
     // CHECK RETURN VALUE
     const { data } = await editContentRes.json();
@@ -271,20 +203,8 @@ test("deleteContent for deleting an unpublished comic", async () => {
     const comic = await Content.findById(user.user_content[0]);
     const post = await ForumPost.findById(comic.discussion_post);
 
-    const deleteContentRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                deleteContent(contentID: "${comic._id}")
-            }`
-          }),
-    });
+    // SEND REQUEST TO DELETE COMIC
+    const deleteContentRes = await deleteContentFunc(comic._id, refreshToken, accessToken);
 
     // CHECK RETURN VALUE OF MUTATION
     const { data } = await deleteContentRes.json();
@@ -311,20 +231,8 @@ test("publishContent for publishing an unpublished story", async () => {
     const story = await Content.findById(user.user_content[0]);
     const post = await ForumPost.findById(story.discussion_post);
 
-    const publishContentRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                publishContent(contentID: "${story._id}")
-            }`
-        }),
-    });
+    // SEND REQUEST TO PUBLISH STORY
+    const publishContentRes = await publishContentFunc(story._id, refreshToken, accessToken);
 
     // CHECK RETURN VALUE OF MUTATION
     const { data } = await publishContentRes.json();
@@ -354,20 +262,7 @@ test("rateStory for rating a published story", async () => {
     const story = await Content.findById(user2.user_content[0]);
     const rating = 5;
 
-    const rateContentRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                rateContent(contentID: "${story._id}", rating: ${rating})
-            }`
-        }),
-    });
+    const rateContentRes = await rateContentFunc(story._id, rating, refreshToken, accessToken);
 
     const { data } = await rateContentRes.json();
 
@@ -396,20 +291,7 @@ test("rateStory for rerating a published story", async () => {
     const story = await Content.findById(user2.user_content[0]);
     const rating = 8;
 
-    const rateContentRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                rateContent(contentID: "${story._id}", rating: ${rating})
-            }`
-        }),
-    });
+    const rateContentRes = await rateContentFunc(story._id, rating, refreshToken, accessToken);
 
     const { data } = await rateContentRes.json();
 
@@ -437,20 +319,7 @@ test("rateStory for more than one rating on a published story", async () => {
     const story = await Content.findById(user2.user_content[0]);
     const rating = 10;
 
-    const rateContentRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                rateContent(contentID: "${story._id}", rating: ${rating})
-            }`
-        }),
-    });
+    const rateContentRes = await rateContentFunc(story._id, rating, refreshToken, accessToken);
 
     const { data } = await rateContentRes.json();
 
@@ -477,20 +346,7 @@ test("addContentToReadList for a story", async () => {
     const user2 = await User.findOne({email: contentTestUser2.email});
     const story = await Content.findById(user2.user_content[0]);
 
-    const readListRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                addContentToReadList(contentID: "${story._id}")
-            }`
-        }),
-    });
+    const readListRes = await addToReadListFunc(story._id, refreshToken, accessToken);
 
     const { data } = await readListRes.json();
 
@@ -511,20 +367,7 @@ test("addContentToFavorites for a story", async () => {
     const user2 = await User.findOne({email: contentTestUser2.email});
     const story = await Content.findById(user2.user_content[0]);
 
-    const favoritesRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                addContentToFavorites(contentID: "${story._id}")
-            }`
-        }),
-    });
+    const favoritesRes = await addToFavoritesFunc(story._id, refreshToken, accessToken);
 
     const { data } = await favoritesRes.json();
 
@@ -545,20 +388,7 @@ test("removeContentFromReadList for a story", async () => {
     const user2 = await User.findOne({email: contentTestUser2.email});
     const story = await Content.findById(user2.user_content[0]);
 
-    const readListRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                removeContentFromReadList(contentID: "${story._id}")
-            }`
-        }),
-    });
+    const readListRes = await removeFromReadListFunc(story._id, refreshToken, accessToken);
 
     const { data } = await readListRes.json();
 
@@ -579,20 +409,7 @@ test("removeContentFromFavorites for a story", async () => {
     const user2 = await User.findOne({email: contentTestUser2.email});
     const story = await Content.findById(user2.user_content[0]);
 
-    const favoritesRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                removeContentFromFavorites(contentID: "${story._id}")
-            }`
-        }),
-    });
+    const favoritesRes = await removeFromFavoritesFunc(story._id, refreshToken, accessToken);
 
     const { data } = await favoritesRes.json();
 
@@ -602,7 +419,85 @@ test("removeContentFromFavorites for a story", async () => {
     // CHECK FOR STORY IN USER 2 FAVORITES LIST
     const updatedUser2 = await User.findById(user2._id);
     expect(!updatedUser2.favorites.includes(story._id));
-})
+});
+
+// TEST USER 2 ADDS A CHAPTER TO A STORY
+test("createChapter for adding a chapter to a story", async () => {
+    // Log in as test user 2 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser2.username, contentTestUser2.password);
+
+    // get user 2's story
+    const user2 = await User.findOne({email: contentTestUser2.email});
+    const story = await Content.findById(user2.user_content[0]);
+
+    // chapter title
+    const chapterTitle = "chapter creation test"
+
+    const createChapterRes = await createChapterFunc(story._id, chapterTitle, refreshToken, accessToken);
+
+    const { data } = await createChapterRes.json();
+
+    // CHECK RETURN VALUE
+    expect(data.createChapter);
+
+    // CHECK FOR CHAPTER IN STORY
+    const chapter = await Chapter.findById(data.createChapter);
+    const updatedStory = await Content.findById(story._id);
+
+    expect(updatedStory.chapters.includes(chapter._id));
+
+    // CHECK CHAPTER FOR CORRECT TITLE
+    expect(chapter.chapter_title).toStrictEqual(chapterTitle);
+    expect(chapter.series_id).toStrictEqual(story._id);
+});
+
+// // TEST USER 1 CREATES A COMIC, ADDS A CHAPTER TO A COMIC, DELETES THE CHAPTER, THEN DELETES THE COMIC
+// test("deleteChapter for deleting a chapter from a comic", async () => {
+//     // Log in as test user 1 
+//     const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+
+//     // create a comic under user 1
+
+//     // add chapter to a comic
+
+//     // deletes a chapter from the comic
+
+//     // expect values
+
+//     // delete comic
+
+//     // get user 1's chapter
+//     const user1 = await User.findOne({email: contentTestUser1.email});
+//     const comic = await Content.findById(user1.user_content[0]);
+
+//     // chapter title
+//     const chapterTitle = "chapter creation test"
+
+//     const deleteChapterRes = await fetch("http://localhost:4000/graphql", {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type' : 'application/json',
+//             'cookie': [
+//                 `${refreshToken}` + "; " + `${accessToken}`
+//             ]
+//         },
+//         body: JSON.stringify({
+//             query: `mutation {
+//                 createChapter(contentID: "${story._id}", chapter_title: "${chapterTitle}")
+//             }`
+//         }),
+//     });
+// });
+
+// editChapter(chapterID: ID, chapterInput: ChapterInput): ID
+
+// publishChapter(chapterID:ID): Boolean
+// createCharacter(storyboardID: ID, characterInput: CharacterInput): ID
+// editCharacter(storyboardID: ID, characterInput: CharacterInput): ID
+// deleteCharacter(storyboardID: ID, characterID: ID): Boolean
+// createPlotPoint(storyboardID: ID, plotpointInput: PlotPointInput): ID
+// editPlotPoint(storyboardID: ID, plotpointInput: PlotPointInput): ID
+// deletePlotPoint(storyboardID: ID, plotpointID: ID): Boolean
 
 // TEST USER 2 DELETES A PUBLISHED STORY 
 test("deleteContent for deleting a published story", async () => {
@@ -613,20 +508,7 @@ test("deleteContent for deleting a published story", async () => {
     const story = await Content.findById(user.user_content[0]);
     const post = await ForumPost.findById(story.discussion_post);
 
-    const deleteContentRes = await fetch("http://localhost:4000/graphql", {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'cookie': [
-                `${refreshToken}` + "; " + `${accessToken}`
-            ]
-        },
-        body: JSON.stringify({
-            query: `mutation {
-                deleteContent(contentID: "${story._id}")
-            }`
-        }),
-    });
+    const deleteContentRes = await deleteContentFunc(story._id, refreshToken, accessToken);
 
     // CHECK RETURN VALUE OF MUTATION
     const { data } = await deleteContentRes.json();
@@ -644,5 +526,7 @@ test("deleteContent for deleting a published story", async () => {
     expect(await Content.findById(story._id)).toStrictEqual(null);
     // USER_CONTENT
     expect(!user.user_content.includes(story._id));
+    // CHAPTERS
+    expect(await Chapter.findOne({series_id: story._id})).toStrictEqual(null);
 });
 
