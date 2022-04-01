@@ -298,6 +298,9 @@ module.exports = {
       topic.posts = topic.posts.filter(p => p.toString() !== post._id.toString());
       await ForumTopic.updateOne({_id:post.topic},{posts:topic.posts});
 
+      // Delete chapters
+      await Chapter.deleteMany({series_id: contentObjId});
+
       return true;
     },
     publishContent: async (_, args, { req, res }) => {
