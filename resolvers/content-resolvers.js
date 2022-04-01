@@ -9,6 +9,32 @@ const StoryBoard = require("../models/storyboard-model");
 
 module.exports = {
   Query: {
+    getContentInfo: async (_, args) => {
+      const {contentID} = args;
+      const contentId = new ObjectId(contentID); 
+      const content = await Content.findOne({_id: contentId})
+      return content;
+    },
+    getContentChapter: async (_, args) => {
+      const {chapterID} = args;
+      const chapterId = new ObjectId(chapterID);
+      const chapter = await Chapter.findOne({_id:chapterId})
+      return chapter;
+    },
+    getChapters: async (_, args) => {
+      const {chapterIDs} = args;
+      let chapterItemObjs = []
+      for(const chapterID of chapterIDs) {
+        let chapterId = new ObjectId(chapterID);
+        const chapter = await Chapter.findOne({_id:chapterId})
+        chapterItemObjs.push({
+          _id: chapter._id,
+          chapter_title: chapter.chapter_title,
+          publication_date: chapter.publication_date
+        })
+      }
+      return chapterItemObjs;
+    },
     getPopularContent: async (_, args) => {
       const {content_type} = args;
       const contents = await Content.find({content_type:content_type}).sort({views:-1}).limit(20);
@@ -23,7 +49,75 @@ module.exports = {
       const {content_type} = args;
       const contents = await Content.find({content_type:content_type}).sort({current_rating:-1}).limit(20);
       return contents;
+    },
+    getReadList: async (_, args) => {
+      const {userID} = args;
+      const userId = new ObjectId(userID);
+      const user = await User.findOne({_id:userId})
+      const readLaterIDs = user.read_list
+      let contentCards = []
+      for(const contentID of readLaterIDs) {
+        let contentId = new ObjectId(contentID);
+        const content = await(Content.findOne({_id:contentId}));
+        contentCards.push({
+          _id: content._id,
+          series_title: content.series_title,
+          num_chapters: content.num_chapters,
+          current_rating: content.current_rating,
+          publication_date: content.publication_date,
+          cover_image: content.cover_image
+        })
+      }
+      return contentCards;
+    },
+    getFavorites: async (_,args) => {
+      const {userID} = args;
+      const userId = new ObjectId(userID);
+      const user = await User.findOne({_id:userId})
+      const favoriteIDs = user.favorites
+      let contentCards = []
+      for(const contentID of favoriteIDs) {
+        let contentId = new ObjectId(contentID);
+        const content = await(Content.findOne({_id:contentId}));
+        contentCards.push({
+          _id: content._id,
+          series_title: content.series_title,
+          num_chapters: content.num_chapters,
+          current_rating: content.current_rating,
+          publication_date: content.publication_date,
+          cover_image: content.cover_image
+        })
+      }
+      return contentCards;
+    },
+    getMyContent: async (_,args) => {
+      const {userID} = args;
+      const userId = new ObjectId(userID);
+      const user = await User.findOne({_id:userId})
+      const userContentIDs = user.user_content;
+      let contentCards = []
+      for(const contentID of userContentIDs) {
+        let contentId = new ObjectId(contentID);
+        const content = await(Content.findOne({_id:contentId}));
+        contentCards.push({
+          _id: content._id,
+          series_title: content.series_title,
+          num_chapters: content.num_chapters,
+          current_rating: content.current_rating,
+          publication_date: content.publication_date,
+          cover_image: content.cover_image
+        })
+      }
+      return contentCards;
+    },
+    getStoryboard: async (_,args) => {
+      const {storyboardID} = args
+      const storyboardId = new ObjectId(storyboardID);
+      const storyboard = await StoryBoard.findOne({_id:storyboardId});
+      console.log(storyboard)
+      return storyboard;
     }
+    
   },
   Mutation: {
     createContent: async (_, args, { req,res }) => {

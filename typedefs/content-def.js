@@ -28,6 +28,14 @@ const typeDefs = gql`
     cover_image: String
     content_type: String
   }
+  type ContentCard {
+    _id: ID
+    series_title: String
+    num_chapters: Int
+    current_rating: Float
+    publication_date: DateTime
+    cover_image: String
+  }
   type Chapter {
     _id: ID
     series_id: ID
@@ -41,6 +49,15 @@ const typeDefs = gql`
     num_pages: Int
     chapter_content: [String]
     publication_date: DateTime
+  }
+  type ChapterItem {
+    _id: ID
+    chapter_title: String
+    publication_date: DateTime
+  }
+  type Storyboard {
+    characters: [Character]
+    plot_points: [PlotPoint]
   }
   type Character {
     _id: ID
@@ -67,9 +84,16 @@ const typeDefs = gql`
     plot_point_image: String
   }
   type Query {
+    getContentInfo(contentID: ID): Content
+    getContentChapter(chapterID: ID): Chapter
+    getChapters(chapterIDs: [ID] ): [ChapterItem]
     getPopularContent(content_type: String): [Content]
     getTopRatedContent(content_type: String): [Content]
     getRecentContent(content_type: String): [Content]
+    getReadList(userID: ID): [ContentCard]
+    getFavorites(userID: ID): [ContentCard]
+    getMyContent(userID: ID): [ContentCard]
+    getStoryboard(storyboardID: ID): Storyboard
   }
   type Mutation {
     createContent(contentInput: ContentInput): ID
