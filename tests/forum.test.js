@@ -2,7 +2,17 @@ require('isomorphic-fetch');
 const { loginReq, registerReq,createPostFunc,deletePostFunc} = require('./shortcuts');
 const mongoose = require('mongoose');
 const ObjectId = require('mongoose').Types.ObjectId;
+const ForumPost = require('../models/forum-post-model');
+require('dotenv').config();
 
+beforeAll(async () => {
+  await mongoose.connect(process.env.MONGO_URI, 
+      { useNewUrlParser: true, useUnifiedTopology: true }).catch(error => console.error(error));;
+})
+
+afterAll(async () => {
+  await mongoose.connection.close().catch(error => console.error(error));;
+});
 
 
 test('Get General Posts', async () => {
@@ -423,74 +433,148 @@ test('Edit Post', async () => {
 })
 
 
-// test('Create Reply', async () => {
+test('Create Reply', async () => {
 
-//   const loginRes = await loginReq("a", "a");
+  const loginRes = await loginReq("a", "a");
 
-//   const refreshRegex = /(refresh-token.*?(?=;))/g
-//   const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
-//   const accessRegex = /(access-token.*?(?=;))/g
-//   const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
+  const refreshRegex = /(refresh-token.*?(?=;))/g
+  const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
+  const accessRegex = /(access-token.*?(?=;))/g
+  const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
   
-//     const updating = await fetch("http://localhost:4000/graphql", {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type' : 'application/json',
-//             'cookie': [
-//                 `${refreshToken}` + "; " + `${accessToken}`
-//             ]
-//         },
+    const updating = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
 
-//         body: JSON.stringify({
-//             query: `mutation {
-//                 createReply(postID: "`+holdrecent+`",content:"I like this post")
-//             }`
-//         }),
+        body: JSON.stringify({
+            query: `mutation {
+                createReply(postID: "`+holdrecent+`",content:"I like this post")
+            }`
+        }),
         
-//     })
-//     const upResp = await updating.json()
-//     //console.log(upResp)
-//     expect((upResp.data.createReply).len).toStrictEqual((holdrecent).len)
-// })
+    })
+    const upResp = await updating.json()
+    //console.log(upResp)
+    expect((upResp.data.createReply).len).toStrictEqual((holdrecent).len)
+})
+//let holdReply
 
+test('Edit Reply', async () => {
+  const postObjectId = new ObjectId(holdrecent);
+  const foundPost = await ForumPost.findOne({_id:postObjectId});
 
-// test('Edit Reply', async () => {
-//   await mongoose.connect(process.env.MONGO_URI, 
-//     { useNewUrlParser: true, useUnifiedTopology: true }).catch(error => console.error(error));;
+  //console.log(foundPost)
+  const replyIDhold = foundPost.replies[0]._id
+  //holdReply=replyIDhold
+
+  const loginRes = await loginReq("a", "a");
+
+  const refreshRegex = /(refresh-token.*?(?=;))/g
+  const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
+  const accessRegex = /(access-token.*?(?=;))/g
+  const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
   
-//   const postObjectId = new ObjectId(holdrecent);
-//   const foundPost = await ForumPost.findOne({_id:postObjectId});
+    const updating = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
 
-
-
-//   const loginRes = await loginReq("a", "a");
-
-//   const refreshRegex = /(refresh-token.*?(?=;))/g
-//   const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
-//   const accessRegex = /(access-token.*?(?=;))/g
-//   const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
-  
-//     const updating = await fetch("http://localhost:4000/graphql", {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type' : 'application/json',
-//             'cookie': [
-//                 `${refreshToken}` + "; " + `${accessToken}`
-//             ]
-//         },
-
-//         body: JSON.stringify({
-//             query: `mutation {
-//                 editReply(postID: "`+holdrecent+`",content:"I dont like this post", replyID: "`+holdreply+`")
-//             }`
-//         }),
+        body: JSON.stringify({
+            query: `mutation {
+                editReply(postID: "`+holdrecent+`",content:"I dont like this post", replyID: "`+replyIDhold+`")
+            }`
+        }),
         
-//     })
-//     const upResp = await updating.json()
-//     //console.log(upResp)
+    })
+    const upResp = await updating.json()
+    //console.log(upResp)
 
-//     expect(upResp.data.editReply).toStrictEqual(holdrecent)
-// })
+    expect(upResp.data.editReply).toStrictEqual(holdrecent)
+})
+
+test('Get Replies To My Post', async () => {
+
+  const loginRes = await loginReq("a", "a");
+
+  const refreshRegex = /(refresh-token.*?(?=;))/g
+  const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
+  const accessRegex = /(access-token.*?(?=;))/g
+  const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
+  
+    const updating = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
+
+        body: JSON.stringify({
+            query: `query {
+                getRepliesToMyPost{
+                  post
+                }
+            }`
+        }),
+        
+    })
+
+    const upResp = await updating.json()
+    //console.log(upResp)
+    const lenData = upResp.data.getRepliesToMyPost.length
+
+    expect(upResp.data.getRepliesToMyPost[lenData-1].post).toStrictEqual(holdrecent)
+
+
+})
+
+
+test('Delete Reply', async () => {
+  const postObjectId = new ObjectId(holdrecent);
+  const foundPost = await ForumPost.findOne({_id:postObjectId});
+
+  //console.log(foundPost)
+  const replyIDhold = foundPost.replies[0]._id
+
+  const loginRes = await loginReq("a", "a");
+
+  const refreshRegex = /(refresh-token.*?(?=;))/g
+  const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
+  const accessRegex = /(access-token.*?(?=;))/g
+  const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
+  
+    const updating = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
+
+        body: JSON.stringify({
+            query: `mutation {
+                deleteReply(postID: "`+holdrecent+`", replyID: "`+replyIDhold+`")
+            }`
+        }),
+        
+    })
+    const upResp = await updating.json()
+    //console.log(upResp)
+
+    expect(upResp.data.deleteReply).toBeTruthy()
+})
+
 
 
 test('Delete Post', async () => {
