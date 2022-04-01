@@ -24,7 +24,8 @@ const contentSchema = new Schema(
 		},
 		genres: {
 			type: [String],
-			required: true
+			enum: ["Action", "Adventure", "Comedy", "Drama", "Fantasy", "Horror", "Mecha", "Music", "Mystery", "Psychological", "Romance", "SciFi", "Slice of Life", "Sports", "Supernatural", "Thriller"],
+			required: true,
 		},
 		num_chapters: {
 			type: Number,
@@ -74,7 +75,9 @@ const contentSchema = new Schema(
 			type: ObjectId
 		},
 		content_type: {
-			type: String
+			type: String,
+			enum: ["S","C"],
+			required: true
 		}
 	},
 );

@@ -7,7 +7,7 @@ const typeDefs = gql`
     author: ID
     author_username: String
     synopsis: String
-    genres: [String]
+    genres: [Genre]
     num_chapters: Int
     chapters: [ID]
     views: Int
@@ -19,7 +19,29 @@ const typeDefs = gql`
     completed: Boolean
     cover_image: String
     storyboard: ID
-    content_type: String
+    content_type: ContentType
+  }
+  enum Genre {
+    Action
+    Adventure
+    Comedy
+    Drama
+    Fantasy
+    Horror
+    Mecha
+    Music
+    Mystery
+    Psychological
+    Romance
+    SciFi
+    Slice of Life
+    Sports
+    Supernatural
+    Thriller
+  }
+  enum ContentType {
+    S
+    C
   }
   input ContentInput {
     series_title: String
