@@ -14,7 +14,28 @@ const loginReq = async (username, password) => {
     return loginRes;
 }
 
-const registerReq = async (email, username, password) => {
+const loginTokenFunc = async (username, password) => {
+    const loginRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `mutation {
+                login(username: "${username}", password: "${password}") {
+                    _id
+                }
+            }`
+        }),
+    });
+
+    const refreshRegex = /(refresh-token.*?(?=;))/g
+    const refreshToken = (loginRes.headers.get('set-cookie')).match(refreshRegex)[0];
+    const accessRegex = /(access-token.*?(?=;))/g
+    const accessToken = (loginRes.headers.get('set-cookie')).match(accessRegex)[0];
+
+    return {loginRes, refreshToken, accessToken};
+}
+
+const registerFunc = async (email, username, password) => {
     const registerRes = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
@@ -89,9 +110,11 @@ const deletePostFunc = async(username,password,postId) => {
       return upResp
 }
 
+/* eventually remove loginReq bc loginTokenFunc does the same thing with more functionality*/
 module.exports = {
     loginReq,
-    registerReq,
+    registerFunc,
     createPostFunc,
-    deletePostFunc
+    deletePostFunc,
+    loginTokenFunc,
 }
