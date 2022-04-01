@@ -264,6 +264,37 @@ module.exports = {
       const content = await Content.findOne({_id:contentObjId});
       content.publication_date = Date.now()
       await Content.updateOne({_id: contentObjId}, {publication_date: content.publication_date});
+
+      // Remove discussion post from unpublished topic
+      const unpublishedTopic = await ForumTopic.findById(new ObjectId("6242239f4b2619473abf93b2"));
+      newUnpublishedPosts = unpublishedTopic.posts.filter(e => !e.equals((content.discussion_post).toString()));
+      await unpublishedTopic.updateOne({posts: newUnpublishedPosts});
+
+      // Hard coded objectId for published discussion post topic section
+      var topicId = null;
+      switch(content.content_type) {
+        // Story Discussions
+        case "S":
+          topicId = new ObjectId("624218db4b2619473abf93ab");
+          break;
+        // Comic Discussions
+        case "C":
+          topicId = new ObjectId("624216a0dd90b5c46c5e24d0");
+          break;
+        default:
+          topicId = null;
+      } 
+      // Invalid content_type
+      if(topicId == null) return false;
+
+      // Save the forum post to the published works topic
+      const topic = await ForumTopic.findOne({_id:topicId});
+      topic.posts.push(content.discussion_post);
+      await ForumTopic.updateOne({_id:topicId},{posts:topic.posts});
+
+      // Update topic field of post
+      await ForumPost.findByIdAndUpdate(content.discussion_post, {topic: topicId});
+
       return true;
     },
     rateContent: async (_, args, { req,res }) => {
