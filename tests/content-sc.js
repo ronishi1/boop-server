@@ -12,7 +12,7 @@ const createContentFunc = async (contentInput, refreshToken, accessToken) => {
                 createContent(contentInput: {
                 series_title: "${contentInput.series_title}",
                 synopsis: "${contentInput.synopsis}",
-                genres: [${contentInput.genres}],
+                genres: ${JSON.stringify(contentInput.genres)},
                 cover_image: "${contentInput.cover_image}",
                 content_type: "${contentInput.content_type}"
                 })
@@ -37,7 +37,7 @@ const editContentFunc = async (contentId, editedContentInput, refreshToken, acce
                 editContent(contentID: "${contentId}", contentInput:{
                     synopsis: "${editedContentInput.synopsis}",
                     series_title: "${editedContentInput.series_title}",
-                    genres: ["${editedContentInput.genres}"],
+                    genres: ${JSON.stringify(editedContentInput.genres)},,
                     cover_image: "${editedContentInput.cover_image}"
                   })
               }`
@@ -134,7 +134,7 @@ const addToFavoritesFunc = async (contentId, refreshToken, accessToken) => {
         },
         body: JSON.stringify({
             query: `mutation {
-                addContentToReadList(contentID: "${contentId}")
+                addContentToFavorites(contentID: "${contentId}")
             }`
         }),
     });
@@ -347,7 +347,7 @@ const createPlotPointFunc = async (storyboardId, plotpointInput, refreshToken, a
     });
 
     return createPlotPointRes;
-}
+};
 
 const editPlotPointFunc = async (storyboardId, plotpointId, plotpointInput, refreshToken, accessToken ) => {
     const editPlotPointRes = await fetch("http://localhost:4000/graphql", {
@@ -370,7 +370,7 @@ const editPlotPointFunc = async (storyboardId, plotpointId, plotpointInput, refr
     });
 
     return editPlotPointRes;
-}
+};
 
 const deletePlotPointFunc = async (storyboardId, plotpointId, refreshToken, accessToken) => {
     const deletePlotPointRes = await fetch("http://localhost:4000/graphql", {
@@ -389,6 +389,56 @@ const deletePlotPointFunc = async (storyboardId, plotpointId, refreshToken, acce
     });
 
     return deletePlotPointRes;
+};
+
+const getContentInfoFunc = async (contentId) => {
+    const getContentInfoRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getContentInfo(contentID: "${contentId}") {
+                    _id
+                }
+            }`
+        }),
+    });
+
+    return getContentInfoRes;
+};
+
+const getContentChapterFunc = async (chapterId) => {
+    const getContentChapterRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getContentChapter(chapterID: "${chapterId}") {
+                    _id
+                }
+            }`
+        }),
+    });
+
+    return getContentChapterRes;
+};
+
+const getChaptersFunc = async (chapterIds) => {
+    const getChaptersRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getChapters(chapterIDs: ${JSON.stringify(chapterIds)} ) {
+                    _id
+                    chapter_title
+                    publication_date
+                }
+            }`
+        }),
+    });
+
+    return getChaptersRes;
 }
 
 module.exports = {
@@ -411,4 +461,7 @@ module.exports = {
     createPlotPointFunc,
     editPlotPointFunc,
     deletePlotPointFunc,
+    getContentInfoFunc,
+    getContentChapterFunc,
+    getChaptersFunc,
 }
