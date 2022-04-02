@@ -158,7 +158,12 @@ module.exports = {
       const storyboardId = new ObjectId(storyboardID);
       const storyboard = await StoryBoard.findOne({_id:storyboardId});
       return storyboard;
-    }
+    },
+    // getSearch: async (_, args) => {
+    //   const {searchTerm} = args
+    //   let searchQuery = 
+
+    // }
     
   },
   Mutation: {
@@ -497,11 +502,11 @@ module.exports = {
       return characterObj._id.toString();
     },
     editCharacter: async (_, args, { req, res }) => {
-      const { storyboardID, characterInput } = args;
+      const { storyboardID, characterID, characterInput } = args;
       const storyboardObjID = new ObjectId(storyboardID);
       const storyboard = await StoryBoard.findOne({_id: storyboardObjID});
       storyboard.characters.forEach((character) => {
-        if (character._id == characterInput._id) {
+        if (character._id == characterID) {
           character.character_name = characterInput.character_name
           character.notes = characterInput.notes
           character.character_image = characterInput.character_image
@@ -535,11 +540,11 @@ module.exports = {
       return plotpointObj._id.toString();
     },
     editPlotPoint: async (_, args, { req, res }) => {
-      const { storyboardID, plotpointInput } = args;
+      const { storyboardID, plotpointID, plotpointInput } = args;
       const storyboardObjID = new ObjectId(storyboardID);
       const storyboard = await StoryBoard.findOne({_id: storyboardObjID});
       storyboard.plot_points.forEach((plotpoint) => {
-        if (plotpoint._id == plotpointInput._id) {
+        if (plotpoint._id == plotpointID) {
           plotpoint.plot_point_name = plotpointInput.plot_point_name
           plotpoint.notes = plotpointInput.notes
           plotpoint.plot_point_image = plotpointInput.plot_point_image

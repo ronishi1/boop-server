@@ -88,7 +88,6 @@ const typeDefs = gql`
     character_image: String
   }
   input CharacterInput {
-    _id: ID
     character_name: String
     notes: String
     character_image: String
@@ -100,7 +99,6 @@ const typeDefs = gql`
     plot_point_image: String
   }
   input PlotPointInput {
-    _id: ID
     plot_point_name: String
     notes: String
     plot_point_image: String
@@ -117,6 +115,7 @@ const typeDefs = gql`
     getFilteredContent(genres: [String], releaseYear: DateTime, rating: Int, completionStatus: Boolean, contentType: String): [ContentCard]
     getMyContent(userID: ID): [ContentCard]
     getStoryboard(storyboardID: ID): Storyboard
+    getSearch(searchTerm: String): [ContentCard]
   }
   type Mutation {
     createContent(contentInput: ContentInput): ID
@@ -132,11 +131,11 @@ const typeDefs = gql`
     editChapter(chapterID: ID, chapterInput: ChapterInput): ID
     deleteChapter(chapterID: ID): Boolean
     publishChapter(chapterID:ID): Boolean
-    createCharacter(storyboardID: ID, characterInput: CharacterInput): ID
-    editCharacter(storyboardID: ID, characterInput: CharacterInput): ID
+    createCharacter(storyboardID: ID,  characterInput: CharacterInput): ID
+    editCharacter(storyboardID: ID, characterID: ID, characterInput: CharacterInput): ID
     deleteCharacter(storyboardID: ID, characterID: ID): Boolean
     createPlotPoint(storyboardID: ID, plotpointInput: PlotPointInput): ID
-    editPlotPoint(storyboardID: ID, plotpointInput: PlotPointInput): ID
+    editPlotPoint(storyboardID: ID, plotpointID: ID, plotpointInput: PlotPointInput): ID
     deletePlotPoint(storyboardID: ID, plotpointID: ID): Boolean
   }
 `;
