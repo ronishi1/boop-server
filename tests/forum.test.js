@@ -23,6 +23,17 @@ afterAll(async () => {
 });
 
 
+const editPostFunc = async(postId,views,replies,timestamp)=>{
+    if(views!=-1)
+        await ForumPost.updateOne({_id:postId},{views:views})
+    if(replies!=-1)
+        await ForumPost.updateOne({_id:postId},{num_replies:replies})
+    if(timestamp!=-1)
+        await ForumPost.updateOne({_id:postId},{timestamp:timestamp})
+        
+    return postId
+}
+
 test('Get General Posts', async () => {
     const generalReturn = [
         {
@@ -114,28 +125,23 @@ test('Get Story Posts', async () => {
 })
 
 test('Get Popular Posts', async () => {
-    const poplularReturn = [
-        {
-            "_id": "62450af504ebb09385e639a2",
-            "views": 100
-          },
-          {
-            "_id": "62450ab404ebb09385e6399c",
-            "views": 50
-          },
-          {
-            "_id": "6243aecec8dd2ba5a3ca215e",
-            "views": 25
-          },
-          {
-            "_id": "6244de1a0dceb55e5759ab64",
-            "views": 22
-          },
-          {
-            "_id": "62450a8f04ebb09385e63996",
-            "views": 15
-          }
-      ]
+
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("b","b");
+    popPost = await createPostFunc("testing","delete soon","624218db4b2619473abf93ab", refreshToken, accessToken)
+    popPost2 = await createPostFunc("testing2","delete comic tho soon","624216a0dd90b5c46c5e24d0", refreshToken, accessToken)
+    popPost3 = await createPostFunc("testing3","delete soon","624218db4b2619473abf93ab", refreshToken, accessToken)
+    popPost4 = await createPostFunc("testing4","delete comic again soon","624216a0dd90b5c46c5e24d0", refreshToken, accessToken)
+    popPost5 = await createPostFunc("testing5","delete soon","624218db4b2619473abf93ab", refreshToken, accessToken)
+
+    //console.log(popPost)
+
+    await editPostFunc(popPost,1000,-1,-1)
+    await editPostFunc(popPost2,999,-1,-1)
+    await editPostFunc(popPost3,998,-1,-1)
+    await editPostFunc(popPost4,997,-1,-1)
+    await editPostFunc(popPost5,996,-1,-1)
+
+
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
@@ -143,7 +149,6 @@ test('Get Popular Posts', async () => {
             query: `query {
                 getPopularPosts {
                     _id
-                    views
                 }
             }`
         }),
@@ -151,27 +156,38 @@ test('Get Popular Posts', async () => {
 
     const upResp = await response.json()
 
+    
+    expect(upResp.data.getPopularPosts[0]._id).toStrictEqual(popPost)
+    expect(upResp.data.getPopularPosts[1]._id).toStrictEqual(popPost2)
+    expect(upResp.data.getPopularPosts[2]._id).toStrictEqual(popPost3)
+    expect(upResp.data.getPopularPosts[3]._id).toStrictEqual(popPost4)
+    expect(upResp.data.getPopularPosts[4]._id).toStrictEqual(popPost5)
 
-    expect(upResp.data.getPopularPosts).toStrictEqual(poplularReturn)
+    await deletePostFunc(popPost, refreshToken, accessToken)
+    await deletePostFunc(popPost2, refreshToken, accessToken)
+    await deletePostFunc(popPost3, refreshToken, accessToken)
+    await deletePostFunc(popPost4, refreshToken, accessToken)
+    await deletePostFunc(popPost5, refreshToken, accessToken)
+
+
 })
 
 test('Get Oldest Posts', async () => {
-    const oldestReturn = [
-      {
-        "_id": "624669bb7e0ae5a8147739be"
-      },
-      {
-        "_id": "624669d07e0ae5a8147739c4"
-      },
-      {
-        "_id": "624669d97e0ae5a8147739ca"
-      },
-      {
-        "_id": "624669df7e0ae5a8147739d0"
-      },
-      {
-        "_id": "624669e77e0ae5a8147739d6"
-      }]
+
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("b","b");
+    oldPost = await createPostFunc("testing","delete soon","624218db4b2619473abf93ab", refreshToken, accessToken)
+    oldPost2 = await createPostFunc("testing2","delete comic tho soon","624216a0dd90b5c46c5e24d0", refreshToken, accessToken)
+    oldPost3 = await createPostFunc("testing3","delete soon","624218db4b2619473abf93ab", refreshToken, accessToken)
+    oldPost4 = await createPostFunc("testing4","delete comic again soon","624216a0dd90b5c46c5e24d0", refreshToken, accessToken)
+    oldPost5 = await createPostFunc("testing5","delete soon","624218db4b2619473abf93ab", refreshToken, accessToken)
+
+    await editPostFunc(oldPost,-1,-1,"1970-01-01T02:55:55.449+00:00")
+    await editPostFunc(oldPost2,-1,-1,"1971-01-01T02:55:55.449+00:00")
+    await editPostFunc(oldPost3,-1,-1,"1972-01-01T02:55:55.449+00:00")
+    await editPostFunc(oldPost4,-1,-1,"1973-01-01T02:55:55.449+00:00")
+    await editPostFunc(oldPost5,-1,-1,"1974-01-01T02:55:55.449+00:00")
+
+    
       
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -187,24 +203,33 @@ test('Get Oldest Posts', async () => {
 
     const upResp = await response.json()
 
-    expect(upResp.data.getOldestPosts.slice(0,5)).toStrictEqual(oldestReturn)
+    expect(upResp.data.getOldestPosts[0]._id).toStrictEqual(oldPost)
+    expect(upResp.data.getOldestPosts[1]._id).toStrictEqual(oldPost2)
+    expect(upResp.data.getOldestPosts[2]._id).toStrictEqual(oldPost3)
+    expect(upResp.data.getOldestPosts[3]._id).toStrictEqual(oldPost4)
+    expect(upResp.data.getOldestPosts[4]._id).toStrictEqual(oldPost5)
+
+    await deletePostFunc(oldPost, refreshToken, accessToken)
+    await deletePostFunc(oldPost2, refreshToken, accessToken)
+    await deletePostFunc(oldPost3, refreshToken, accessToken)
+    await deletePostFunc(oldPost4, refreshToken, accessToken)
+    await deletePostFunc(oldPost5, refreshToken, accessToken)
 })
 
 test('Get Most Replied Posts', async () => {
-    const repliedrReturn = [
-      {
-        "_id": "62450af504ebb09385e639a2",
-        "num_replies": 7
-      },
-      {
-        "_id": "62460cbedab0cf6c79ab53ff",
-        "num_replies": 6
-      },
-      {
-        "_id": "62450ab404ebb09385e6399c",
-        "num_replies": 3
-      }
-    ]
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("b","b");
+    mostrepPost = await createPostFunc("testing","delete soon","624218db4b2619473abf93ab", refreshToken, accessToken)
+    mostrepPost2 = await createPostFunc("testing2","delete comic tho soon","624216a0dd90b5c46c5e24d0", refreshToken, accessToken)
+    mostrepPost3 = await createPostFunc("testing3","delete soon","624218db4b2619473abf93ab", refreshToken, accessToken)
+    mostrepPost4 = await createPostFunc("testing4","delete comic again soon","624216a0dd90b5c46c5e24d0", refreshToken, accessToken)
+    mostrepPost5 = await createPostFunc("testing5","delete soon","624218db4b2619473abf93ab", refreshToken, accessToken)
+
+    await editPostFunc(mostrepPost,-1,100,-1)
+    await editPostFunc(mostrepPost2,-1,99,-1)
+    await editPostFunc(mostrepPost3,-1,98,-1)
+    await editPostFunc(mostrepPost4,-1,97,-1)
+    await editPostFunc(mostrepPost5,-1,96,-1)
+
         
     const response = await fetch("http://localhost:4000/graphql", {
         method: 'POST',
@@ -213,7 +238,6 @@ test('Get Most Replied Posts', async () => {
             query: `query {
                 getMostRepliedPosts {
                     _id
-                    num_replies
                 }
             }`
         }),
@@ -221,8 +245,18 @@ test('Get Most Replied Posts', async () => {
 
     const upResp = await response.json()
 
+    expect(upResp.data.getMostRepliedPosts[0]._id).toStrictEqual(mostrepPost)
+    expect(upResp.data.getMostRepliedPosts[1]._id).toStrictEqual(mostrepPost2)
+    expect(upResp.data.getMostRepliedPosts[2]._id).toStrictEqual(mostrepPost3)
+    expect(upResp.data.getMostRepliedPosts[3]._id).toStrictEqual(mostrepPost4)
+    expect(upResp.data.getMostRepliedPosts[4]._id).toStrictEqual(mostrepPost5)
 
-    expect(upResp.data.getMostRepliedPosts.slice(0,3)).toStrictEqual(repliedrReturn)
+    await deletePostFunc(mostrepPost, refreshToken, accessToken)
+    await deletePostFunc(mostrepPost2, refreshToken, accessToken)
+    await deletePostFunc(mostrepPost3, refreshToken, accessToken)
+    await deletePostFunc(mostrepPost4, refreshToken, accessToken)
+    await deletePostFunc(mostrepPost5, refreshToken, accessToken)
+
 })
 
 test('Get Topic Posts', async () => {
