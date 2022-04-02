@@ -13,7 +13,9 @@ const { loginTokenFunc, registerFunc } = require('./user-sc');
 const { createContentFunc, editContentFunc, deleteContentFunc, 
     publishContentFunc, rateContentFunc, addToReadListFunc, 
     addToFavoritesFunc, removeFromReadListFunc, removeFromFavoritesFunc, 
-    createChapterFunc, } = require("./content-sc");
+    createChapterFunc, editChapterFunc, deleteChapterFunc, 
+    publishChapterFunc, createCharacterFunc, editCharacterFunc, 
+    deleteCharacterFunc, createPlotPointFunc, editPlotPointFunc, deletePlotPointFunc } = require("./content-sc");
 
 /*SETUP TEST USER INFO */
 const contentTestUser1 = {
@@ -451,53 +453,376 @@ test("createChapter for adding a chapter to a story", async () => {
     expect(chapter.series_id).toStrictEqual(story._id);
 });
 
-// // TEST USER 1 CREATES A COMIC, ADDS A CHAPTER TO A COMIC, DELETES THE CHAPTER, THEN DELETES THE COMIC
-// test("deleteChapter for deleting a chapter from a comic", async () => {
-//     // Log in as test user 1 
-//     const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+// TEST USER 1 CREATES A COMIC, ADDS A CHAPTER TO A COMIC, DELETES THE CHAPTER, THEN DELETES THE COMIC
+test("deleteChapter for deleting a chapter from a comic", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
 
-//     // create a comic under user 1
+    // create a comic under user 1
+    const createContentRes = await createContentFunc(testComic, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const comicId = data.createContent
 
-//     // add chapter to a comic
+    // create chapter in comic
+    const chapterTitle = "comic chapter 1"
+    const createChapterRes = await createChapterFunc(comicId, chapterTitle, refreshToken, accessToken);
+    const { data:createChapterData } = await createChapterRes.json();
+    const chapterId = createChapterData.createChapter;
 
-//     // deletes a chapter from the comic
+    // deletes a chapter from the comic
+    const deleteChapterRes = await deleteChapterFunc(createChapterData.createChapter);
+    const { data:deleteChapterData } = await deleteChapterRes.json();
 
-//     // expect values
+    // expect return value
+    expect(deleteChapterData.deleteChapter);
 
-//     // delete comic
+    // check if chapter has been removed from Chapter collection
+    expect(await Chapter.findById(chapterId)).toStrictEqual(null);
 
-//     // get user 1's chapter
-//     const user1 = await User.findOne({email: contentTestUser1.email});
-//     const comic = await Content.findById(user1.user_content[0]);
+    //check if chapter has been removed from Content
+    const updatedComic = await Content.findById(comicId);
+    expect(!updatedComic.chapters.includes(chapterId));
 
-//     // chapter title
-//     const chapterTitle = "chapter creation test"
+    // delete comic
+    const deleteContentRes = await deleteContentFunc(comicId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
 
-//     const deleteChapterRes = await fetch("http://localhost:4000/graphql", {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type' : 'application/json',
-//             'cookie': [
-//                 `${refreshToken}` + "; " + `${accessToken}`
-//             ]
-//         },
-//         body: JSON.stringify({
-//             query: `mutation {
-//                 createChapter(contentID: "${story._id}", chapter_title: "${chapterTitle}")
-//             }`
-//         }),
-//     });
-// });
+// TEST USER 1 CREATES A COMIC, ADDS A CHAPTER TO A COMIC, EDITS THE CHAPTER, THEN DELETES THE COMIC
+test("editChapter for editing a chapter from a comic", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
 
-// editChapter(chapterID: ID, chapterInput: ChapterInput): ID
+    // create a comic under user 1
+    const createContentRes = await createContentFunc(testComic, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const comicId = data.createContent;
 
-// publishChapter(chapterID:ID): Boolean
-// createCharacter(storyboardID: ID, characterInput: CharacterInput): ID
-// editCharacter(storyboardID: ID, characterInput: CharacterInput): ID
-// deleteCharacter(storyboardID: ID, characterID: ID): Boolean
-// createPlotPoint(storyboardID: ID, plotpointInput: PlotPointInput): ID
-// editPlotPoint(storyboardID: ID, plotpointInput: PlotPointInput): ID
-// deletePlotPoint(storyboardID: ID, plotpointID: ID): Boolean
+    // create chapter in comic
+    const chapterTitle = "comic chapter 1"
+    const createChapterRes = await createChapterFunc(comicId, chapterTitle, refreshToken, accessToken);
+    const { data:createChapterData } = await createChapterRes.json();
+    const chapterId = createChapterData.createChapter;
+
+    // edits comic data
+    const editedValues = {
+        chapter_title: "new chapter title",
+        num_pages: 2,
+        chapter_content: ["a","b"],
+        publication_date: Date.now()
+    }
+
+    const editChapterRes = await editChapterFunc(chapterId, editedValues, refreshToken, accessToken);
+    const { data:editChapterData } = await editChapterRes.json();
+
+    // expect return value
+    expect(editChapterData.editChapter).toStrictEqual(chapterId);
+
+    // expect updated chapter values
+    const updatedComic = await Chapter.findById(chapterId);
+    const updatedValues = {
+        chapter_title: updatedComic.chapter_title,
+        num_pages: updatedComic.num_pages,
+        chapter_content: updatedComic.chapter_content,
+        publication_date: new Date(updatedComic.publication_date).getTime()
+    }
+    expect(updatedValues).toStrictEqual(editedValues)
+
+    // delete comic
+    const deleteContentRes = await deleteContentFunc(comicId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// TEST USER 1 CREATES A STORY, ADDS A CHAPTER TO THE STORY, PUBLISHES THE STORY, THEN DELETES THE STORY
+test("publishChapter for publishing a chapter from a story", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+
+    // create a story under user 1
+    const createContentRes = await createContentFunc(testStory, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const storyId = data.createContent;
+
+    // create chapter in story
+    const chapterTitle = "story chapter 1"
+    const createChapterRes = await createChapterFunc(storyId, chapterTitle, refreshToken, accessToken);
+    const { data:createChapterData } = await createChapterRes.json();
+    const chapterId = createChapterData.createChapter;
+
+    // publishes story chapter
+    const publishChapterRes = await publishChapterFunc(chapterId, refreshToken, accessToken);
+    const { data:publishChapterData } = await publishChapterRes.json();
+
+    // expect return value
+    expect(publishChapterData.publishChapter);
+
+    // expect updated chapter values
+    const chapter = await Chapter.findById(chapterId);
+    expect(chapter.publication_date != 0);
+
+    // delete story
+    const deleteContentRes = await deleteContentFunc(storyId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// TEST USER 2 CREATES A STORY, CREATES A CHARACTER, THEN DELETES THE STORY
+test("createCharacter for creating a character in a story", async () => {
+    // Log in as test user 2 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser2.username, contentTestUser2.password);
+
+    // create a story
+    const createContentRes = await createContentFunc(testStory, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const storyId = data.createContent;
+
+    // create a character
+    const testCharacter = {
+        character_name: "test character",
+        notes: "notes on test character",
+        character_image: "image character"
+    }
+    const story = await Content.findById(storyId)
+    const storyboard = await StoryBoard.findById(story.storyboard);
+    const createCharacterRes = await createCharacterFunc(storyboard._id, testCharacter, refreshToken, accessToken);
+    const { data:createCharacterData } = await createCharacterRes.json();
+
+    // check return value for null values
+    expect(createCharacterData.createCharacter);
+
+    // check character values are correct
+    const updatedStoryboard = await StoryBoard.findById(story.storyboard);
+    const character = updatedStoryboard.characters.find(o => o._id.toString() === createCharacterData.createCharacter.toString());
+    const updatedCharacterValues = {
+        character_name: character.character_name,
+        notes: character.notes,
+        character_image: character.character_image
+    }
+    expect(updatedCharacterValues).toStrictEqual(testCharacter);
+
+    // delete a story
+    const deleteContentRes = await deleteContentFunc(storyId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// TEST USER 2 CREATES A STORY, CREATES A CHARACTER, EDITS THE CHARACTER, THEN DELETES THE STORY
+test("editCharacter for editing a character in a story", async () => {
+    // Log in as test user 2 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser2.username, contentTestUser2.password);
+
+    // create a story
+    const createContentRes = await createContentFunc(testStory, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const storyId = data.createContent;
+
+    // create a character
+    const testCharacter = {
+        character_name: "test character",
+        notes: "notes on test character",
+        character_image: "image character"
+    }
+    const story = await Content.findById(storyId)
+    const storyboard = await StoryBoard.findById(story.storyboard);
+    const createCharacterRes = await createCharacterFunc(storyboard._id, testCharacter, refreshToken, accessToken);
+    const { data:createCharacterData } = await createCharacterRes.json();
+
+    // edit character
+    const editedValues = {
+        character_name: "edited test name",
+        notes: "changed notes on test char",
+        character_image: "new image"
+    }
+    const editCharacterRes = await editCharacterFunc(storyboard._id, createCharacterData.createCharacter, editedValues, refreshToken, accessToken);
+    const { data:editCharacterData } = await editCharacterRes.json();
+
+    // check return values
+    expect(editCharacterData.editCharacter).toStrictEqual(storyboard._id.toString());
+
+    // check edited values
+    const updatedStoryboard = await StoryBoard.findById(story.storyboard);
+    const character = updatedStoryboard.characters.find(o => o._id.toString() === createCharacterData.createCharacter.toString());
+    const updatedCharacterValues = {
+        character_name: character.character_name,
+        notes: character.notes,
+        character_image: character.character_image
+    }
+    expect(updatedCharacterValues).toStrictEqual(editedValues);
+
+    // delete a story
+    const deleteContentRes = await deleteContentFunc(storyId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// TEST USER 2 CREATES A STORY, CREATES A CHARACTER, DELETES THE CHARACTER, THEN DELETES THE STORY
+test("deleteCharacter for deleting a character from a story", async () => {
+    // Log in as test user 2 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser2.username, contentTestUser2.password);
+
+    // create a story
+    const createContentRes = await createContentFunc(testStory, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const storyId = data.createContent;
+
+    // create a character
+    const testCharacter = {
+        character_name: "test character",
+        notes: "notes on test character",
+        character_image: "image character"
+    }
+    const story = await Content.findById(storyId)
+    const storyboard = await StoryBoard.findById(story.storyboard);
+    const createCharacterRes = await createCharacterFunc(storyboard._id, testCharacter, refreshToken, accessToken);
+    const { data:createCharacterData } = await createCharacterRes.json();
+
+    // delete character
+    const deleteCharacterRes = await deleteCharacterFunc(storyboard._id, createCharacterData.createCharacter);
+    const { data:deleteCharacterData } = await deleteCharacterRes.json();
+
+    // check return values
+    expect(deleteCharacterData.deleteCharacter);
+
+    // check that the character no longer exists in storyboard
+    const updatedStoryboard = await StoryBoard.findById(story.storyboard);
+    const character = updatedStoryboard.characters.find(o => o._id.toString() === createCharacterData.createCharacter.toString());
+    expect(!character);
+
+    // delete a story
+    const deleteContentRes = await deleteContentFunc(storyId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// TEST USER 2 CREATES A STORY, CREATES A PLOTPOINT, THEN DELETES THE STORY
+test("createPlotPoint for creating a plot point in a story", async () => {
+    // Log in as test user 2 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser2.username, contentTestUser2.password);
+
+    // create a story
+    const createContentRes = await createContentFunc(testStory, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const storyId = data.createContent;
+
+    // create a plot point
+    const testPlotpoint = {
+        plot_point_name: "plot point",
+        notes: "plot notes",
+        plot_point_image: "plot image"
+    }
+    const story = await Content.findById(storyId)
+    const storyboard = await StoryBoard.findById(story.storyboard);
+    const createPlotPointRes = await createPlotPointFunc(storyboard._id, testPlotpoint, refreshToken, accessToken);
+    const { data:createPlotPointData } = await createPlotPointRes.json();
+
+    // check return value for null values
+    expect(createPlotPointData.createPlotPoint);
+
+    // check plot point values are correct
+    const updatedStoryboard = await StoryBoard.findById(story.storyboard);
+    const plotpoint = updatedStoryboard.plot_points.find(o => o._id.toString() === createPlotPointData.createPlotPoint.toString());
+    const updatedPlotPointValues = {
+        plot_point_name: plotpoint.plot_point_name,
+        notes: plotpoint.notes,
+        plot_point_image: plotpoint.plot_point_image
+    }
+    expect(updatedPlotPointValues).toStrictEqual(testPlotpoint);
+
+    // delete a story
+    const deleteContentRes = await deleteContentFunc(storyId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// TEST USER 2 CREATES A STORY, CREATES A PLOTPOINT, EDITS THE PLOTPOINT, AND DELETES THE STORY
+test("editPlotPoint for editing a plot point in a story", async () => {
+    // Log in as test user 2 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser2.username, contentTestUser2.password);
+
+    // create a story
+    const createContentRes = await createContentFunc(testStory, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const storyId = data.createContent;
+
+    // create a plot point
+    const testPlotpoint = {
+        plot_point_name: "plot point",
+        notes: "plot notes",
+        plot_point_image: "plot image"
+    }
+    const story = await Content.findById(storyId)
+    const storyboard = await StoryBoard.findById(story.storyboard);
+    const createPlotPointRes = await createPlotPointFunc(storyboard._id, testPlotpoint, refreshToken, accessToken);
+    const { data:createPlotPointData } = await createPlotPointRes.json();
+
+    // edit plot point values
+    const editedValues = {
+        plot_point_name: "adfsdf",
+        notes: "3y54y5y53",
+        plot_point_image: "348w34tiuht4"
+    }
+    const editPlotPointRes = await editPlotPointFunc(storyboard._id, createPlotPointData.createPlotPoint, editedValues, refreshToken, accessToken);
+    const { data:editPlotPointData } = await editPlotPointRes.json();
+
+    // check return value
+    expect(editPlotPointData.editPlotPoint).toStrictEqual(storyboard._id.toString());
+
+    // check plot point values have changed
+    const updatedStoryboard = await StoryBoard.findById(story.storyboard);
+    const plotpoint = updatedStoryboard.plot_points.find(o => o._id.toString() === createPlotPointData.createPlotPoint.toString());
+    const updatedPlotPointValues = {
+        plot_point_name: plotpoint.plot_point_name,
+        notes: plotpoint.notes,
+        plot_point_image: plotpoint.plot_point_image
+    }
+    expect(updatedPlotPointValues).toStrictEqual(editedValues);
+
+    // delete a story
+    const deleteContentRes = await deleteContentFunc(storyId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// TEST USER 2 CREATES A STORY, CREATES A PLOTPOINT, DELETES A PLOTPOINT, AND DELETES THE STORY
+test("deletePlotPoint for deleting a plot point from a story", async () => {
+    // Log in as test user 2 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser2.username, contentTestUser2.password);
+
+    // create a story
+    const createContentRes = await createContentFunc(testStory, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const storyId = data.createContent;
+
+    // create a plot point
+    const testPlotpoint = {
+        plot_point_name: "plot point",
+        notes: "plot notes",
+        plot_point_image: "plot image"
+    }
+    const story = await Content.findById(storyId)
+    const storyboard = await StoryBoard.findById(story.storyboard);
+    const createPlotPointRes = await createPlotPointFunc(storyboard._id, testPlotpoint, refreshToken, accessToken);
+    const { data:createPlotPointData } = await createPlotPointRes.json();
+
+    // delete a plot point
+    const deletePlotPointRes = await deletePlotPointFunc(storyboard._id, createPlotPointData.createPlotPoint, refreshToken, accessToken);
+    const { data:deletePlotPointData } = await deletePlotPointRes.json();
+
+    // check return value
+    expect(deletePlotPointData.deletePlotPoint);
+
+    // check plot point has been deleted from storyboard
+    const updatedStoryboard = await StoryBoard.findById(story.storyboard);
+    const plotpoint = updatedStoryboard.plot_points.find(o => o._id.toString() === createPlotPointData.createPlotPoint.toString());
+    expect(!plotpoint);
+
+    // delete a story
+    const deleteContentRes = await deleteContentFunc(storyId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
 
 // TEST USER 2 DELETES A PUBLISHED STORY 
 test("deleteContent for deleting a published story", async () => {

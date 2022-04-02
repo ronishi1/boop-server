@@ -21,7 +21,7 @@ const createContentFunc = async (contentInput, refreshToken, accessToken) => {
     });
 
     return createContentRes;
-}
+};
 
 const editContentFunc = async (contentId, editedContentInput, refreshToken, accessToken) => {
     const editContentRes = await fetch("http://localhost:4000/graphql", {
@@ -45,7 +45,7 @@ const editContentFunc = async (contentId, editedContentInput, refreshToken, acce
     });
 
     return editContentRes;
-}
+};
 
 const deleteContentFunc = async (contentId, refreshToken, accessToken) => {
     const deleteContentRes = await fetch("http://localhost:4000/graphql", {
@@ -102,7 +102,7 @@ const rateContentFunc = async (contentId, rating, refreshToken, accessToken) => 
     });
 
     return rateContentRes;
-}
+};
 
 const addToReadListFunc = async (contentId, refreshToken, accessToken) => {
     const readListRes = await fetch("http://localhost:4000/graphql", {
@@ -159,7 +159,7 @@ const removeFromReadListFunc = async (contentId, refreshToken, accessToken) => {
     });
 
     return readListRes;
-}
+};
 
 const removeFromFavoritesFunc = async (contentId, refreshToken, accessToken) => {
     const favoritesRes = await fetch("http://localhost:4000/graphql", {
@@ -178,7 +178,7 @@ const removeFromFavoritesFunc = async (contentId, refreshToken, accessToken) => 
     });
 
     return favoritesRes;
-}
+};
 
 const createChapterFunc = async (contentId, chapterTitle, refreshToken, accessToken) => {
     const createChapterRes = await fetch("http://localhost:4000/graphql", {
@@ -197,6 +197,198 @@ const createChapterFunc = async (contentId, chapterTitle, refreshToken, accessTo
     });
 
     return createChapterRes;
+};
+
+const editChapterFunc = async (chapterId, chapterInput, refreshToken, accessToken) => {
+    const editChapterRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
+        body: JSON.stringify({
+            query: `mutation {
+                editChapter(chapterID: "${chapterId}", chapterInput: {
+                    chapter_title: "${chapterInput.chapter_title}",
+                    num_pages: ${chapterInput.num_pages},
+                    chapter_content: ${JSON.stringify(chapterInput.chapter_content)},
+                    publication_date: "${chapterInput.publication_date}"
+                })
+            }`
+        }),
+    });
+
+    return editChapterRes;
+};
+
+const deleteChapterFunc = async (chapterId, refreshToken, accessToken) => {
+    const deleteChapterRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
+        body: JSON.stringify({
+            query: `mutation {
+                deleteChapter(chapterID: "${chapterId}")
+            }`
+        }),
+    });
+
+    return deleteChapterRes;
+};
+
+const publishChapterFunc = async (chapterId, refreshToken, accessToken) => {
+    const publishChapterRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
+        body: JSON.stringify({
+            query: `mutation {
+                publishChapter(chapterID:"${chapterId}")
+            }`
+        }),
+    });
+
+    return publishChapterRes;
+};
+
+const createCharacterFunc = async (storyboardId, characterInput, refreshToken, accessToken) => {
+    const createCharacterRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
+        body: JSON.stringify({
+            query: `mutation {
+                createCharacter(storyboardID: "${storyboardId}", characterInput: {
+                    character_name: "${characterInput.character_name}"
+                    notes: "${characterInput.notes}"
+                    character_image: "${characterInput.character_image}"
+                })
+            }`
+        }),
+    });
+
+    return createCharacterRes;
+};
+
+const editCharacterFunc = async (storyboardId, characterId, characterInput, refreshToken, accessToken) => {
+    const editCharacterRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
+        body: JSON.stringify({
+            query: `mutation {
+                editCharacter(storyboardID: "${storyboardId}", characterID: "${characterId}", characterInput: {
+                    character_name: "${characterInput.character_name}"
+                    notes: "${characterInput.notes}"
+                    character_image: "${characterInput.character_image}"
+                })
+            }`
+        }),
+    });
+
+    return editCharacterRes;
+};
+
+const deleteCharacterFunc = async (storyboardId, characterId, refreshToken, accessToken) => {
+    const deleteCharacterRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
+        body: JSON.stringify({
+            query: `mutation {
+                deleteCharacter(storyboardID: "${storyboardId}", characterID: "${characterId}")
+            }`
+        }),
+    });
+
+    return deleteCharacterRes;
+};
+
+const createPlotPointFunc = async (storyboardId, plotpointInput, refreshToken, accessToken) => {
+    const createPlotPointRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
+        body: JSON.stringify({
+            query: `mutation {
+                createPlotPoint(storyboardID: "${storyboardId}", plotpointInput: {
+                    plot_point_name: "${plotpointInput.plot_point_name}"
+                    notes: "${plotpointInput.notes}"
+                    plot_point_image: "${plotpointInput.plot_point_image}"
+                })
+            }`
+        }),
+    });
+
+    return createPlotPointRes;
+}
+
+const editPlotPointFunc = async (storyboardId, plotpointId, plotpointInput, refreshToken, accessToken ) => {
+    const editPlotPointRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
+        body: JSON.stringify({
+            query: `mutation {
+                editPlotPoint(storyboardID: "${storyboardId}", plotpointID: "${plotpointId}", plotpointInput: {
+                    plot_point_name: "${plotpointInput.plot_point_name}"
+                    notes: "${plotpointInput.notes}"
+                    plot_point_image: "${plotpointInput.plot_point_image}"
+                })
+            }`
+        }),
+    });
+
+    return editPlotPointRes;
+}
+
+const deletePlotPointFunc = async (storyboardId, plotpointId, refreshToken, accessToken) => {
+    const deletePlotPointRes = await fetch("http://localhost:4000/graphql", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'cookie': [
+                `${refreshToken}` + "; " + `${accessToken}`
+            ]
+        },
+        body: JSON.stringify({
+            query: `mutation {
+                deletePlotPoint(storyboardID: "${storyboardId}", plotpointID: "${plotpointId}")
+            }`
+        }),
+    });
+
+    return deletePlotPointRes;
 }
 
 module.exports = {
@@ -210,4 +402,13 @@ module.exports = {
     removeFromReadListFunc,
     removeFromFavoritesFunc,
     createChapterFunc,
+    editChapterFunc,
+    deleteChapterFunc,
+    publishChapterFunc, 
+    createCharacterFunc,
+    editCharacterFunc,
+    deleteCharacterFunc,
+    createPlotPointFunc,
+    editPlotPointFunc,
+    deletePlotPointFunc,
 }
