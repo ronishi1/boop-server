@@ -159,11 +159,11 @@ module.exports = {
       const storyboard = await StoryBoard.findOne({_id:storyboardId});
       return storyboard;
     },
-    // getSearch: async (_, args) => {
-    //   const {searchTerm} = args
-    //   let searchQuery = 
-
-    // }
+    getSearch: async (_, args) => {
+      const {searchTerm} = args
+      const searchedContent = await Content.find({series_title: {$regex: searchTerm, $options: "i"}})
+      return searchedContent
+    }
     
   },
   Mutation: {
