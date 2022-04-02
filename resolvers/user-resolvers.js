@@ -3,7 +3,10 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const User = require('../models/user-model');
 const tokens = require('../utils/tokens');
-
+const Content = require('../models/content-model');
+const Chapter = require('../models/chapter-model');
+const ForumPost = require('../models/forum-post-model');
+const StoryBoard = require("../models/storyboard-model");
 
 // Resolvers define the technique for fetching the types defined in the
 // schema. This resolver retrieves books from the "books" array above.
@@ -143,19 +146,27 @@ module.exports = {
                 )
             }
             const updatedEmail = await User.updateOne({_id: foundUser._id}, {email: newEmail});
-            return true
+            return true;
         },
         deleteAccount: async(_, args,{ res, req }) => {
             const userId = new ObjectId(req.userId);
-            console.log(req);
-            const deleted = await User.deleteOne({_id: userId})
-            return true
+
+            const foundUser = await User.findOne({_id:userId});
+
+            await User.deleteOne({_id: userId});
+            await ForumPost.deleteMany({_id: {$in: foundUser.forum_posts}});
+
+            const foundContent = await Content.find({_id: {$in: foundUser.user_content}});
+            await Content.deleteMany({_id: {$in: foundUser.user_content}});
+            await StoryBoard.deleteOne({_id: foundContent.storyboard});
+            await Chapter.deleteMany({_id: {$in: foundContent.chapters}});
+            return true;
         },
         updateBio: async(_, args, { res, req }) => {
             const { newBio } = args;
             const userId = new ObjectId(req.userId);
             const updatedBio = await User.updateOne({_id: userId}, {bio: newBio});
-            return true
+            return true;
 
         }
   }
