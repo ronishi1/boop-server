@@ -1,5 +1,5 @@
 const createContentFunc = async (contentInput, refreshToken, accessToken) => {
-    const createContentRes = await fetch("http://localhost:4000/graphql", {
+    const createContentRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -24,7 +24,7 @@ const createContentFunc = async (contentInput, refreshToken, accessToken) => {
 };
 
 const editContentFunc = async (contentId, editedContentInput, refreshToken, accessToken) => {
-    const editContentRes = await fetch("http://localhost:4000/graphql", {
+    const editContentRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -48,7 +48,7 @@ const editContentFunc = async (contentId, editedContentInput, refreshToken, acce
 };
 
 const deleteContentFunc = async (contentId, refreshToken, accessToken) => {
-    const deleteContentRes = await fetch("http://localhost:4000/graphql", {
+    const deleteContentRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -67,7 +67,7 @@ const deleteContentFunc = async (contentId, refreshToken, accessToken) => {
 };
 
 const publishContentFunc = async (contentId, refreshToken, accessToken) => {
-    const publishContentRes = await fetch("http://localhost:4000/graphql", {
+    const publishContentRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -86,7 +86,7 @@ const publishContentFunc = async (contentId, refreshToken, accessToken) => {
 };
 
 const rateContentFunc = async (contentId, rating, refreshToken, accessToken) => {
-    const rateContentRes = await fetch("http://localhost:4000/graphql", {
+    const rateContentRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -104,8 +104,9 @@ const rateContentFunc = async (contentId, rating, refreshToken, accessToken) => 
     return rateContentRes;
 };
 
+// RETURNS BOOLEAN
 const addToReadListFunc = async (contentId, refreshToken, accessToken) => {
-    const readListRes = await fetch("http://localhost:4000/graphql", {
+    const readListRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -124,7 +125,7 @@ const addToReadListFunc = async (contentId, refreshToken, accessToken) => {
 };
 
 const addToFavoritesFunc = async (contentId, refreshToken, accessToken) => {
-    const readListRes = await fetch("http://localhost:4000/graphql", {
+    const readListRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -143,7 +144,7 @@ const addToFavoritesFunc = async (contentId, refreshToken, accessToken) => {
 };
 
 const removeFromReadListFunc = async (contentId, refreshToken, accessToken) => {
-    const readListRes = await fetch("http://localhost:4000/graphql", {
+    const readListRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -162,7 +163,7 @@ const removeFromReadListFunc = async (contentId, refreshToken, accessToken) => {
 };
 
 const removeFromFavoritesFunc = async (contentId, refreshToken, accessToken) => {
-    const favoritesRes = await fetch("http://localhost:4000/graphql", {
+    const favoritesRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -181,7 +182,7 @@ const removeFromFavoritesFunc = async (contentId, refreshToken, accessToken) => 
 };
 
 const createChapterFunc = async (contentId, chapterTitle, refreshToken, accessToken) => {
-    const createChapterRes = await fetch("http://localhost:4000/graphql", {
+    const createChapterRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -200,7 +201,7 @@ const createChapterFunc = async (contentId, chapterTitle, refreshToken, accessTo
 };
 
 const editChapterFunc = async (chapterId, chapterInput, refreshToken, accessToken) => {
-    const editChapterRes = await fetch("http://localhost:4000/graphql", {
+    const editChapterRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -224,7 +225,7 @@ const editChapterFunc = async (chapterId, chapterInput, refreshToken, accessToke
 };
 
 const deleteChapterFunc = async (chapterId, refreshToken, accessToken) => {
-    const deleteChapterRes = await fetch("http://localhost:4000/graphql", {
+    const deleteChapterRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -243,7 +244,7 @@ const deleteChapterFunc = async (chapterId, refreshToken, accessToken) => {
 };
 
 const publishChapterFunc = async (chapterId, refreshToken, accessToken) => {
-    const publishChapterRes = await fetch("http://localhost:4000/graphql", {
+    const publishChapterRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -262,7 +263,7 @@ const publishChapterFunc = async (chapterId, refreshToken, accessToken) => {
 };
 
 const createCharacterFunc = async (storyboardId, characterInput, refreshToken, accessToken) => {
-    const createCharacterRes = await fetch("http://localhost:4000/graphql", {
+    const createCharacterRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -285,7 +286,7 @@ const createCharacterFunc = async (storyboardId, characterInput, refreshToken, a
 };
 
 const editCharacterFunc = async (storyboardId, characterId, characterInput, refreshToken, accessToken) => {
-    const editCharacterRes = await fetch("http://localhost:4000/graphql", {
+    const editCharacterRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -308,7 +309,7 @@ const editCharacterFunc = async (storyboardId, characterId, characterInput, refr
 };
 
 const deleteCharacterFunc = async (storyboardId, characterId, refreshToken, accessToken) => {
-    const deleteCharacterRes = await fetch("http://localhost:4000/graphql", {
+    const deleteCharacterRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -327,7 +328,7 @@ const deleteCharacterFunc = async (storyboardId, characterId, refreshToken, acce
 };
 
 const createPlotPointFunc = async (storyboardId, plotpointInput, refreshToken, accessToken) => {
-    const createPlotPointRes = await fetch("http://localhost:4000/graphql", {
+    const createPlotPointRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -350,7 +351,7 @@ const createPlotPointFunc = async (storyboardId, plotpointInput, refreshToken, a
 };
 
 const editPlotPointFunc = async (storyboardId, plotpointId, plotpointInput, refreshToken, accessToken ) => {
-    const editPlotPointRes = await fetch("http://localhost:4000/graphql", {
+    const editPlotPointRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -373,7 +374,7 @@ const editPlotPointFunc = async (storyboardId, plotpointId, plotpointInput, refr
 };
 
 const deletePlotPointFunc = async (storyboardId, plotpointId, refreshToken, accessToken) => {
-    const deletePlotPointRes = await fetch("http://localhost:4000/graphql", {
+    const deletePlotPointRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -392,7 +393,7 @@ const deletePlotPointFunc = async (storyboardId, plotpointId, refreshToken, acce
 };
 
 const getContentInfoFunc = async (contentId) => {
-    const getContentInfoRes = await fetch("http://localhost:4000/graphql", {
+    const getContentInfoRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -408,7 +409,7 @@ const getContentInfoFunc = async (contentId) => {
 };
 
 const getContentChapterFunc = async (chapterId) => {
-    const getContentChapterRes = await fetch("http://localhost:4000/graphql", {
+    const getContentChapterRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -424,7 +425,7 @@ const getContentChapterFunc = async (chapterId) => {
 };
 
 const getChaptersFunc = async (chapterIds) => {
-    const getChaptersRes = await fetch("http://localhost:4000/graphql", {
+    const getChaptersRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -439,6 +440,181 @@ const getChaptersFunc = async (chapterIds) => {
     });
 
     return getChaptersRes;
+};
+
+const getPopularContentFunc = async (contentType) => {
+    const getPopularContentRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getPopularContent(contentType: "${contentType}") {
+                    _id
+                }
+            }`
+        }),
+    });
+
+    return getPopularContentRes;
+};
+
+const getTopRatedContentFunc = async (contentType) => {
+    const getTopRatedContentRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getTopRatedContent(contentType: "${contentType}") {
+                    _id
+                }
+            }`
+        }),
+    }); 
+
+    return getTopRatedContentRes
+};
+
+const getRecentContentFunc = async (contentType) => {
+    const getRecentContentRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getRecentContent(contentType: "${contentType}") {
+                    _id
+                }
+            }`
+        }),
+    }); 
+
+    return getRecentContentRes;
+};
+
+const getReadListFunc = async (userId) => {
+    const getReadListRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getReadList(userID: "${userId}") {
+                    _id
+                    series_title
+                    num_chapters
+                    current_rating
+                    publication_date
+                    cover_image
+                }
+            }`
+        }),
+    }); 
+
+    return getReadListRes;
+};
+
+const getFavoritesFunc = async (userId) => {
+    const getFavoritesRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getFavorites(userID: "${userId}") {
+                    _id
+                    series_title
+                    num_chapters
+                    current_rating
+                    publication_date
+                    cover_image
+                }
+            }`
+        }),
+    }); 
+
+    return getFavoritesRes;
+};
+
+const getFilteredContentFunc = async (genres, releaseYear, rating, completionStatus, contentType) => {
+    const getFilteredContentRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getFilteredContent(genres: ${JSON.stringify(genres)}, releaseYear: ${releaseYear}, rating: ${rating}, completionStatus: ${completionStatus}, contentType: "${contentType}") {
+                    _id
+                    series_title
+                    num_chapters
+                    current_rating
+                    publication_date
+                    cover_image
+                }
+            }`
+        }),
+    }); 
+
+    return getFilteredContentRes;
+};
+
+const getMyContentFunc = async (userId) => {
+    const getMyContentRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getMyContent(userID: "${userId}") {
+                    _id
+                    series_title
+                    num_chapters
+                    current_rating
+                    publication_date
+                    cover_image
+                }
+            }`
+        }),
+    }); 
+
+    return getMyContentRes
+}
+
+const getStoryboardFunc = async (storyboardId) => {
+    const getStoryboardRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getStoryboard(storyboardID: "${storyboardId}") {
+                    characters {
+                        character_name
+                    }
+                    plot_points {
+                        plot_point_name
+                    }
+                }
+            }`
+        }),
+    }); 
+
+    return getStoryboardRes;
+};
+
+// getSearch(searchTerm: String): [ContentCard]
+const getSearchFunc = async (searchTerm) => {
+    const getSearchRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+            query: `query {
+                getSearch(searchTerm: "${searchTerm}") {
+                    _id
+                    series_title
+                    num_chapters
+                    current_rating
+                    publication_date
+                    cover_image
+                }
+            }`
+        }),
+    }); 
+
+    return getSearchRes;
 }
 
 module.exports = {
@@ -464,4 +640,14 @@ module.exports = {
     getContentInfoFunc,
     getContentChapterFunc,
     getChaptersFunc,
+    getPopularContentFunc,
+    getTopRatedContentFunc,
+    getRecentContentFunc,
+    getReadListFunc,
+    getFavoritesFunc,
+    getFilteredContentFunc,
+    getMyContentFunc,
+    getStoryboardFunc,
+    getSearchFunc,
+
 }

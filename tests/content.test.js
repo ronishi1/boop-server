@@ -15,7 +15,11 @@ const { createContentFunc, editContentFunc, deleteContentFunc,
     addToFavoritesFunc, removeFromReadListFunc, removeFromFavoritesFunc, 
     createChapterFunc, editChapterFunc, deleteChapterFunc, 
     publishChapterFunc, createCharacterFunc, editCharacterFunc, 
-    deleteCharacterFunc, createPlotPointFunc, editPlotPointFunc, deletePlotPointFunc } = require("./content-sc");
+    deleteCharacterFunc, createPlotPointFunc, editPlotPointFunc, 
+    deletePlotPointFunc, getContentInfoFunc, getContentChapterFunc, 
+    getChaptersFunc, getPopularContentFunc, getTopRatedContentFunc,
+    getRecentContentFunc, getReadListFunc, getFavoritesFunc, 
+    getFilteredContentFunc, getMyContentFunc, getStoryboardFunc, getSearchFunc } = require("./content-sc");
 
 /*SETUP TEST USER INFO */
 const contentTestUser1 = {
@@ -169,7 +173,7 @@ test("editContent test for stories", async () => {
     const editedValues = {
         synopsis: "changed synopsis",
         series_title: "title change",
-        genres: ["Action"],
+        genres: ["Action","Adventure"],
         cover_image: "newcoverimage"
     }
     
@@ -177,7 +181,7 @@ test("editContent test for stories", async () => {
     const editContentRes = await editContentFunc(story._id, editedValues, refreshToken, accessToken);
 
     // CHECK RETURN VALUE
-    const { data } = await editContentRes.json();
+    const { data, errors } = await editContentRes.json();
     expect(data.editContent == story._id);
 
     const updatedStory = await Content.findById(story._id);
@@ -822,6 +826,534 @@ test("deletePlotPoint for deleting a plot point from a story", async () => {
     const deleteContentRes = await deleteContentFunc(storyId, refreshToken, accessToken);
     const { data:deleteContentData } = await deleteContentRes.json();
     expect(deleteContentData.deleteContent);
+});
+
+// TEST USER 1 CREATES A COMIC, A QUERY IS SENT TO REQUEST FOR THE CONTENT, TEST USER 1 THEN DELETES THE COMIC
+test("getContentInfo for getting info on a comic", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+
+    // create a comic
+    const createContentRes = await createContentFunc(testComic, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const comicId = data.createContent;
+
+    // send query for comic
+    const getContentInfoRes = await getContentInfoFunc(comicId);
+    const { data:getContentInfoData } = await getContentInfoRes.json()
+
+    // check return value
+    expect(getContentInfoData.getContentInfo._id).toStrictEqual(comicId);
+
+    // delete a comic
+    const deleteContentRes = await deleteContentFunc(comicId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// TEST USER 1 CREATES A COMIC, CREATES A CHAPTER FOR THE COMIC, A QUERY IS SENT TO REQUEST FOR THE CHAPTER, TEST USER 1 THEN DELETES THE COMIC
+test("getContentChapter for getting a comic chapter", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+
+    // create a comic
+    const createContentRes = await createContentFunc(testComic, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const comicId = data.createContent;
+
+    // create chapter in comic
+    const chapterTitle = "comic chapter 1"
+    const createChapterRes = await createChapterFunc(comicId, chapterTitle, refreshToken, accessToken);
+    const { data:createChapterData } = await createChapterRes.json();
+    const chapterId = createChapterData.createChapter;
+
+    // send query for chapter
+    const getContentChapterRes = await getContentChapterFunc(chapterId);
+    const { data:getContentChapterData } = await getContentChapterRes.json();
+
+    // check return value
+    expect(getContentChapterData.getContentChapter._id).toStrictEqual(chapterId);
+
+    // delete a comic
+    const deleteContentRes = await deleteContentFunc(comicId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// getChapters(chapterIDs: [ID] ): [ChapterItem]
+// TEST USER 1 CREATES A COMIC, CREATES 2 CHAPTERS FOR THE COMIC(ONE PUBLISHED, ONE UNPUBLISHED), 
+// A QUERY IS SENT TO REQUEST FOR THE LIST OF CHAPTERS, TEST USER 1 THEN DELETES THE COMIC
+test("getChapters for getting the chapters of a comic", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+
+    // create a comic
+    const createContentRes = await createContentFunc(testComic, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const comicId = data.createContent;
+
+    // create chapter in comic
+    const chapterTitle = "comic chapter 1"
+    const createChapterRes = await createChapterFunc(comicId, chapterTitle, refreshToken, accessToken);
+    const { data:createChapterData } = await createChapterRes.json();
+    const chapterId = createChapterData.createChapter;
+
+    // publish chapter 1
+    const publishChapterRes = await publishChapterFunc(chapterId, refreshToken, accessToken);
+    const { data:publishChapterData } = await publishChapterRes.json();
+
+    // create another chapter in comic
+    const chapterTitle2 = "comic chapter 2"
+    const createChapterRes2 = await createChapterFunc(comicId, chapterTitle2, refreshToken, accessToken);
+    const { data:createChapterData2 } = await createChapterRes2.json();
+    const chapterId2 = createChapterData2.createChapter;
+
+    // send query for chapters
+    const getChaptersRes = await getChaptersFunc([chapterId, chapterId2]);
+    const { data:getChaptersData, errors } = await getChaptersRes.json();
+
+    // check return values
+    const chapter1 = await Chapter.findById(chapterId);
+    const targetValue = [{
+        _id: chapterId,
+        chapter_title: chapterTitle,
+        publication_date: chapter1.publication_date
+    }, {
+        _id: chapterId2,
+        chapter_title: chapterTitle2,
+        publication_date: new Date(0)
+    }];
+    const actualValue = [{
+        _id: getChaptersData.getChapters[0]._id,
+        chapter_title: getChaptersData.getChapters[0].chapter_title,
+        publication_date: new Date(getChaptersData.getChapters[0].publication_date)
+    }, {
+        _id: getChaptersData.getChapters[1]._id,
+        chapter_title: getChaptersData.getChapters[1].chapter_title,
+        publication_date: new Date(getChaptersData.getChapters[1].publication_date)
+    }]
+
+    expect(actualValue).toStrictEqual(targetValue);
+
+    // delete a comic
+    const deleteContentRes = await deleteContentFunc(comicId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// CREATE COMIC WITH MAX VIEWS, QUERY FOR POPULAR CONTENT, DELETE COMIC
+test("getPopularContent test for a comic with the most views", async () => {
+    //get test user 1
+    const user1 = await User.findOne({username: contentTestUser1.username});
+
+    // create test comic
+    const mostPopularId = new ObjectId();
+    const mostPopularContent = {
+      _id: mostPopularId,
+      series_title: "this is the most popular comic",
+      author: user1._id,
+      author_username: user1.username,
+      synopsis: "synopsis for a popular comic",
+      genres: ["Action"],
+      num_chapters: 0,
+      chapters: [],
+      views: Number.MAX_SAFE_INTEGER,
+      num_favorites: 0,
+      discussion_post: new ObjectId("624216a0dd90b5c46c5e24d0"),
+      current_rating: 5,
+      num_of_ratings: 0,
+      total_ratings: 0,
+      publication_date: 0,
+      completed: false,
+      cover_image: "most popular cover",
+      content_type: "C",
+    }
+
+    // save the new content
+    const mostPopular = new Content(mostPopularContent);
+    await mostPopular.save();
+
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+
+    // publish content
+    await publishContentFunc(mostPopularId, refreshToken, accessToken);
+
+    // query for popular
+    const getPopularContentRes = await getPopularContentFunc(mostPopularContent.content_type);
+    const { data } = await getPopularContentRes.json();
+
+    // check the top result is the generated comic
+    expect(data.getPopularContent[0]._id).toStrictEqual(mostPopularId.toString());
+
+    // delete content
+
+    const deleteContentRes = await deleteContentFunc(mostPopularId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// CREATE COMIC WITH MAX RATING, QUERY FOR TOP RATED, DELETE COMIC
+test("getTopRatedContent test for a top rated comic", async () => {
+    // //delete conflicting data
+    // await Content.deleteMany({current_rating: {$gte:Number.MAX_SAFE_INTEGER}});
+
+    //get test user 1
+    const user1 = await User.findOne({username: contentTestUser1.username});
+
+    // create test comic
+    const topRatedId = new ObjectId();
+    const topRatedContent = {
+      _id: topRatedId,
+      series_title: "this is the top rated comic",
+      author: user1._id,
+      author_username: user1.username,
+      synopsis: "synopsis for the top rated comic",
+      genres: ["Action"],
+      num_chapters: 0,
+      chapters: [],
+      views: 0,
+      num_favorites: 0,
+      discussion_post: new ObjectId("624216a0dd90b5c46c5e24d0"),
+      current_rating: Number.MAX_SAFE_INTEGER,
+      num_of_ratings: 0,
+      total_ratings: 0,
+      publication_date: 0,
+      completed: false,
+      cover_image: "top rated cover",
+      content_type: "C",
+    }
+
+    // save the new content
+    const topRated = new Content(topRatedContent);
+    await topRated.save();
+
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+
+    // publish content
+    await publishContentFunc(topRatedId, refreshToken, accessToken);
+
+    // query for popular
+    const getTopRatedContentRes = await getTopRatedContentFunc(topRatedContent.content_type);
+    const { data } = await getTopRatedContentRes.json();
+
+    // check the top result is the generated comic
+    expect(data.getTopRatedContent[0]._id).toStrictEqual(topRatedId.toString());
+
+    // delete content
+    const deleteContentRes = await deleteContentFunc(topRatedId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// CREATE 5 MOST RECENT COMICS, QUERY FOR MOST RECENT COMICS, DELETE COMICS
+test("getRecentContent test for 5 recent comics", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+
+    let comicIds = []
+
+    // Create 5 comics
+    for(let i = 0; i < 5; i++){
+        const recentComic = {
+            series_title: "recent comic "+i,
+            synopsis: "synopsis for a test comic",
+            genres: [],
+            cover_image: "coverimagefortestcomic",
+            content_type: "C"
+        }
+        const res = await createContentFunc(recentComic, refreshToken, accessToken);
+        const { data } = await res.json();
+        await Content.findByIdAndUpdate(data.createContent, {publication_date: new Date(3000, 5-i)});
+        comicIds.push(data.createContent);
+    }
+
+    // query for most recent comics
+    const res = await getRecentContentFunc(testComic.content_type);
+    const { data } = await res.json();
+
+    for(let i = 0; i < 5; i++){
+        const comic = await Content.findById(data.getRecentContent[i]);
+        expect(comic._id.toString()).toStrictEqual(comicIds[i].toString());
+    }
+
+    // delete 5 comics
+    comicIds.forEach(async (id) => {
+        const deleteContentRes = await deleteContentFunc(id, refreshToken, accessToken);
+        const { data:deleteContentData } = await deleteContentRes.json();
+        expect(deleteContentData.deleteContent);
+    });
+});
+
+// CREATE COMIC, ADD COMIC TO READ LIST, QUERY, DELETE COMIC
+test("getReadList for getting read list of user 1", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+    const { data: loginData } = await loginRes.json();
+
+    // create a comic
+    const createContentRes = await createContentFunc(testComic, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const comicId = data.createContent;
+
+    // add comic to read list
+    await addToReadListFunc(comicId, refreshToken, accessToken);
+
+    // query for read list of user 1
+    const getReadListRes = await getReadListFunc(loginData.login._id);
+    const { data:getReadListData } = await getReadListRes.json();
+
+    // expect values
+    const comic = await Content.findById(comicId);
+
+    const expected_values = [{
+        series_title: comic.series_title,
+        num_chapters: comic.num_chapters,
+        current_rating: comic.current_rating,
+        publication_date: comic.publication_date,
+        cover_image: comic.cover_image
+    }]
+
+    const actual_values = [{
+        series_title: getReadListData.getReadList[0].series_title,
+        num_chapters: getReadListData.getReadList[0].num_chapters,
+        current_rating: getReadListData.getReadList[0].current_rating,
+        publication_date: new Date(getReadListData.getReadList[0].publication_date),
+        cover_image: getReadListData.getReadList[0].cover_image
+    }];
+
+    expect(actual_values).toStrictEqual(expected_values)
+
+    // delete comic
+    const deleteContentRes = await deleteContentFunc(comicId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// CREATE COMIC, ADD TO FAVORITES, QUERY, DELETE COMIC
+test("getFavorites for getting favorites of user 1", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+    const { data: loginData } = await loginRes.json();
+
+    // create a comic
+    const createContentRes = await createContentFunc(testComic, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const comicId = data.createContent;
+
+    // add comic to read list
+    await addToFavoritesFunc(comicId, refreshToken, accessToken);
+
+    // query for read list of user 1
+    const getFavoritesRes = await getFavoritesFunc(loginData.login._id);
+    const { data:getFavoritesData } = await getFavoritesRes.json();
+
+    // expect values
+    const comic = await Content.findById(comicId);
+
+    const expected_values = [{
+        series_title: comic.series_title,
+        num_chapters: comic.num_chapters,
+        current_rating: comic.current_rating,
+        publication_date: comic.publication_date,
+        cover_image: comic.cover_image
+    }]
+
+    const actual_values = [{
+        series_title: getFavoritesData.getFavorites[0].series_title,
+        num_chapters: getFavoritesData.getFavorites[0].num_chapters,
+        current_rating: getFavoritesData.getFavorites[0].current_rating,
+        publication_date: new Date(getFavoritesData.getFavorites[0].publication_date),
+        cover_image: getFavoritesData.getFavorites[0].cover_image
+    }];
+
+    expect(actual_values).toStrictEqual(expected_values);
+
+    // delete comic
+    const deleteContentRes = await deleteContentFunc(comicId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// CREATE A COMIC, QUERY, DELETE COMIC
+// getFilteredContent(genres: [String], releaseYear: DateTime, rating: Int, completionStatus: Boolean, contentType: String): [ContentCard]
+test("getFilteredContent between two different pieces of content", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+    const { data: loginData } = await loginRes.json();
+
+    // create a comic
+    const comicFilter = {
+        genres: ["Action","Psychological"],
+        releaseYear: new Date(3000, 1),
+        rating: 999,
+        completionStatus: true,
+        contentType: "C"
+    }
+
+    const createContentRes = await createContentFunc(testComic, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const comicId = data.createContent;
+
+    await Content.findByIdAndUpdate(comicId, {
+        genres: comicFilter.genres,
+        publication_date: comicFilter.releaseYear,
+        current_rating: comicFilter.rating,
+        completed: comicFilter.completionStatus,
+    });
+
+    // query for filters
+    const filterRes = await getFilteredContentFunc(comicFilter.genres, 3000, comicFilter.rating, comicFilter.completionStatus, testComic.content_type);
+    const { data:filter } = await filterRes.json();
+
+    // check expected values
+    const comic = await Content.findById(comicId);
+    const expected_values = [{
+        series_title: comic.series_title,
+        num_chapters: comic.num_chapters,
+        current_rating: comic.current_rating,
+        publication_date: comic.publication_date,
+        cover_image: comic.cover_image
+    }]
+
+    const actual_values = [{
+        series_title: filter.getFilteredContent[0].series_title,
+        num_chapters: filter.getFilteredContent[0].num_chapters,
+        current_rating: filter.getFilteredContent[0].current_rating,
+        publication_date: new Date(filter.getFilteredContent[0].publication_date),
+        cover_image: filter.getFilteredContent[0].cover_image
+    }];
+    expect(actual_values).toStrictEqual(expected_values)
+
+    // delete comic
+    const deleteContentRes = await deleteContentFunc(comicId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+});
+
+// CREATE COMIC, QUERY FOR CONTENT, DELETE COMIC
+test("getMyContent for getting user 1's user content", async () => {
+    await registerFunc("getmycontent@email.com", "getmycontentusername", "getmycontent");
+
+    // Log in as getmycontent user 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("getmycontentusername", "getmycontent");
+    const { data:loginData } = await loginRes.json()
+
+    // clear out user content
+    const user = await User.findByIdAndUpdate(loginData.login._id);
+
+    // create a comic
+    const createContentRes = await createContentFunc(testComic, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const comicId = data.createContent;
+    const comic = await Content.findById(comicId);
+
+    // query for user content
+    const getMyContentRes = await getMyContentFunc(loginData.login._id);
+    const { data:contentData, errors } = await getMyContentRes.json();
+
+    // check expected values
+    const expected_values = [{
+        series_title: comic.series_title,
+        num_chapters: comic.num_chapters,
+        current_rating: comic.current_rating,
+        publication_date: comic.publication_date,
+        cover_image: comic.cover_image
+    }]
+    const actual_values = [{
+        series_title: contentData.getMyContent[0].series_title,
+        num_chapters: contentData.getMyContent[0].num_chapters,
+        current_rating: contentData.getMyContent[0].current_rating,
+        publication_date: new Date(contentData.getMyContent[0].publication_date),
+        cover_image: contentData.getMyContent[0].cover_image
+    }];
+    expect(actual_values).toStrictEqual(expected_values);
+
+    // delete comic
+    const deleteContentRes = await deleteContentFunc(comicId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+
+    // delete user
+    await User.deleteOne({email:"getmycontent@email.com"});
+})
+
+// CREATE STORY, QUERY FOR STORYBOARD, DELETE STORY
+test("getStoryboard for getting a storyboard from a new story", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+    const { data:loginData } = await loginRes.json()
+
+    // create a story under user 1
+    const createContentRes = await createContentFunc(testStory, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const storyId = data.createContent;
+
+    // query for storyboard
+    const story = await Content.findById(storyId);
+    const storyboardRes = await getStoryboardFunc(story.storyboard);
+    const { data:storyboardData } = await storyboardRes.json();
+
+    // delete story
+    const deleteContentRes = await deleteContentFunc(storyId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+
+    // expect values
+    const expected_values = {
+        characters: [],
+        plot_points: []
+    }
+    expect(storyboardData.getStoryboard).toStrictEqual(expected_values)
+});
+
+// CREATE COMIC, SEARCH FOR COMIC, DELETE COMIC
+test("getSearch for searching for a comic", async () => {
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+    const { data:loginData } = await loginRes.json()
+
+    // create a comic
+    const searchComic = {
+        series_title: "conspicuous title for a comic",
+        synopsis: "synopsis for a conspicuous comic",
+        genres: [],
+        cover_image: "coverimageforconspicuouscomic",
+        content_type: "C"
+    }
+    const createContentRes = await createContentFunc(searchComic, refreshToken, accessToken);
+    const { data } = await createContentRes.json();
+    const comicId = data.createContent;
+
+    // search for comic
+    const getSearchRes = await getSearchFunc("conspicuous");
+    const { data:searchData } = await getSearchRes.json()
+
+    const comic = await Content.findById(comicId);
+
+    // delete comic
+    const deleteContentRes = await deleteContentFunc(comicId, refreshToken, accessToken);
+    const { data:deleteContentData } = await deleteContentRes.json();
+    expect(deleteContentData.deleteContent);
+
+    // check expected values
+    const expected_values = [{
+        series_title: comic.series_title,
+        num_chapters: comic.num_chapters,
+        current_rating: comic.current_rating,
+        publication_date: comic.publication_date,
+        cover_image: comic.cover_image
+    }]
+
+    const actual_values = [{
+        series_title: searchData.getSearch[0].series_title,
+        num_chapters: searchData.getSearch[0].num_chapters,
+        current_rating: searchData.getSearch[0].current_rating,
+        publication_date: new Date(searchData.getSearch[0].publication_date),
+        cover_image: searchData.getSearch[0].cover_image
+    }];
+    expect(actual_values).toStrictEqual(expected_values);
 });
 
 // TEST USER 2 DELETES A PUBLISHED STORY 
