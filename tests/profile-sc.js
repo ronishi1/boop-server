@@ -1,5 +1,5 @@
 const getUserPublishedFunc = async (userId) => {
-    const getUserPublishedRes = await fetch("http://localhost:4000/graphql", {
+    const getUserPublishedRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -16,7 +16,7 @@ const getUserPublishedFunc = async (userId) => {
 };
 
 const getUserFavoritesFunc = async (userId) => {
-    const getUserFavoritesRes = await fetch("http://localhost:4000/graphql", {
+    const getUserFavoritesRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({

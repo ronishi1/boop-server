@@ -90,7 +90,7 @@ afterAll(async () => {
 test("getUserProfile", async () => {
     const followedUser = await User.findOne({username: followedInfo.username});
 
-    const res = await fetch("http://localhost:4000/graphql", {
+    const res = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -151,7 +151,7 @@ test('Follow User', async () => {
     const follower = await User.findOne({email: followerInfo.email});
     const followed = await User.findOne({email: followedInfo.email});
         
-    const following = await fetch("http://localhost:4000/graphql", {
+    const following = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -180,7 +180,7 @@ test('Unfollow User', async () => {
     const unfollower = await User.findOne({email: followerInfo.email});
     const unfollowed = await User.findOne({email: followedInfo.email});
     
-    const unfollowing = await fetch("http://localhost:4000/graphql", {
+    const unfollowing = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
