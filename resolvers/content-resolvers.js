@@ -37,16 +37,38 @@ module.exports = {
     },
     getPopularContent: async (_, args) => {
       const {contentType} = args;
-      const contents = await Content.find({content_type:contentType}).sort({views:-1}).limit(20);
+      // unpublished represents the dateTime "1970-01-01T00:00:00.000Z"
+      const unpublished = new Date(0)
+      const query = {
+        $and : [
+          {"content_type": contentType},
+          {"publication_date": {$ne: unpublished}}
+        ]
+      }
+      const contents = await Content.find(query).sort({views:-1}).limit(20);
       return contents;
     },
     getRecentContent: async (_, args) => {
       const {contentType} = args;
-      const contents = await Content.find({content_type:contentType}).sort({publication_date:-1}).limit(20);
+      const unpublished = new Date(0)
+      const query = {
+        $and : [
+          {"content_type": contentType},
+          {"publication_date": {$ne: unpublished}}
+        ]
+      }
+      const contents = await Content.find(query).sort({publication_date:-1}).limit(20);
       return contents;
     },
     getTopRatedContent: async (_, args) => {
       const {contentType} = args;
+      const unpublished = new Date(0)
+      const query = {
+        $and : [
+          {"content_type": contentType},
+          {"publication_date": {$ne: unpublished}}
+        ]
+      }
       const contents = await Content.find({content_type:contentType}).sort({current_rating:-1}).limit(20);
       return contents;
     },
