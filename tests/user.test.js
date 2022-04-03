@@ -54,7 +54,7 @@ test('Registering Account', async () => {
 
 test('Registering Account ERROR: Email Already Exists', async () => {
     const registerReturn = 'Email Already Exists'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -74,7 +74,7 @@ test('Registering Account ERROR: Email Already Exists', async () => {
 test('Registering Account ERROR: Username Already Exists', async () => {
 
     const registerReturn = 'Username Already Exists' 
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
