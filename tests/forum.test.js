@@ -46,7 +46,7 @@ test('Get General Posts', async () => {
             "_id": "624219954b2619473abf93b0"
           }
       ]
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -142,7 +142,7 @@ test('Get Popular Posts', async () => {
     await editPostFunc(popPost5,996,-1,-1)
 
 
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -189,7 +189,7 @@ test('Get Oldest Posts', async () => {
 
     
       
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -231,7 +231,7 @@ test('Get Most Replied Posts', async () => {
     await editPostFunc(mostrepPost5,-1,96,-1)
 
         
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -265,7 +265,7 @@ test('Get Topic Posts', async () => {
     topicPost2 = await createPostFunc("topic2","delete topic2","6242239f4b2619473abf93b2",refreshToken,accessToken);
     topicPost3 = await createPostFunc("topic3","delete topic3","6242239f4b2619473abf93b2",refreshToken,accessToken);
       
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -296,7 +296,7 @@ test('Get Post', async () => {
     holdgetPost = await createPostFunc("testing","delete soon","624218db4b2619473abf93ab", refreshToken, accessToken);
           
       
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -325,7 +325,7 @@ test('get My Posts', async () => {
     holdPost5 = await createPostFunc("testing5","delete soon","624218db4b2619473abf93ab",refreshToken,accessToken)
 
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -370,7 +370,7 @@ test('Get Recent Posts', async () => {
 
 
 
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -408,7 +408,7 @@ test('Create Post', async () => {
 
     const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -439,7 +439,7 @@ test('Edit Post', async () => {
 
     const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -466,7 +466,7 @@ test('Create Reply', async () => {
 
     const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -498,7 +498,7 @@ test('Edit Reply', async () => {
 
   const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -524,7 +524,7 @@ test('Get Replies To My Post', async () => {
 
     const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -562,7 +562,7 @@ test('Delete Reply', async () => {
 
   const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -590,7 +590,7 @@ test('Delete Post', async () => {
 
     const { loginRes, refreshToken, accessToken } = await loginTokenFunc("a", "a");
   
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',

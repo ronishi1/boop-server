@@ -1,5 +1,5 @@
 const createPostFunc = async(title,content,topicId,refreshToken,accessToken) => {
-      const updating = await fetch("http://localhost:4000/graphql", {
+      const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
           method: 'POST',
           headers: {
               'Content-Type' : 'application/json',
@@ -24,7 +24,7 @@ const createPostFunc = async(title,content,topicId,refreshToken,accessToken) => 
 }
 
 const deletePostFunc = async(postId,refreshToken,accessToken) => {
-      const updating = await fetch("http://localhost:4000/graphql", {
+      const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
           method: 'POST',
           headers: {
               'Content-Type' : 'application/json',

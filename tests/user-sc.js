@@ -1,5 +1,5 @@
 const loginTokenFunc = async (username, password) => {
-    const loginRes = await fetch("http://localhost:4000/graphql", {
+    const loginRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -20,7 +20,7 @@ const loginTokenFunc = async (username, password) => {
 }
 
 const registerFunc = async (email, username, password) => {
-    const registerRes = await fetch("http://localhost:4000/graphql", {
+    const registerRes = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({

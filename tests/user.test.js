@@ -8,7 +8,7 @@ require('isomorphic-fetch');
 //             "content": "Hello this is my post about games"
 //         }
 //     };
-//     return await fetch("http://localhost:4000/graphql", {
+//     return await fetch("https://boop416-server.herokuapp.com/graphql", {
 //         method: 'POST',
 //         headers: {'Content-Type' : 'application/json'},
 //         // Query we're sending to GraphQL API
@@ -30,7 +30,7 @@ test('Registering Account', async () => {
     const registerReturn = 'Will'
     // Get the response, the data could be in resp.data or it could return an error
     //  Modify your tests accordingly 
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         // Query we're sending to GraphQL API
@@ -94,7 +94,7 @@ test('Registering Account ERROR: Username Already Exists', async () => {
 test('Login', async () => {
 
     const loginReturn = 'Will'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         credentials: "include",
         headers: {'Content-Type' : 'application/json'},
@@ -114,7 +114,7 @@ test('Login', async () => {
 
 test('Login ERROR: Invalid Username', async () => {
     const loginReturn = 'Invalid Username'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         credentials: "include",
         headers: {'Content-Type' : 'application/json'},
@@ -134,7 +134,7 @@ test('Login ERROR: Invalid Username', async () => {
 
 test('Login ERROR: Invalid Password', async () => {
     const loginReturn = 'Invalid Password'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         credentials: "include",
         headers: {'Content-Type' : 'application/json'},
@@ -153,7 +153,7 @@ test('Login ERROR: Invalid Password', async () => {
 
 test('Update Username ERROR: Username Already Exists', async () => {
     const loginReturn = 'Username Already Exists'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -172,7 +172,7 @@ test('Update Username ERROR: Username Already Exists', async () => {
     const accessToken = (response.headers.get('set-cookie')).match(accessRegex)[0];
     
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -193,7 +193,7 @@ test('Update Username ERROR: Username Already Exists', async () => {
 
 test('Update Username', async () => {
     const registerReturn = 'Email Already Exists'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         // Query we're sending to GraphQL API
@@ -216,7 +216,7 @@ test('Update Username', async () => {
     // console.log(response.headers[0])
     
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -237,7 +237,7 @@ test('Update Username', async () => {
 
 test('Get Current User', async () => {
     const currentReturn = 'Chris'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -256,7 +256,7 @@ test('Get Current User', async () => {
     const accessToken = (response.headers.get('set-cookie')).match(accessRegex)[0];
     
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -282,7 +282,7 @@ test('Get Current User', async () => {
 
 test('Update Password ERROR: Invalid Password', async () => {
     const registerReturn = 'Invalid Password'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -301,7 +301,7 @@ test('Update Password ERROR: Invalid Password', async () => {
     const accessToken = (response.headers.get('set-cookie')).match(accessRegex)[0];
     
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -326,7 +326,7 @@ test('Update Password ERROR: Invalid Password', async () => {
 
 test('Update Password ', async () => {
     const registerReturn = 'Invalid Password'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -345,7 +345,7 @@ test('Update Password ', async () => {
     const accessToken = (response.headers.get('set-cookie')).match(accessRegex)[0];
     
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -369,7 +369,7 @@ test('Update Password ', async () => {
 })
 
 test('Password Reset ERROR: Email Not Registered', async () => {
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -391,7 +391,7 @@ test('Password Reset ERROR: Email Not Registered', async () => {
 
 test('Password Reset', async () => {
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -414,7 +414,7 @@ test('Password Reset', async () => {
 
 test('Update Email ERROR: Email Already Exists', async () => {
     const registerReturn = 'Invalid Password'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -433,7 +433,7 @@ test('Update Email ERROR: Email Already Exists', async () => {
     const accessToken = (response.headers.get('set-cookie')).match(accessRegex)[0];
     
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -458,7 +458,7 @@ test('Update Email ERROR: Email Already Exists', async () => {
 
 test('Update Email ERROR: Invalid Password', async () => {
     const registerReturn = 'Invalid Password'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -477,7 +477,7 @@ test('Update Email ERROR: Invalid Password', async () => {
     const accessToken = (response.headers.get('set-cookie')).match(accessRegex)[0];
     
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -502,7 +502,7 @@ test('Update Email ERROR: Invalid Password', async () => {
 
 test('Update Email ', async () => {
     const registerReturn = ''
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -521,7 +521,7 @@ test('Update Email ', async () => {
     const accessToken = (response.headers.get('set-cookie')).match(accessRegex)[0];
     
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -546,7 +546,7 @@ test('Update Email ', async () => {
 
 test('Update Bio ', async () => {
     const registerReturn = ''
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -565,7 +565,7 @@ test('Update Bio ', async () => {
     const accessToken = (response.headers.get('set-cookie')).match(accessRegex)[0];
     
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
@@ -591,7 +591,7 @@ test('Update Bio ', async () => {
 
 test('Delete Account', async () => {
     const registerReturn = 'Email Already Exists'
-    const response = await fetch("http://localhost:4000/graphql", {
+    const response = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -610,7 +610,7 @@ test('Delete Account', async () => {
     const accessToken = (response.headers.get('set-cookie')).match(accessRegex)[0];
     
 
-    const updating = await fetch("http://localhost:4000/graphql", {
+    const updating = await fetch("https://boop416-server.herokuapp.com/graphql", {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json',
