@@ -85,6 +85,10 @@ module.exports = {
                 replies_to_my_post: [],
             })
             const saved = await user.save();
+            const accessToken = tokens.generateAccessToken(user);
+            const refreshToken = tokens.generateRefreshToken(user);
+            res.cookie('refresh-token', refreshToken, { httpOnly: true , sameSite: 'None', secure: true});
+            res.cookie('access-token', accessToken, { httpOnly: true , sameSite: 'None', secure: true})
             return user;
         },
         updateUsername: async(_, args, { res, req }) => {
