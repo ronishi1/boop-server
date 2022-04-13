@@ -29,20 +29,20 @@ const { DateTimeTypeDefinition } = require("graphql-scalars");
 const app = express();
 
 var whitelist = ['http://localhost:3000', 'https://studio.apollographql.com']
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-	credentials: true
-}
+// var corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   },
+// 	credentials: true
+// }
 
 // since we presume cors is enabled, this next step is not optional, so cors
 // is enable here instead of in options
-app.use(cors(corsOption));
+app.use(cors({origin:whitelist,credentials:true});
 
 const corsPolicy = async(req, res, next) => {
 	res.set("Access-Control-Allow-Origin", req.headers.origin);
