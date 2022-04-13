@@ -28,7 +28,7 @@ const { DateTimeTypeDefinition } = require("graphql-scalars");
 // create express server handling our middleware
 const app = express();
 
-var whitelist = ['http://localhost:3000', 'https://studio.apollographql.com']
+var whitelist = ['localhost:3000', 'https://studio.apollographql.com']
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
