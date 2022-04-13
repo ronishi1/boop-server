@@ -20,6 +20,7 @@ const { createContentFunc, editContentFunc, deleteContentFunc,
     getChaptersFunc, getPopularContentFunc, getTopRatedContentFunc,
     getRecentContentFunc, getReadListFunc, getFavoritesFunc, 
     getFilteredContentFunc, getMyContentFunc, getStoryboardFunc, getSearchFunc } = require("./content-sc");
+const { update } = require('../models/user-model');
 
 /*SETUP TEST USER INFO */
 const contentTestUser1 = {
@@ -216,6 +217,8 @@ test("deleteContent for deleting an unpublished comic", async () => {
     const { data } = await deleteContentRes.json();
     expect(data.deleteContentRes);
 
+    const updatedUser = await User.findOne({email: contentTestUser1.email});
+
     // CHECK DELETION OF CONTENT FROM:
     // FORUMTOPICS
     const topics = await ForumTopic.findById(post.topic);
@@ -225,7 +228,7 @@ test("deleteContent for deleting an unpublished comic", async () => {
     // CONTENT
     expect(await Content.findById(comic._id)).toStrictEqual(null);
     // USER_CONTENT
-    expect(!user.user_content.includes(comic._id));
+    expect(updatedUser.user_content.length == 0);
 });
 
 // TEST USER 2 PUBLISHES A STORY
@@ -1051,39 +1054,62 @@ test("getTopRatedContent test for a top rated comic", async () => {
 test("getRecentContent test for 5 recent comics", async () => {
     // Log in as test user 1 
     const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+    const {data:loginData} = await loginRes.json();
+
+    const user1 = await User.findById(loginData.login)
 
     let comicIds = []
 
     // Create 5 comics
     for(let i = 0; i < 5; i++){
+        const recentComicId = new ObjectId();
         const recentComic = {
+            _id: recentComicId,
             series_title: "recent comic "+i,
+            author: loginData.login,
+            author_username: user1.username,
             synopsis: "synopsis for a test comic",
-            genres: [],
+            genres: ["Action"],
+            num_chapters: 0,
+            chapters: [],
+            views: 0,
+            num_favorites: 0,
+            discussion_post: new ObjectId("624216a0dd90b5c46c5e24d0"),
+            current_rating: 0,
+            num_of_ratings: 0,
+            total_ratings: 0,
+            publication_date: new Date(3000, 6-i),
+            completed: false,
             cover_image: "coverimagefortestcomic",
-            content_type: "C"
+            content_type: "C",
         }
-        const res = await createContentFunc(recentComic, refreshToken, accessToken);
-        const { data } = await res.json();
-        await Content.findByIdAndUpdate(data.createContent, {publication_date: new Date(3000, 5-i)});
-        comicIds.push(data.createContent);
+        const recent = new Content(recentComic);
+        await recent.save();
+        comicIds.push(recent._id);
     }
 
     // query for most recent comics
     const res = await getRecentContentFunc(testComic.content_type);
     const { data } = await res.json();
 
+    // ids to check for
+    const checkids = []
     for(let i = 0; i < 5; i++){
         const comic = await Content.findById(data.getRecentContent[i]);
-        expect(comic._id.toString()).toStrictEqual(comicIds[i].toString());
+        checkids.push(comic._id);
     }
 
     // delete 5 comics
-    comicIds.forEach(async (id) => {
-        const deleteContentRes = await deleteContentFunc(id, refreshToken, accessToken);
+    for(let k =0;k<comicIds.length;k++){
+        const deleteContentRes = await deleteContentFunc(comicIds[k], refreshToken, accessToken);
         const { data:deleteContentData } = await deleteContentRes.json();
         expect(deleteContentData.deleteContent);
-    });
+    }
+
+    // check ids
+    for(i in checkids){
+        expect(checkids[i]).toStrictEqual(comicIds[i]);
+    }
 });
 
 // CREATE COMIC, ADD COMIC TO READ LIST, QUERY, DELETE COMIC
@@ -1234,13 +1260,10 @@ test("getFilteredContent between two different pieces of content", async () => {
 
 // CREATE COMIC, QUERY FOR CONTENT, DELETE COMIC
 test("getMyContent for getting user 1's user content", async () => {
-    await registerFunc("getmycontent@email.com", "getmycontentusername", "getmycontent");
+    // Log in as test user 1 
+    const { loginRes, refreshToken, accessToken } = await loginTokenFunc(contentTestUser1.username, contentTestUser1.password);
+    const { data: loginData } = await loginRes.json();
 
-    // Log in as getmycontent user 
-    const { loginRes, refreshToken, accessToken } = await loginTokenFunc("getmycontentusername", "getmycontent");
-    const { data:loginData } = await loginRes.json()
-
-    // clear out user content
     const user = await User.findByIdAndUpdate(loginData.login._id);
 
     // create a comic
@@ -1274,9 +1297,6 @@ test("getMyContent for getting user 1's user content", async () => {
     const deleteContentRes = await deleteContentFunc(comicId, refreshToken, accessToken);
     const { data:deleteContentData } = await deleteContentRes.json();
     expect(deleteContentData.deleteContent);
-
-    // delete user
-    await User.deleteOne({email:"getmycontent@email.com"});
 })
 
 // CREATE STORY, QUERY FOR STORYBOARD, DELETE STORY
