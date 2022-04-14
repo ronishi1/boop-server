@@ -16,6 +16,14 @@ module.exports = {
             userId = new ObjectId(req.userId)
             const user = await User.findOne({_id:userId});
             return user;
+        },
+        getResetUser: async(_, args) => {
+          const {reset_string} = args;
+          const user = await User.findOne({reset_string:reset_string});
+          if(user) {
+            return true;
+          }
+          return false;
         }
     },
     Mutation: {
@@ -121,7 +129,19 @@ module.exports = {
         //  Then the email link redirects to the reset password page.
         //  User enters new password and then enters their new password.
         //  Page should have email and password to pass into mutation.
-        passwordReset: async(_, args, { res }) => {
+        generateResetPassword: async(_, args) => {
+          const { email } = args;
+          let result = '';
+          let length = 20;
+          let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+          let charactersLength = characters.length;
+          for ( let i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+          }
+          await User.updateOne({email:email},{reset_string:result})
+          return;
+        },
+        resetPassword: async(_, args, { res }) => {
             const { email, newPassword } = args;
             const foundUser = await User.findOne({email: email});
             if(!foundUser) {
@@ -130,7 +150,7 @@ module.exports = {
                 )
             }
             const hashed = await bcrypt.hash(newPassword, 10);
-            const resetPassword = await User.updateOne({email: email},{password: hashed});
+            await User.updateOne({email: email},{password: hashed});
             return true
         },
         updateEmail: async(_, args, { res, req }) => {

@@ -37,6 +37,7 @@ const typeDefs = gql`
   }
   type Query {
     getCurrentUser: User
+    getResetUser(reset_string: String!): Boolean
   }
   type Mutation {
     login(username: String!, password: String!): User
@@ -44,7 +45,8 @@ const typeDefs = gql`
     register(email: String!, username: String!, password: String!): User
     updateUsername(username: String!): Boolean
     updatePassword(oldPassword: String!, newPassword: String!): Boolean
-    passwordReset(email: String!, newPassword: String!): Boolean
+    generateResetPassword(email: String!): Boolean
+    resetPassword(email: String!, newPassword: String!): Boolean
     updateEmail(newEmail: String!, password: String!): Boolean
 
     #TODO

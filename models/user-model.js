@@ -20,6 +20,9 @@ const userSchema = new Schema(
 		bio: {
 			type: String,
 		},
+		reset_string: {
+			type: String,
+		},
 		password: {
 			type: String,
 			required: true
