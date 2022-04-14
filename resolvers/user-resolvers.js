@@ -7,6 +7,7 @@ const Content = require('../models/content-model');
 const Chapter = require('../models/chapter-model');
 const ForumPost = require('../models/forum-post-model');
 const StoryBoard = require("../models/storyboard-model");
+const nodemailer = require("nodemailer");
 
 // Resolvers define the technique for fetching the types defined in the
 // schema. This resolver retrieves books from the "books" array above.
@@ -139,19 +140,35 @@ module.exports = {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
           }
           await User.updateOne({email:email},{reset_string:result})
+          let transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+              user: "boop.cse416@gmail.com",
+              pass: "boopboop416"
+            },
+          });
+          let info = await transporter.sendMail({
+            from: '"CSE416 Boop" <boop.cse416@gmail.com>', // sender address
+            to: email, // list of receivers
+            subject: "Password Reset Request", // Subject line
+            html: `
+            <div>Hello,
+              <br></br> If you requested to reset your password, please do so by clicking
+              <a href="http://localhost:3000/reset/${result}">here</a>.
+              <br></br>
+              Team Boop, CSE416
+            </div>`, // plain text body
+          });
           return;
         },
         resetPassword: async(_, args, { res }) => {
             const { reset_string,password } = args;
             console.log(args);
-            // const foundUser = await User.findOne({email: email});
-            // if(!foundUser) {
-            //     throw new Error(
-            //         "Email Not Registered"
-            //     )
-            // }
-            // const hashed = await bcrypt.hash(newPassword, 10);
-            // await User.updateOne({email: email},{password: hashed});
+            const foundUser = await User.findOne({reset_string:reset_string});
+            const hashed = await bcrypt.hash(password, 10);
+            await User.updateOne({_id:foundUser._id},{password: hashed,reset_string:""});
             return true
         },
         updateEmail: async(_, args, { res, req }) => {
