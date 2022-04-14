@@ -6,9 +6,10 @@ const Content = require('../models/content-model');
 module.exports = {
   Query: {
     getUserProfile: async(_, args, { req }) => {
-      const { _id } = args;
-      const objId = new ObjectId(_id);
-      const user = await User.findOne({_id:objId});
+      const { username } = args;
+      // const objId = new ObjectId(_id);
+      const user = await User.findOne({username:username});
+      console.log(user);
       // STRIP USER OBJECT POTENTIALLY BUT ONLY NECSESARY FIELDS MAY BE GRABBED AUTOMATICALLY
       return user;
     },

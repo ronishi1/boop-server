@@ -26,14 +26,14 @@ module.exports = {
             console.log(user)
 			if(!user) {
                 throw new Error(
-                    "Invalid Username"
+                    "Invalid username and password combination"
                 )
             };
 
 			const valid = await bcrypt.compare(password, user.password);
 			if(!valid) {
                 throw new Error(
-                    "Invalid Password"
+                  "Invalid username and password combination"
                 )
             }
 			// Set tokens if login info was valid

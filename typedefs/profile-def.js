@@ -2,16 +2,15 @@ const { gql } = require('apollo-server');
 
 const typeDefs = gql`
   type Profile {
+    _id: ID
     email: String!
     username: String!
-    user_bio: String
+    bio: String
     profile_pic: String
-    favorite_comics: [ID]
-    favorite_stories: [ID]
+    favorites: [ID]
     following: [ID]
     followers: [ID]
-    user_comics: [ID]
-    user_stories: [ID]
+    user_content: [ID]
   }
   type WorkCard {
     title: String
@@ -22,7 +21,7 @@ const typeDefs = gql`
     content_ID: ID
   }
   type Query {
-    getUserProfile(_id: ID!): Profile
+    getUserProfile(username: String): Profile
     getUserPublished(_id:ID): [WorkCard]
     getUserFavorites(_id:ID): [WorkCard]
     getUserActivityFeed(_id:ID): [Activity]
