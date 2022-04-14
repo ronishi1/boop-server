@@ -142,15 +142,16 @@ module.exports = {
           return;
         },
         resetPassword: async(_, args, { res }) => {
-            const { email, newPassword } = args;
-            const foundUser = await User.findOne({email: email});
-            if(!foundUser) {
-                throw new Error(
-                    "Email Not Registered"
-                )
-            }
-            const hashed = await bcrypt.hash(newPassword, 10);
-            await User.updateOne({email: email},{password: hashed});
+            const { reset_string,password } = args;
+            console.log(args);
+            // const foundUser = await User.findOne({email: email});
+            // if(!foundUser) {
+            //     throw new Error(
+            //         "Email Not Registered"
+            //     )
+            // }
+            // const hashed = await bcrypt.hash(newPassword, 10);
+            // await User.updateOne({email: email},{password: hashed});
             return true
         },
         updateEmail: async(_, args, { res, req }) => {

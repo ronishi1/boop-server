@@ -46,7 +46,7 @@ const typeDefs = gql`
     updateUsername(username: String!): Boolean
     updatePassword(oldPassword: String!, newPassword: String!): Boolean
     generateResetPassword(email: String!): Boolean
-    resetPassword(email: String!, newPassword: String!): Boolean
+    resetPassword(reset_string: String!, password: String!): Boolean
     updateEmail(newEmail: String!, password: String!): Boolean
 
     #TODO
