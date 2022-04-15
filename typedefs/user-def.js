@@ -52,7 +52,7 @@ const typeDefs = gql`
     #TODO
     updateProfilePicture: Boolean
 
-    deleteAccount: Boolean
+    deleteAccount(password: String!): Boolean
     updateBio(newBio: String!): Boolean
   }
 `;

@@ -191,9 +191,17 @@ module.exports = {
             return true;
         },
         deleteAccount: async(_, args,{ res, req }) => {
+            const { password } = args
             const userId = new ObjectId(req.userId);
 
             const foundUser = await User.findOne({_id:userId});
+
+            const valid = await bcrypt.compare(password, foundUser.password);
+            if (!valid) {
+                throw new Error(
+                    "Invalid Password"
+                )
+            }
 
             await User.deleteOne({_id: userId});
             await ForumPost.deleteMany({_id: {$in: foundUser.forum_posts}});
