@@ -132,6 +132,10 @@ module.exports = {
         //  Page should have email and password to pass into mutation.
         generateResetPassword: async(_, args) => {
           const { email } = args;
+          const foundUser = await User.findOne({email:email});
+          if(foundUser == null){
+            return;
+          }
           let result = '';
           let length = 20;
           let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
