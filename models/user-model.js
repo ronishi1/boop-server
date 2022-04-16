@@ -45,9 +45,6 @@ const userSchema = new Schema(
 		user_content: {
 			type: [ObjectId],
 		},
-		recent_content: {
-			type: [ObjectId],
-		},
 		recent_activity: {type: [{
 			activity_type: {type: String, required: true},
 			content_ID: {type: ObjectId, required: true},

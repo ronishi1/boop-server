@@ -8,6 +8,7 @@ const Chapter = require('../models/chapter-model');
 const ForumPost = require('../models/forum-post-model');
 const StoryBoard = require("../models/storyboard-model");
 const nodemailer = require("nodemailer");
+const cloudinary = require('cloudinary').v2
 
 // Resolvers define the technique for fetching the types defined in the
 // schema. This resolver retrieves books from the "books" array above.
@@ -88,7 +89,6 @@ module.exports = {
                 followers: [],
                 forum_posts: [],
                 user_content: [],
-                recent_content: [],
                 rated_content: [],
                 recent_activity: [],
                 replies_to_my_post: [],
@@ -226,6 +226,14 @@ module.exports = {
             const { url } = args;
             console.log(url)
             const userId = new ObjectId(req.userId);
+            const foundUser = await User.findOne({_id:userId});
+            if(foundUser.profile_pic != ""){
+              let groups = foundUser.profile_pic.split("/");
+              let temp = groups[groups.length-1].split(".");
+              console.log(temp);
+              cloudinary.uploader.destroy(temp[0]);
+            }
+            console.log("POST DESTROY");
             const updatedProfilePicture = await User.updateOne({_id: userId}, {profile_pic: url})
             return true
         }
