@@ -221,7 +221,13 @@ module.exports = {
             const userId = new ObjectId(req.userId);
             const updatedBio = await User.updateOne({_id: userId}, {bio: newBio});
             return true;
-
+        },
+        updateProfilePicture: async(_, args, { res, req }) => {
+            const { url } = args;
+            console.log(url)
+            const userId = new ObjectId(req.userId);
+            const updatedProfilePicture = await User.updateOne({_id: userId}, {profile_pic: url})
+            return true
         }
   }
 };

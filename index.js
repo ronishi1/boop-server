@@ -75,16 +75,16 @@ mongoose.connect(MONGO_URI, {useNewUrlParser: true , useUnifiedTopology: true})
 
 const cloudinary = require('cloudinary').v2
 app.post("/imageUpload", async function(req,res) {
-    console.log(req)
+    // console.log(req)
     // console.log(req.body.data)
-    // cloudinary.uploader.upload(req.body.data, {
-    //     resource_type: "image",
-    //     tags: req.files.content.type
-    // })
-    // .then((result)=> {
-    //     console.log(result)
-    //     res.send(({'url': result.secure_url }))
-    // })
+    cloudinary.uploader.upload(req.body.data, {
+        resource_type: "image",
+        tags: req.files.content.type
+    })
+    .then((result)=> {
+        console.log(result)
+        res.send(({'url': result.secure_url }))
+    })
 
 })
 // async function startApolloServer(typeDefs, resolvers) {

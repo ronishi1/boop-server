@@ -48,10 +48,7 @@ const typeDefs = gql`
     generateResetPassword(email: String!): Boolean
     resetPassword(reset_string: String!, password: String!): Boolean
     updateEmail(newEmail: String!, password: String!): Boolean
-
-    #TODO
-    updateProfilePicture: Boolean
-
+    updateProfilePicture(url: String!): Boolean
     deleteAccount(password: String!): Boolean
     updateBio(newBio: String!): Boolean
   }
