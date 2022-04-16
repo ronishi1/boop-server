@@ -22,8 +22,11 @@ const resolvers = require('./resolvers/root-resolver');
 const { typeDefs }  = require('./typedefs/root-def');
 const serverOptions = require('./server-config');
 require('dotenv').config();
-const { MONGO_URI, BACKEND_PORT, CLIENT_LOCAL_ORIGIN, SERVER_LOCAL_DOMAIN } = process.env;
+const { MONGO_URI, BACKEND_PORT, CLIENT_LOCAL_ORIGIN, SERVER_LOCAL_DOMAIN, CLOUDINARY_URL} = process.env;
 const { DateTimeTypeDefinition } = require("graphql-scalars");
+const formData = require('express-form-data');
+const os = require('os')
+
 
 // create express server handling our middleware
 const app = express();
@@ -40,7 +43,12 @@ const corsPolicy = async(req, res, next) => {
 
 app.options('*', cors());
 app.use(corsPolicy);
-
+const options = {
+    uploadDir: os.tmpdir(),
+    autoClean: true
+}
+app.use(formData.parse(options))
+// app.use(formData.union());
 
 // middleware application is configured to happen in server-config.js
 serverOptions(app);
@@ -65,6 +73,20 @@ mongoose.connect(MONGO_URI, {useNewUrlParser: true , useUnifiedTopology: true})
             console.log(error)
         });
 
+const cloudinary = require('cloudinary').v2
+app.post("/imageUpload", async function(req,res) {
+    console.log(req)
+    // console.log(req.body.data)
+    // cloudinary.uploader.upload(req.body.data, {
+    //     resource_type: "image",
+    //     tags: req.files.content.type
+    // })
+    // .then((result)=> {
+    //     console.log(result)
+    //     res.send(({'url': result.secure_url }))
+    // })
+
+})
 // async function startApolloServer(typeDefs, resolvers) {
 //   // create express server handling our middleware
 //   const app = express();
