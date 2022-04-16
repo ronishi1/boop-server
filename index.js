@@ -31,6 +31,7 @@ const os = require('os')
 // create express server handling our middleware
 const app = express();
 
+console.log(process.env.CORS_ORIGIN)
 // since we presume cors is enabled, this next step is not optional, so cors
 // is enable here instead of in options
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
@@ -66,7 +67,7 @@ server.start().then(res => {
 mongoose.connect(MONGO_URI, {useNewUrlParser: true , useUnifiedTopology: true})
         .then(() => {
             app.listen({ port: process.env.PORT || BACKEND_PORT }, CLIENT_LOCAL_ORIGIN, () => {
-                console.log(`Server ready at ${SERVER_LOCAL_DOMAIN}:${BACKEND_PORT}`);
+                console.log(`Server ready at ${SERVER_LOCAL_DOMAIN}${BACKEND_PORT}`);
             })
         })
         .catch(error => {
