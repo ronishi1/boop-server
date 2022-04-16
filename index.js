@@ -33,7 +33,7 @@ const app = express();
 
 // since we presume cors is enabled, this next step is not optional, so cors
 // is enable here instead of in options
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 
 const corsPolicy = async(req, res, next) => {
 	res.set("Access-Control-Allow-Origin", req.headers.origin);
@@ -85,7 +85,6 @@ app.post("/imageUpload", async function(req,res) {
         console.log(result)
         res.send(({'url': result.secure_url }))
     })
-
 })
 // async function startApolloServer(typeDefs, resolvers) {
 //   // create express server handling our middleware
