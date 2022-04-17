@@ -119,7 +119,7 @@ module.exports = {
             const valid = await bcrypt.compare(oldPassword, foundUser.password);
             if (!valid) {
                throw new Error(
-                   "Invalid Password"
+                   "Old password does not match"
                )
             }
             const hashed = await bcrypt.hash(newPassword, 10)
