@@ -160,7 +160,7 @@ module.exports = {
             html: `
             <div>Hello,
               <br></br> If you requested to reset your password, please do so by clicking
-              <a href="http://localhost:3000/reset/${result}">here</a>.
+              <a href="https://boop416.herokuapp.com/reset/${result}">here</a>.
               <br></br>
               Team Boop, CSE416
             </div>`, // plain text body
