@@ -20,7 +20,6 @@ const contentSchema = new Schema(
 		},
 		synopsis: {
 			type: String,
-			required: true
 		},
 		genres: {
 			type: [String],
@@ -69,7 +68,6 @@ const contentSchema = new Schema(
 		},
 		cover_image: {
 			type: String,
-			required: true
 		},
 		storyboard: {
 			type: ObjectId

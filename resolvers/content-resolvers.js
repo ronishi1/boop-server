@@ -11,7 +11,7 @@ module.exports = {
   Query: {
     getContentInfo: async (_, args) => {
       const {contentID} = args;
-      const contentId = new ObjectId(contentID); 
+      const contentId = new ObjectId(contentID);
       const content = await Content.findOne({_id: contentId})
       return content;
     },
@@ -126,7 +126,7 @@ module.exports = {
         )
       }
 
-      // Filtering on publication date 
+      // Filtering on publication date
       if (releaseYear > 0) {
         const startYear = new Date(`${releaseYear.toString()}-01-01T00:00:00Z`)
         let nextYear = releaseYear + 1;
@@ -186,7 +186,7 @@ module.exports = {
       const searchedContent = await Content.find({series_title: {$regex: searchTerm, $options: "i"}})
       return searchedContent
     }
-    
+
   },
   Mutation: {
     createContent: async (_, args, { req,res }) => {
@@ -209,8 +209,8 @@ module.exports = {
         series_title: contentInput.series_title,
         author: userId,
         author_username: userObj.username,
-        synopsis: contentInput.synopsis,
-        genres: contentInput.genres,
+        synopsis: "",
+        genres: [],
         num_chapters: 0,
         chapters: [],
         views: 0,
@@ -221,7 +221,7 @@ module.exports = {
         total_ratings: 0,
         publication_date: 0,
         completed: false,
-        cover_image: contentInput.cover_image,
+        cover_image: '',
         content_type: contentInput.content_type,
       }
 
@@ -355,7 +355,7 @@ module.exports = {
           break;
         default:
           topicId = null;
-      } 
+      }
       // Invalid content_type
       if(topicId == null) return false;
 

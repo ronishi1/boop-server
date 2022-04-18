@@ -207,6 +207,12 @@ module.exports = {
                 )
             }
 
+            if(foundUser.profile_pic != ""){
+              let groups = foundUser.profile_pic.split("/");
+              let temp = groups[groups.length-1].split(".");
+              cloudinary.uploader.destroy(temp[0]);
+            }
+
             await User.deleteOne({_id: userId});
             await ForumPost.deleteMany({_id: {$in: foundUser.forum_posts}});
 
