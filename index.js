@@ -34,7 +34,7 @@ const app = express();
 console.log(process.env.CORS_ORIGIN)
 // since we presume cors is enabled, this next step is not optional, so cors
 // is enable here instead of in options
-app.use(cors({ origin: "https://studio.apollographql.com", credentials: true }));
+app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 
 const corsPolicy = async(req, res, next) => {
 	res.set("Access-Control-Allow-Origin", req.headers.origin);
