@@ -30,20 +30,20 @@ module.exports = {
     },
     Mutation: {
         login: async (_, args, { res }) => {
-			const { username, password } = args;
+			const { usernameOrEmail, password } = args;
 
-			const user = await User.findOne({username: username});
+			const user = await User.findOne({$or: [{username: usernameOrEmail}, {email:usernameOrEmail}]});
             console.log(user)
 			if(!user) {
                 throw new Error(
-                    "Invalid username and password combination"
+                    "Invalid username/email and password combination"
                 )
             };
 
 			const valid = await bcrypt.compare(password, user.password);
 			if(!valid) {
                 throw new Error(
-                  "Invalid username and password combination"
+                  "Invalid username/email and password combination"
                 )
             }
 			// Set tokens if login info was valid
