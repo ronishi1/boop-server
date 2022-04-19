@@ -254,6 +254,8 @@ module.exports = {
         content: discussionContent,
         tags: ["Discussion"],
         linked_content: contentId,
+        linked_title:'',
+        linked_image:'',
         author: autoModID,
         author_name: "AutoModerator",
         replies: [],

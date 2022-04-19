@@ -19,11 +19,9 @@ const forumPostSchema = new Schema(
 		},
 		linked_title: {
 			type: String,
-			required: true
 		},
 		linked_image: {
 			type: String,
-			required: true
 		},
 		tags: {
 			type: [String],
