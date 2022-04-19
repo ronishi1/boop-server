@@ -34,7 +34,6 @@ const typeDefs = gql`
     Psychological
     Romance
     SciFi
-    Slice of Life
     Sports
     Supernatural
     Thriller
