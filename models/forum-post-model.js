@@ -17,6 +17,14 @@ const forumPostSchema = new Schema(
 		linked_content: {
 			type: ObjectId,
 		},
+		linked_title: {
+			type: String,
+			required: true
+		},
+		linked_image: {
+			type: String,
+			required: true
+		},
 		tags: {
 			type: [String],
 		},

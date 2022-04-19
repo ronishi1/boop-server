@@ -6,6 +6,7 @@ const tokens = require('../utils/tokens');
 const Content = require('../models/content-model');
 const Chapter = require('../models/chapter-model');
 const ForumPost = require('../models/forum-post-model');
+const ForumTopic = require('../models/forum-topic-model')
 const StoryBoard = require("../models/storyboard-model");
 const nodemailer = require("nodemailer");
 const cloudinary = require('cloudinary').v2
@@ -220,6 +221,11 @@ module.exports = {
             await Content.deleteMany({_id: {$in: foundUser.user_content}});
             await StoryBoard.deleteOne({_id: foundContent.storyboard});
             await Chapter.deleteMany({_id: {$in: foundContent.chapters}});
+            const relatedPosts = await ForumPost.find({linked_content: {$in: foundContent}})
+            // Dont want to delete the posts related to their content **** as of now ****
+            // await ForumPost.deleteMany({_id: {$in: relatedPosts}})
+            // Only delete the content stored in the unpublished forum topics
+            await ForumTopic.updateOne({_id: new ObjectId("6242239f4b2619473abf93b2")}, {$pull: {posts: {$in: relatedPosts}}})
             return true;
         },
         updateBio: async(_, args, { res, req }) => {
