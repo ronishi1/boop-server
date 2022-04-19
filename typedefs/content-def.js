@@ -138,6 +138,7 @@ const typeDefs = gql`
     publishChapter(chapterID:ID): Boolean
     addPage(chapterID: ID): ID
     savePage(chapterID: ID, pageInput: PageInput ): Boolean
+    deletePage(chapterID: ID, pageNumber: Int, pageID: ID): Boolean
     createCharacter(storyboardID: ID,  characterInput: CharacterInput): ID
     editCharacter(storyboardID: ID, characterID: ID, characterInput: CharacterInput): ID
     deleteCharacter(storyboardID: ID, characterID: ID): Boolean

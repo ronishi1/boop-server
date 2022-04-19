@@ -609,6 +609,38 @@ module.exports = {
       return true
 
     },
+    deletePage: async (_, args, { req, res }) => {
+      const { chapterID, pageNumber, pageID } = args;
+      const pageObjId = new ObjectId(pageID);
+      // Delete page object
+      await Page.deleteOne({_id: pageObjId});
+      const chapterObjId = new ObjectId(chapterID);
+      const chapter = await Chapter.findOne({_id: chapterObjId});
+      // Delete the image from cloudinary
+      let url = chapter.page_images[pageNumber-1]
+      if (url !== undefined) {
+        let groups = url.cover_image.split("/");
+        let temp = groups[groups.length-1].split(".");
+        cloudinary.uploader.destroy(temp[0]);
+      }
+      // Remove page reference from chater pages
+      let pages = chapter.pages.filter((page, page_num) => 
+        page_num !== pageNumber -1
+      )
+      // Remove page url from chapter page_iages
+      let page_images = chapter.page_images.filter((url, page_num) => 
+        page_num !== pageNumber -1
+      )
+      console.log(pages)
+      console.log(page_images)
+      let num_pages = chapter.num_pages - 1
+      await Chapter.updateOne({_id: chapterObjId}, {
+        num_pages: num_pages,
+        pages: pages,
+        page_images: page_images
+      })
+      return true
+    },
     createCharacter: async (_, args, { req, res }) => {
       const { storyboardID, characterInput } = args;
       const storyboardObjID = new ObjectId(storyboardID);
