@@ -47,7 +47,6 @@ const typeDefs = gql`
     series_title: String
     synopsis: String
     genres: [String]
-    cover_image: String
     content_type: String
   }
   type ContentCard {
@@ -113,7 +112,7 @@ const typeDefs = gql`
     getReadList(userID: ID): [ContentCard]
     getFavorites(userID: ID): [ContentCard]
     getFilteredContent(genres: [String], releaseYear: Int, rating: Int, completionStatus: Boolean, contentType: String): [ContentCard]
-    getMyContent(userID: ID): [ContentCard]
+    getMyContent: [Content]
     getStoryboard(storyboardID: ID): Storyboard
     getSearch(searchTerm: String): [ContentCard]
   }
