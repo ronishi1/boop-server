@@ -18,7 +18,11 @@ const ChapterSchema = new Schema(
 			type: Number,
 			required: true
 		},
-        chapter_content: {
+        pages: {
+			type: [ObjectId],
+			required: true
+		},
+		page_images: {
 			type: [String],
 			required: true
 		},

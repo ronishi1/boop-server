@@ -6,6 +6,7 @@ const Chapter = require('../models/chapter-model');
 const ForumPost = require('../models/forum-post-model');
 const ForumTopic = require('../models/forum-topic-model');
 const StoryBoard = require("../models/storyboard-model");
+const Page = require("../models/page-model");
 const cloudinary = require('cloudinary').v2
 
 module.exports = {
@@ -35,6 +36,11 @@ module.exports = {
         })
       }
       return chapterItemObjs;
+    },
+    getPage: async(_, args) => {
+      const {pageID} = args;
+      const page = await Page.findOne({_id: pageID})
+      return page;
     },
     getPopularContent: async (_, args) => {
       const {contentType} = args;
@@ -481,33 +487,44 @@ module.exports = {
     createChapter: async (_, args, { req, res }) => {
       const { contentID, chapter_title } = args;
       const contentObjId = new ObjectId(contentID);
-      const content = await Content.findOne({_id:contentID})
+      const content = await Content.findOne({_id: contentObjId})
       const chapterId = new ObjectId();
-      let chapterInputObj = {
+      const pageId = new ObjectId();
+      
+      let firstPage = new Page({
+        _id: pageId,
+        page_content: ""
+      })
+      await firstPage.save()
+
+      let chapterObj = new Chapter({
         _id: chapterId,
         series_id: contentObjId,
         chapter_title: chapter_title,
-        num_pages: 0,
-        chapter_content: [],
+        num_pages: 1,
+        pages: [pageId],
+        page_images: [],
         publication_date: 0
-      }
-
-      let chapterObj = new Chapter(chapterInputObj);
+      })
+      
       await chapterObj.save()
-      content.chapters.push(chapterId);
-      await Content.updateOne({_id:contentID}, {chapters:content.chapters})
+      let num_chapters = content.num_chapters + 1
+      let chapters = content.chapters
+      chapters.push(chapterId)
+      await Content.updateOne({_id: contentObjId}, {
+        num_chapters: num_chapters,
+        chapters: chapters
+      })
 
-      return chapterObj._id.toString();
+      return chapterId.toString();
     },
     editChapter: async (_, args, { req, res }) => {
-      const { chapterID, chapterInput } = args;
+      const { chapterID, chapter_title } = args;
       const chapter = await Chapter.findOne({_id:chapterID});
       await Chapter.updateOne({_id:chapterID},
       {
-        chapter_title: chapterInput.chapter_title,
-        num_pages: chapterInput.num_pages,
-        chapter_content: chapterInput.chapter_content,
-        publication_date: chapterInput.publication_date
+        chapter_title: chapter_title,
+        publication_date: new Date.now()
       });
       return chapter._id.toString();
     },
@@ -535,6 +552,62 @@ module.exports = {
       await Chapter.updateOne({_id: chapterObjId}, {publication_date: chapter.publication_date})
 
       return true;
+    },
+    addPage: async (_, args, { req, res }) => {
+      const { chapterID } = args;
+      const chapterObjId = new ObjectId(chapterID);
+      const chapter = await Chapter.findOne({_id: chapterObjId});
+      const pageId = new ObjectId();
+      let newPage = new Page({
+        _id: pageId,
+        page_content: ""
+      })
+      await newPage.save()
+      let num_pages = chapter.num_pages + 1
+      let pages = chapter.pages
+      pages.push(pageId);
+      await Chapter.updateOne({_id: chapterObjId},
+      {
+        num_pages: num_pages,
+        pages: pages
+      })
+      return pageId.toString();
+    },
+    savePage: async (_, args, { req, res }) => {
+      const { chapterID, pageInput } = args;
+      let pageObjId = new ObjectId(pageInput._id)
+      // Update the page object first 
+      const page = await Page.updateOne({_id: pageObjId}, {page_content: pageInput.page_content})
+
+      // Update the URL in the chapter Obj
+      let chapterObjId = new ObjectId(chapterID);
+      const chapter = await Chapter.findOne({_id: chapterObjId})
+      // In the case that the image is there for the first time, need to append the image url
+      if (chapter.page_images.length < pageInput.page_number) {
+        console.log("WHEE")
+        console.log(pageInput.url)
+        console.log(chapter.page_images)
+        let pushed = chapter.page_images
+        pushed.push(pageInput.url)
+        await Chapter.updateOne({_id: chapterObjId}, {
+          page_images: pushed
+          });
+      } 
+      // Else we just need to update the current url stored in the chapter and delete it 
+      else {
+        let page_images = chapter.page_images
+        // Need to do page_number -1 because of index
+        let prevUrl = page_images[pageInput.page_number - 1]
+        let groups = prevUrl.cover_image.split("/");
+        let temp = groups[groups.length-1].split(".");
+        cloudinary.uploader.destroy(temp[0]);
+        page_images[pageInput.page_number - 1] = pageInput.url
+        await Chapter.updateOne({_id: chapterObjId}, {
+          page_images: page_images
+        });
+      }
+      return true
+
     },
     createCharacter: async (_, args, { req, res }) => {
       const { storyboardID, characterInput } = args;
