@@ -584,23 +584,26 @@ module.exports = {
       const chapter = await Chapter.findOne({_id: chapterObjId})
       // In the case that the image is there for the first time, need to append the image url
       if (chapter.page_images.length < pageInput.page_number) {
-        console.log("WHEE")
-        console.log(pageInput.url)
-        console.log(chapter.page_images)
-        let pushed = chapter.page_images
-        pushed.push(pageInput.url)
+        let pageURLs = chapter.page_images
+        while (pageURLs.length < pageInput.page_number) {
+          pageURLs.push("Unsaved URL")
+        }
+        pageURLs[pageInput.page_number-1] = pageInput.url
         await Chapter.updateOne({_id: chapterObjId}, {
-          page_images: pushed
-          });
+          page_images: pageURLs
+        });
       } 
       // Else we just need to update the current url stored in the chapter and delete it 
       else {
         let page_images = chapter.page_images
         // Need to do page_number -1 because of index
-        let prevUrl = page_images[pageInput.page_number - 1]
-        let groups = prevUrl.cover_image.split("/");
-        let temp = groups[groups.length-1].split(".");
-        cloudinary.uploader.destroy(temp[0]);
+        const prevURL = page_images[pageInput.page_number - 1]
+        
+        if (prevURL !== "Unsaved URL") {
+          let groups = prevURL.cover_image.split("/");
+          let temp = groups[groups.length-1].split(".");
+          cloudinary.uploader.destroy(temp[0]);
+        }
         page_images[pageInput.page_number - 1] = pageInput.url
         await Chapter.updateOne({_id: chapterObjId}, {
           page_images: page_images
