@@ -142,7 +142,7 @@ module.exports = {
       foundUser.replies_to_my_post = foundUser.replies_to_my_post.filter(reply => reply.post.toString() !== postID);
       await User.updateOne({_id:foundPost.author},{forum_posts: foundUser.forum_posts,replies_to_my_post:foundUser.replies_to_my_post});
 
-      // Check to delete the content if no post has a reference to the cover_image
+      // Check to delete the content image  if no post has a reference to the cover_image
       const linkedImage = foundPost.linked_image
       const contentsContainsURL = await Content.find({cover_image: linkedImage})
       const postsContainURL = await ForumPost.find({linked_image: linkedImage})
