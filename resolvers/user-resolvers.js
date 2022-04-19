@@ -222,8 +222,10 @@ module.exports = {
             await StoryBoard.deleteOne({_id: foundContent.storyboard});
             await Chapter.deleteMany({_id: {$in: foundContent.chapters}});
             const relatedPosts = await ForumPost.find({linked_content: {$in: foundContent}})
-            await ForumPost.deleteMany({_id: {$in: relatedPosts}})
-            await ForumTopic.updateMany({}, {$pull: {posts: {$in: relatedPosts}}})
+            // Dont want to delete the posts related to their content **** as of now ****
+            // await ForumPost.deleteMany({_id: {$in: relatedPosts}})
+            // Only delete the content stored in the unpublished forum topics
+            await ForumTopic.updateOne({_id: new ObjectId("6242239f4b2619473abf93b2")}, {$pull: {posts: {$in: relatedPosts}}})
             return true;
         },
         updateBio: async(_, args, { res, req }) => {

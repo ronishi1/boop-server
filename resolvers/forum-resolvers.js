@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const User = require('../models/user-model');
 const ForumPost = require('../models/forum-post-model');
 const ForumTopic = require('../models/forum-topic-model');
+const cloudinary = require('cloudinary').v2
 
 module.exports = {
   Query: {
@@ -83,6 +84,7 @@ module.exports = {
       const foundUser = await User.findOne({_id:userId});
       foundUser.forum_posts.push(_id);
       await User.updateOne({_id:userId},{forum_posts:foundUser.forum_posts});
+      const content = await Content.findOne({_id: new ObjectId(linked_content)})
 
       // Build out forum post object to push to DB
       let postInput = args.forumPost;
@@ -94,6 +96,8 @@ module.exports = {
         content: postInput.content,
         tags: postInput.tags,
         linked_content: postInput.linked_content,
+        linked_title: content.series_title,
+        linked_image: content.cover_image,
         author: userId,
         author_name: foundUser.username,
         replies: [],
@@ -138,6 +142,16 @@ module.exports = {
       foundUser.replies_to_my_post = foundUser.replies_to_my_post.filter(reply => reply.post.toString() !== postID);
       await User.updateOne({_id:foundPost.author},{forum_posts: foundUser.forum_posts,replies_to_my_post:foundUser.replies_to_my_post});
 
+      // Check to delete the content if no post has a reference to the cover_image
+      const linkedImage = foundPost.linked_image
+      const contentsContainsURL = await Content.find({cover_image: linkedImage})
+      const postsContainURL = await ForumPost.find({linked_image: linkedImage})
+      if (contentsContainsURL.length === 0 && postsContainURL === 0) {
+        let groups = linkedImage.split("/");
+        let temp = groups[groups.length-1].split(".");
+        console.log(temp);
+        cloudinary.uploader.destroy(temp[0]);
+      }
       return true;
     },
     createReply: async (_, args, { req,res }) => {
