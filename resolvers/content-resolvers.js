@@ -6,6 +6,7 @@ const Chapter = require('../models/chapter-model');
 const ForumPost = require('../models/forum-post-model');
 const ForumTopic = require('../models/forum-topic-model');
 const StoryBoard = require("../models/storyboard-model");
+const cloudinary = require('cloudinary').v2
 
 module.exports = {
   Query: {
@@ -329,6 +330,23 @@ module.exports = {
       await Chapter.deleteMany({series_id: contentObjId});
 
       return true;
+    },
+    updateCoverImage: async (_, args, { res }) => {
+      const { contentID,url } = args;
+      console.log(contentID);
+      console.log(url);
+      const contentObjId = new ObjectId(contentID);
+      const foundContent = await Content.findOne({_id:contentObjId});
+      if(foundContent.cover_image != ""){
+        let groups = foundContent.cover_image.split("/");
+        let temp = groups[groups.length-1].split(".");
+        cloudinary.uploader.destroy(temp[0]);
+        console.log(temp);
+
+      }
+      console.log("POST DESTROY");
+      const updatedCoverImage = await Content.updateOne({_id: contentObjId}, {cover_image: url})
+      return true
     },
     publishContent: async (_, args, { req, res }) => {
       const { contentID } = args;

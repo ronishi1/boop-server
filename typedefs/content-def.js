@@ -119,6 +119,7 @@ const typeDefs = gql`
   }
   type Mutation {
     createContent(contentInput: ContentInput): ID
+    updateCoverImage(contentID: ID, url: String): Boolean
     editContent(contentID: ID, contentInput: ContentInput): ID
     deleteContent(contentID: ID): Boolean
     publishContent(contentID: ID): Boolean
