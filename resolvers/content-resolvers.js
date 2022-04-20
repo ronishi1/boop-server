@@ -473,21 +473,15 @@ module.exports = {
       return true;
     },
     createChapter: async (_, args, { req, res }) => {
-      const { contentID, chapterTitle } = args;
+      const { contentID, chapterTitle, seriesTitle} = args;
       const contentObjId = new ObjectId(contentID);
       const content = await Content.findOne({_id: contentObjId})
       const chapterId = new ObjectId();
-      const pageId = new ObjectId();
-
-      let firstPage = new Page({
-        _id: pageId,
-        page_content: ""
-      })
-      await firstPage.save()
 
       let chapterObj = new Chapter({
         _id: chapterId,
         series_id: contentObjId,
+        series_title: seriesTitle,
         chapter_title: chapterTitle,
         num_pages: 1,
         page_images: [],
@@ -552,17 +546,21 @@ module.exports = {
       return true;
     },
     savePage: async (_, args, { req, res }) => {
-      const { chapterID, pageInput } = args;
+      const { chapterID, pageNumber, url } = args;
+      console.log("WHEEE")
+      console.log(chapterID)
+      console.log(pageNumber)
+      console.log(url)
       // Update the URL in the chapter Obj
       let chapterObjId = new ObjectId(chapterID);
       const chapter = await Chapter.findOne({_id: chapterObjId})
       // In the case that the image is there for the first time, need to append the image url
-      if (chapter.page_images.length < pageInput.page_number) {
+      if (chapter.page_images.length < pageNumber) {
         let pageURLs = chapter.page_images
-        while (pageURLs.length < pageInput.page_number) {
+        while (pageURLs.length < pageNumber) {
           pageURLs.push("Unsaved URL")
         }
-        pageURLs[pageInput.page_number-1] = pageInput.url
+        pageURLs[pageNumber-1] = url
         await Chapter.updateOne({_id: chapterObjId}, {
           page_images: pageURLs
         });
@@ -571,14 +569,14 @@ module.exports = {
       else {
         let page_images = chapter.page_images
         // Need to do page_number -1 because of index
-        const prevURL = page_images[pageInput.page_number - 1]
+        const prevURL = page_images[pageNumber - 1]
 
         if (prevURL !== "Unsaved URL") {
           let groups = prevURL.cover_image.split("/");
           let temp = groups[groups.length-1].split(".");
           cloudinary.uploader.destroy(temp[0]);
         }
-        page_images[pageInput.page_number - 1] = pageInput.url
+        page_images[pageNumber - 1] = url
         await Chapter.updateOne({_id: chapterObjId}, {
           page_images: page_images
         });

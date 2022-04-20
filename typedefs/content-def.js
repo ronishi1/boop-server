@@ -59,6 +59,7 @@ const typeDefs = gql`
   type Chapter {
     _id: ID
     series_id: ID
+    series_title: String
     chapter_title: String
     num_pages: Int
     page_images: [String]
@@ -80,7 +81,6 @@ const typeDefs = gql`
     character_image: String
   }
   input PageInput {
-    _id: ID
     page_number: Int
     url: String
   }
@@ -125,12 +125,12 @@ const typeDefs = gql`
     addContentToFavorites(contentID: ID): Boolean
     removeContentFromReadList(contentID: ID): Boolean
     removeContentFromFavorites(contentID: ID): Boolean
-    createChapter(contentID: ID, chapterTitle: String): ID
+    createChapter(contentID: ID, chapterTitle: String, seriesTitle: String): ID
     editChapter(chapterID: ID, chapter_title: String): ID
     deleteChapter(chapterID: ID): Boolean
     publishChapter(chapterID:ID): Boolean
     addPage(chapterID: ID): Boolean
-    savePage(chapterID: ID, pageInput: PageInput ): Boolean
+    savePage(chapterID: ID, pageNumber: Int, url: String): Boolean
     deletePage(chapterID: ID, pageNumber: Int): Boolean
     createCharacter(storyboardID: ID,  characterInput: CharacterInput): ID
     editCharacter(storyboardID: ID, characterID: ID, characterInput: CharacterInput): ID
