@@ -18,10 +18,6 @@ const ChapterSchema = new Schema(
 			type: Number,
 			required: true
 		},
-        pages: {
-			type: [ObjectId],
-			required: true
-		},
 		page_images: {
 			type: [String],
 			required: true
