@@ -111,9 +111,9 @@ const typeDefs = gql`
     getContentChapter(chapterID: ID): Chapter
     getChapters(chapterIDs: [ID] ): [ChapterItem]
     getPage(pageID: ID): Page
-    getPopularContent(contentType: String): [Content]
-    getTopRatedContent(contentType: String): [Content]
-    getRecentContent(contentType: String): [Content]
+    getPopularContent: [Content]
+    getTopRatedContent: [Content]
+    getRecentContent: [Content]
     getReadList(userID: ID): [ContentCard]
     getFavorites(userID: ID): [ContentCard]
     getFilteredContent(genres: [String], releaseYear: Int, rating: Int, completionStatus: Boolean, contentType: String): [ContentCard]
