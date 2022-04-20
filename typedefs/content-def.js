@@ -132,7 +132,7 @@ const typeDefs = gql`
     addContentToFavorites(contentID: ID): Boolean
     removeContentFromReadList(contentID: ID): Boolean
     removeContentFromFavorites(contentID: ID): Boolean
-    createChapter(contentID: ID, chapter_title: String): ID
+    createChapter(contentID: ID, chapterTitle: String): ID
     editChapter(chapterID: ID, chapter_title: String): ID
     deleteChapter(chapterID: ID): Boolean
     publishChapter(chapterID:ID): Boolean

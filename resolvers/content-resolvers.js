@@ -479,12 +479,12 @@ module.exports = {
       return true;
     },
     createChapter: async (_, args, { req, res }) => {
-      const { contentID, chapter_title } = args;
+      const { contentID, chapterTitle } = args;
       const contentObjId = new ObjectId(contentID);
       const content = await Content.findOne({_id: contentObjId})
       const chapterId = new ObjectId();
       const pageId = new ObjectId();
-      
+
       let firstPage = new Page({
         _id: pageId,
         page_content: ""
@@ -494,13 +494,13 @@ module.exports = {
       let chapterObj = new Chapter({
         _id: chapterId,
         series_id: contentObjId,
-        chapter_title: chapter_title,
+        chapter_title: chapterTitle,
         num_pages: 1,
         pages: [pageId],
         page_images: [],
         publication_date: 0
       })
-      
+
       await chapterObj.save()
       let num_chapters = content.num_chapters + 1
       let chapters = content.chapters
@@ -570,7 +570,7 @@ module.exports = {
     savePage: async (_, args, { req, res }) => {
       const { chapterID, pageInput } = args;
       let pageObjId = new ObjectId(pageInput._id)
-      // Update the page object first 
+      // Update the page object first
       const page = await Page.updateOne({_id: pageObjId}, {page_content: pageInput.page_content})
 
       // Update the URL in the chapter Obj
@@ -586,13 +586,13 @@ module.exports = {
         await Chapter.updateOne({_id: chapterObjId}, {
           page_images: pageURLs
         });
-      } 
-      // Else we just need to update the current url stored in the chapter and delete it 
+      }
+      // Else we just need to update the current url stored in the chapter and delete it
       else {
         let page_images = chapter.page_images
         // Need to do page_number -1 because of index
         const prevURL = page_images[pageInput.page_number - 1]
-        
+
         if (prevURL !== "Unsaved URL") {
           let groups = prevURL.cover_image.split("/");
           let temp = groups[groups.length-1].split(".");
@@ -621,11 +621,11 @@ module.exports = {
         cloudinary.uploader.destroy(temp[0]);
       }
       // Remove page reference from chater pages
-      let pages = chapter.pages.filter((page, page_num) => 
+      let pages = chapter.pages.filter((page, page_num) =>
         page_num !== pageNumber -1
       )
       // Remove page url from chapter page_iages
-      let page_images = chapter.page_images.filter((url, page_num) => 
+      let page_images = chapter.page_images.filter((url, page_num) =>
         page_num !== pageNumber -1
       )
       console.log(pages)
