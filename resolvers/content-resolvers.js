@@ -399,9 +399,10 @@ module.exports = {
       const user = await User.findOne({_id:userObjId});
 
       // Get the rating that the user gave the content (if any)
-      const rated = user.rated_content.filter(content => content.content_ID.toString() == contentID);
+      // const rated = user.rated_content.filter(content => content.content_ID.toString() == contentID);
+      const rated = user.rated_content.find(c => content.content_ID.toString() == contentID);
       // If there was no rating found, then just add to the tally and update the user's rated content
-      if(rated.length == 0){
+      if(!rated){
         content.num_of_ratings++;
         content.total_ratings += rating;
         content.current_rating = content.total_ratings / content.num_of_ratings;
@@ -409,10 +410,10 @@ module.exports = {
       }
       else {
         // Otherwise if rating was found then update existing score
-        content.total_ratings = content.total_ratings + rating - rated[0].rating;
+        content.total_ratings = content.total_ratings + rating - rated.rating;
         content.current_rating = content.total_ratings / content.num_of_ratings;
         user.rated_content.forEach((ratedContent,i) => {
-          if(ratedContent.content_ID.toString() == contentID){
+          if(ratedContent.content_ID.toString().equals(contentID)){
             user.rated_content[i] = {content_ID:contentObjId,rating: rating};
           }
         })
