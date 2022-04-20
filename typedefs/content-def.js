@@ -61,7 +61,6 @@ const typeDefs = gql`
     series_id: ID
     chapter_title: String
     num_pages: Int
-    pages: [ID]
     page_images: [String]
     publication_date: DateTime
   }
@@ -83,12 +82,7 @@ const typeDefs = gql`
   input PageInput {
     _id: ID
     page_number: Int
-    page_content: String
     url: String
-  }
-  type Page {
-    _id: ID
-    page_content: String
   }
   input CharacterInput {
     character_name: String
@@ -110,7 +104,6 @@ const typeDefs = gql`
     getContentInfo(contentID: ID): Content
     getContentChapter(chapterID: ID): Chapter
     getChapters(chapterIDs: [ID] ): [ChapterItem]
-    getPage(pageID: ID): Page
     getPopularContent: [Content]
     getTopRatedContent: [Content]
     getRecentContent: [Content]
@@ -136,9 +129,9 @@ const typeDefs = gql`
     editChapter(chapterID: ID, chapter_title: String): ID
     deleteChapter(chapterID: ID): Boolean
     publishChapter(chapterID:ID): Boolean
-    addPage(chapterID: ID): ID
+    addPage(chapterID: ID): Boolean
     savePage(chapterID: ID, pageInput: PageInput ): Boolean
-    deletePage(chapterID: ID, pageNumber: Int, pageID: ID): Boolean
+    deletePage(chapterID: ID, pageNumber: Int): Boolean
     createCharacter(storyboardID: ID,  characterInput: CharacterInput): ID
     editCharacter(storyboardID: ID, characterID: ID, characterInput: CharacterInput): ID
     deleteCharacter(storyboardID: ID, characterID: ID): Boolean

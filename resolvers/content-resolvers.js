@@ -6,7 +6,6 @@ const Chapter = require('../models/chapter-model');
 const ForumPost = require('../models/forum-post-model');
 const ForumTopic = require('../models/forum-topic-model');
 const StoryBoard = require("../models/storyboard-model");
-const Page = require("../models/page-model");
 const cloudinary = require('cloudinary').v2
 
 module.exports = {
@@ -36,11 +35,6 @@ module.exports = {
         })
       }
       return chapterItemObjs;
-    },
-    getPage: async(_, args) => {
-      const {pageID} = args;
-      const page = await Page.findOne({_id: pageID})
-      return page;
     },
     getPopularContent: async () => {
       // unpublished represents the dateTime "1970-01-01T00:00:00.000Z"
@@ -496,7 +490,6 @@ module.exports = {
         series_id: contentObjId,
         chapter_title: chapterTitle,
         num_pages: 1,
-        pages: [pageId],
         page_images: [],
         publication_date: 0
       })
@@ -551,28 +544,15 @@ module.exports = {
       const { chapterID } = args;
       const chapterObjId = new ObjectId(chapterID);
       const chapter = await Chapter.findOne({_id: chapterObjId});
-      const pageId = new ObjectId();
-      let newPage = new Page({
-        _id: pageId,
-        page_content: ""
-      })
-      await newPage.save()
       let num_pages = chapter.num_pages + 1
-      let pages = chapter.pages
-      pages.push(pageId);
       await Chapter.updateOne({_id: chapterObjId},
       {
         num_pages: num_pages,
-        pages: pages
       })
-      return pageId.toString();
+      return true;
     },
     savePage: async (_, args, { req, res }) => {
       const { chapterID, pageInput } = args;
-      let pageObjId = new ObjectId(pageInput._id)
-      // Update the page object first
-      const page = await Page.updateOne({_id: pageObjId}, {page_content: pageInput.page_content})
-
       // Update the URL in the chapter Obj
       let chapterObjId = new ObjectId(chapterID);
       const chapter = await Chapter.findOne({_id: chapterObjId})
@@ -607,33 +587,24 @@ module.exports = {
 
     },
     deletePage: async (_, args, { req, res }) => {
-      const { chapterID, pageNumber, pageID } = args;
-      const pageObjId = new ObjectId(pageID);
-      // Delete page object
-      await Page.deleteOne({_id: pageObjId});
+      const { chapterID, pageNumber } = args;
       const chapterObjId = new ObjectId(chapterID);
       const chapter = await Chapter.findOne({_id: chapterObjId});
       // Delete the image from cloudinary
       let url = chapter.page_images[pageNumber-1]
-      if (url !== undefined) {
+      if (url !== undefined && url !== "Unsaved URL") {
         let groups = url.cover_image.split("/");
         let temp = groups[groups.length-1].split(".");
         cloudinary.uploader.destroy(temp[0]);
       }
-      // Remove page reference from chater pages
-      let pages = chapter.pages.filter((page, page_num) =>
-        page_num !== pageNumber -1
-      )
       // Remove page url from chapter page_iages
       let page_images = chapter.page_images.filter((url, page_num) =>
         page_num !== pageNumber -1
       )
-      console.log(pages)
       console.log(page_images)
       let num_pages = chapter.num_pages - 1
       await Chapter.updateOne({_id: chapterObjId}, {
         num_pages: num_pages,
-        pages: pages,
         page_images: page_images
       })
       return true
