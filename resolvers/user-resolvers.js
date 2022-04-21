@@ -56,8 +56,8 @@ module.exports = {
 		},
 
         logout:(_, __, { res, req }) => {
-			res.clearCookie('refresh-token');
-			res.clearCookie('access-token');
+			res.clearCookie('refresh-token',{ httpOnly: true , sameSite: 'None', secure: true});
+			res.clearCookie('access-token',{ httpOnly: true , sameSite: 'None', secure: true});
 			return true;
 		},
 
