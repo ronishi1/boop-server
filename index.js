@@ -76,8 +76,8 @@ mongoose.connect(MONGO_URI, {useNewUrlParser: true , useUnifiedTopology: true})
 
 const cloudinary = require('cloudinary').v2
 app.post("/imageUpload", async function(req,res) {
-    console.log(req)
-    console.log(req.body.data)
+    // console.log(req)
+    // console.log(req.body.data)
     cloudinary.uploader.upload(req.body.data, {
         resource_type: "image",
         tags: req.files.content.type

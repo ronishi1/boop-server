@@ -548,10 +548,6 @@ module.exports = {
     },
     savePage: async (_, args, { req, res }) => {
       const { chapterID, pageNumber, url } = args;
-      console.log("WHEEE")
-      console.log(chapterID)
-      console.log(pageNumber)
-      console.log(url)
       // Update the URL in the chapter Obj
       let chapterObjId = new ObjectId(chapterID);
       const chapter = await Chapter.findOne({_id: chapterObjId})
@@ -573,7 +569,7 @@ module.exports = {
         const prevURL = page_images[pageNumber - 1]
 
         if (prevURL !== "Unsaved URL") {
-          let groups = prevURL.cover_image.split("/");
+          let groups = prevURL.split("/");
           let temp = groups[groups.length-1].split(".");
           cloudinary.uploader.destroy(temp[0]);
         }
@@ -592,7 +588,7 @@ module.exports = {
       // Delete the image from cloudinary
       let url = chapter.page_images[pageNumber-1]
       if (url !== undefined && url !== "Unsaved URL") {
-        let groups = url.cover_image.split("/");
+        let groups = url.split("/");
         let temp = groups[groups.length-1].split(".");
         cloudinary.uploader.destroy(temp[0]);
       }
