@@ -10,6 +10,10 @@ const ChapterSchema = new Schema(
 			type: ObjectId,
 			required: true
 		},
+		author: {
+			type: ObjectId,
+			required: true
+		},
 		series_title: {
 			type: String,
 			required: true

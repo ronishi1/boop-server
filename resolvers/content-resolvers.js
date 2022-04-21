@@ -474,14 +474,16 @@ module.exports = {
       return true;
     },
     createChapter: async (_, args, { req, res }) => {
-      const { contentID, chapterTitle, seriesTitle} = args;
+      const { contentID, chapterTitle, seriesTitle, authorID} = args;
       const contentObjId = new ObjectId(contentID);
       const content = await Content.findOne({_id: contentObjId})
       const chapterId = new ObjectId();
+      const authorId = new ObjectId(authorID)
 
       let chapterObj = new Chapter({
         _id: chapterId,
         series_id: contentObjId,
+        author: authorId,
         series_title: seriesTitle,
         chapter_title: chapterTitle,
         num_pages: 1,
