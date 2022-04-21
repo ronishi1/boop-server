@@ -596,7 +596,6 @@ module.exports = {
       let page_images = chapter.page_images.filter((url, page_num) =>
         page_num !== pageNumber -1
       )
-      console.log(page_images)
       let num_pages = chapter.num_pages - 1
       await Chapter.updateOne({_id: chapterObjId}, {
         num_pages: num_pages,
