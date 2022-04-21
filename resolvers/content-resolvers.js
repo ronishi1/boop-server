@@ -68,42 +68,54 @@ module.exports = {
       return contents;
     },
     getReadList: async (_, args) => {
-      const {userID} = args;
-      const userId = new ObjectId(userID);
-      const user = await User.findOne({_id:userId})
+      const {username} = args;
+      const user = await User.findOne({username:username})
       const readLaterIDs = user.read_list
       let contentCards = []
       for(const contentID of readLaterIDs) {
         let contentId = new ObjectId(contentID);
         const content = await(Content.findOne({_id:contentId}));
-        contentCards.push({
-          _id: content._id,
-          series_title: content.series_title,
-          num_chapters: content.num_chapters,
-          current_rating: content.current_rating,
-          publication_date: content.publication_date,
-          cover_image: content.cover_image
-        })
+        if(content){
+          contentCards.push({
+            _id: content._id,
+            series_title: content.series_title,
+            num_chapters: content.num_chapters,
+            current_rating: content.current_rating,
+            publication_date: content.publication_date,
+            cover_image: content.cover_image,
+            content_type: content.content_type
+          })
+        }
+        else {
+          let temp = user.read_list.filter(item => item !== contentID);
+          await User.updateOne({username:username},{favorites:temp})
+        }
       }
       return contentCards;
     },
     getFavorites: async (_,args) => {
-      const {userID} = args;
-      const userId = new ObjectId(userID);
-      const user = await User.findOne({_id:userId})
+      const {username} = args;
+      const user = await User.findOne({username:username})
       const favoriteIDs = user.favorites
       let contentCards = []
       for(const contentID of favoriteIDs) {
         let contentId = new ObjectId(contentID);
         const content = await(Content.findOne({_id:contentId}));
-        contentCards.push({
-          _id: content._id,
-          series_title: content.series_title,
-          num_chapters: content.num_chapters,
-          current_rating: content.current_rating,
-          publication_date: content.publication_date,
-          cover_image: content.cover_image
-        })
+        if(content){
+          contentCards.push({
+            _id: content._id,
+            series_title: content.series_title,
+            num_chapters: content.num_chapters,
+            current_rating: content.current_rating,
+            publication_date: content.publication_date,
+            cover_image: content.cover_image,
+            content_type: content.content_type
+          })
+        }
+        else {
+          let temp = user.favorites.filter(item => item !== contentID);
+          await User.updateOne({username:username},{favorites:temp})
+        }
       }
       return contentCards;
     },
@@ -352,7 +364,7 @@ module.exports = {
         console.log(temp);
         cloudinary.uploader.destroy(temp[0]);
       }
-      
+
       return true;
     },
     updateCoverImage: async (_, args, { res }) => {

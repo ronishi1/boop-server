@@ -55,6 +55,7 @@ const typeDefs = gql`
     current_rating: Float
     publication_date: DateTime
     cover_image: String
+    content_type: ContentType
   }
   type Chapter {
     _id: ID
@@ -107,8 +108,8 @@ const typeDefs = gql`
     getPopularContent: [Content]
     getTopRatedContent: [Content]
     getRecentContent: [Content]
-    getReadList(userID: ID): [ContentCard]
-    getFavorites(userID: ID): [ContentCard]
+    getReadList(username: String): [ContentCard]
+    getFavorites(username: String): [ContentCard]
     getFilteredContent(genres: [String], releaseYear: Int, rating: Int, completionStatus: Boolean, contentType: String): [ContentCard]
     getMyContent: [Content]
     getStoryboard(storyboardID: ID): Storyboard
