@@ -299,6 +299,27 @@ module.exports = {
         await StoryBoard.deleteOne({_id:content.storyboard});
       }
       await Content.deleteOne({_id:contentObjId});
+      console.log("Start deleting chapters")
+      // Delete chapters
+      let chapters = content.chapters
+      console.log("wtf is going on")
+      console.log(content)
+      console.log(chapters)
+      chapters.forEach(async (chapterID) => {
+        let chapter = await Chapter.findOne({_id: chapterID})
+        console.log("This is thechapter? ")
+        console.log(chapter)
+        chapter.page_images.forEach((url) => {
+          console.log("inside")
+          console.log(url)
+          if (url !== "Unsaved URL") {
+            let groups = url.split("/");
+            let temp = groups[groups.length-1].split(".");
+            cloudinary.uploader.destroy(temp[0]);
+          }
+        })
+      })
+      await Chapter.deleteMany({series_id: contentObjId});
 
       // Delete the content from the user's list of content
       const user = await User.findOne({_id:content.author});
@@ -323,16 +344,15 @@ module.exports = {
       // Check to delete the content image if no post or content has a reference to the image url
       const linkedImage = content.cover_image
       const contentsContainsURL = await Content.find({cover_image: linkedImage})
+
       const postsContainURL = await ForumPost.find({linked_image: linkedImage})
-      if (contentsContainsURL.length === 0 && postsContainURL === 0) {
+      if (contentsContainsURL.length === 0 && postsContainURL.length === 0) {
         let groups = linkedImage.split("/");
         let temp = groups[groups.length-1].split(".");
         console.log(temp);
         cloudinary.uploader.destroy(temp[0]);
       }
-      // Delete chapters
-      await Chapter.deleteMany({series_id: contentObjId});
-
+      
       return true;
     },
     updateCoverImage: async (_, args, { res }) => {
