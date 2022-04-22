@@ -65,11 +65,17 @@ const typeDefs = gql`
     num_pages: Int
     page_images: [String]
     publication_date: DateTime
+    content_type: ContentType
   }
   type ChapterItem {
     _id: ID
     chapter_title: String
     publication_date: DateTime
+  }
+  type ChapterView {
+    chapter: Chapter,
+    chapter_titles: [String]
+    chapter_ids: [ID]
   }
   type Storyboard {
     characters: [Character]
@@ -104,6 +110,7 @@ const typeDefs = gql`
   type Query {
     getContentInfo(contentID: ID): Content
     getContentChapter(chapterID: ID): Chapter
+    getChapterView(chapterID: ID): ChapterView
     getChapters(chapterIDs: [ID] ): [ChapterItem]
     getPopularContent: [Content]
     getTopRatedContent: [Content]
@@ -126,7 +133,7 @@ const typeDefs = gql`
     addContentToFavorites(contentID: ID): Boolean
     removeContentFromReadList(contentID: ID): Boolean
     removeContentFromFavorites(contentID: ID): Boolean
-    createChapter(contentID: ID, chapterTitle: String, seriesTitle: String, authorID: ID): ID
+    createChapter(contentID: ID, chapterTitle: String, seriesTitle: String, authorID: ID, contentType: String): ID
     editChapter(chapterID: ID, chapter_title: String): ID
     deleteChapter(chapterID: ID): Boolean
     publishChapter(chapterID:ID): Boolean

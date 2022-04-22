@@ -22,6 +22,27 @@ module.exports = {
       const chapter = await Chapter.findOne({_id:chapterId})
       return chapter;
     },
+    getChapterView: async (_, args) => {
+      const {chapterID} = args;
+      const chapterId = new ObjectId(chapterID);
+      const chapter = await Chapter.findOne({_id: chapterId})
+      const seriesId = new ObjectId(chapter.series_id)
+      const series = await Content.findOne({_id: seriesId})
+      const chapterTitles = []
+      const chapterIds = []
+      for (var i = 0; i < series.chapters.length; i++ ){ 
+        const otherChapterIds = new ObjectId(series.chapters[i]);
+        const otherChapter = await Chapter.findOne({_id: otherChapterIds})
+        chapterTitles.push(otherChapter.chapter_title)
+        chapterIds.push(series.chapters[i])
+      }
+      const chapterView = {
+        chapter: chapter,
+        chapter_titles: chapterTitles,
+        chapter_ids: chapterIds
+      }
+      return chapterView;
+    },
     getChapters: async (_, args) => {
       const {chapterIDs} = args;
       let chapterItemObjs = []
@@ -506,7 +527,7 @@ module.exports = {
       return true;
     },
     createChapter: async (_, args, { req, res }) => {
-      const { contentID, chapterTitle, seriesTitle, authorID} = args;
+      const { contentID, chapterTitle, seriesTitle, authorID, contentType} = args;
       const contentObjId = new ObjectId(contentID);
       const content = await Content.findOne({_id: contentObjId})
       const chapterId = new ObjectId();
@@ -520,7 +541,8 @@ module.exports = {
         chapter_title: chapterTitle,
         num_pages: 1,
         page_images: [],
-        publication_date: 0
+        publication_date: 0,
+        content_type: contentType
       })
 
       await chapterObj.save()

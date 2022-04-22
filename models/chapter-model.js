@@ -34,6 +34,10 @@ const ChapterSchema = new Schema(
 			type: Date,
 			required: true
 		},
+		content_type: {
+			type: String,
+			required: true
+		}
     }
 );
 
