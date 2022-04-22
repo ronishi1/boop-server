@@ -117,7 +117,7 @@ const typeDefs = gql`
     getRecentContent: [Content]
     getReadList(username: String): [ContentCard]
     getFavorites(username: String): [ContentCard]
-    getFilteredContent(genres: [String], releaseYear: Int, rating: Int, completionStatus: Boolean, contentType: String): [ContentCard]
+    getFilteredContent(genres: [String], releaseYears: [Int], rating: Int, contentTypes: [String]): [ContentCard]
     getMyContent: [Content]
     getStoryboard(storyboardID: ID): Storyboard
     getSearch(searchTerm: String): [ContentCard]

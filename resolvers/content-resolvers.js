@@ -30,7 +30,7 @@ module.exports = {
       const series = await Content.findOne({_id: seriesId})
       const chapterTitles = []
       const chapterIds = []
-      for (var i = 0; i < series.chapters.length; i++ ){ 
+      for (var i = 0; i < series.chapters.length; i++ ){
         const otherChapterIds = new ObjectId(series.chapters[i]);
         const otherChapter = await Chapter.findOne({_id: otherChapterIds})
         chapterTitles.push(otherChapter.chapter_title)
@@ -141,27 +141,35 @@ module.exports = {
       return contentCards;
     },
     getFilteredContent: async (_, args) => {
-      const {genres, releaseYear, rating, completionStatus, contentType} = args
+      const {genres, releaseYears, rating, completionStatus, contentTypes} = args
+      let initDate = new Date(null)
       const query = {
         $and: [
-          {"content_type": {$eq: contentType}}
+          {"publication_date": {$ne: initDate}}
         ]
       }
       // Filtering on genres
       if (genres !== undefined && genres !== null) {
-       query.$and.push(
-          {"genres": { $all: genres}}
-        )
+        if(genres.length > 0){
+           query.$and.push(
+              {"genres": { $all: genres}}
+            )
+        }
       }
 
       // Filtering on publication date
-      if (releaseYear > 0) {
-        const startYear = new Date(`${releaseYear.toString()}-01-01T00:00:00Z`)
-        let nextYear = releaseYear + 1;
-        nextYear = new Date(`${nextYear.toString()}-01-01T00:00:00Z`)
-        query.$and.push(
-          {"publication_date": { $lte: nextYear, $gte: startYear}}
-        )
+      if (releaseYears.length > 0) {
+        let temp = {$or:[]};
+        releaseYears.forEach((releaseYear) => {
+          const startYear = new Date(`${releaseYear.toString()}-01-01T00:00:00Z`)
+          let nextYear = releaseYear + 1;
+          nextYear = new Date(`${nextYear.toString()}-01-01T00:00:00Z`)
+          temp.$or.push(
+            {"publication_date": { $lte: nextYear, $gte: startYear}}
+          )
+        })
+        query.$and.push(temp);
+
       }
 
       // Filtering on comics greater than parameter rating
@@ -171,16 +179,25 @@ module.exports = {
         )
       }
 
-      // Filtering on completion status
-      if (completionStatus !== undefined && completionStatus !== null) {
-        query.$and.push(
-          {"completed": {$eq: completionStatus}}
-        )
+      // Filtering on content type
+      if (contentTypes !== undefined && contentTypes !== null) {
+        if(contentTypes.length > 0){
+          let temp = {$or: []};
+          contentTypes.forEach((contentType) => {
+            temp.$or.push(
+              {"content_type": {$eq: contentType.charAt(0)}}
+            )
+          })
+          query.$and.push(temp);
+          console.log(temp.$or);
+        }
       }
 
+      console.log(query.$and);
       const filteredComics = await Content.find(
         query
       )
+      console.log(filteredComics);
       return filteredComics
     },
     getMyContent: async (_,args,{ req,res }) => {
@@ -453,7 +470,7 @@ module.exports = {
 
       // Get the rating that the user gave the content (if any)
       // const rated = user.rated_content.filter(content => content.content_ID.toString() == contentID);
-      const rated = user.rated_content.find(c => content.content_ID.toString() == contentID);
+      const rated = user.rated_content.find(c => c.content_ID.toString() == contentID);
       // If there was no rating found, then just add to the tally and update the user's rated content
       if(!rated){
         content.num_of_ratings++;
@@ -466,7 +483,7 @@ module.exports = {
         content.total_ratings = content.total_ratings + rating - rated.rating;
         content.current_rating = content.total_ratings / content.num_of_ratings;
         user.rated_content.forEach((ratedContent,i) => {
-          if(ratedContent.content_ID.toString().equals(contentID)){
+          if(ratedContent.content_ID.toString() == contentID ){
             user.rated_content[i] = {content_ID:contentObjId,rating: rating};
           }
         })
