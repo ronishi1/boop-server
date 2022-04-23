@@ -30,6 +30,9 @@ const ChapterSchema = new Schema(
 			type: [String],
 			required: true
 		},
+		page_JSONS: {
+			type: [String]
+		},
         publication_date: {
 			type: Date,
 			required: true

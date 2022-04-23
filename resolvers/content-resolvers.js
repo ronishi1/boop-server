@@ -636,10 +636,16 @@ module.exports = {
       return true;
     },
     savePage: async (_, args, { req, res }) => {
-      const { chapterID, pageNumber, url } = args;
+      const { chapterID, pageNumber, url, pageJSON } = args;
       // Update the URL in the chapter Obj
       let chapterObjId = new ObjectId(chapterID);
       const chapter = await Chapter.findOne({_id: chapterObjId})
+      let chapterJSONS = chapter.page_JSONS;
+      if(chapter.page_JSONS.length < pageNumber){
+        chapterJSONS.push(pageJSON)
+      }
+      else chapterJSONS[pageNumber-1] = pageJSON;
+      await Chapter.findByIdAndUpdate(chapterObjId, {page_JSONS:chapterJSONS});
       // In the case that the image is there for the first time, need to append the image url
       if (chapter.page_images.length < pageNumber) {
         let pageURLs = chapter.page_images

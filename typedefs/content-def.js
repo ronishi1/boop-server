@@ -64,6 +64,7 @@ const typeDefs = gql`
     chapter_title: String
     num_pages: Int
     page_images: [String]
+    page_JSONS: [String]
     publication_date: DateTime
     content_type: ContentType
   }
@@ -139,7 +140,7 @@ const typeDefs = gql`
     deleteChapter(chapterID: ID): Boolean
     publishChapter(chapterID:ID): Boolean
     addPage(chapterID: ID): Boolean
-    savePage(chapterID: ID, pageNumber: Int, url: String): Boolean
+    savePage(chapterID: ID, pageNumber: Int, url: String, pageJSON: String): Boolean
     deletePage(chapterID: ID, pageNumber: Int): Boolean
     createCharacter(storyboardID: ID,  characterInput: CharacterInput): ID
     editCharacter(storyboardID: ID, characterID: ID, characterInput: CharacterInput): ID
