@@ -23,6 +23,8 @@ module.exports = {
       return chapter;
     },
     getChapterView: async (_, args) => {
+      const unpublished = new Date(0)
+
       const {chapterID} = args;
       const chapterId = new ObjectId(chapterID);
       const chapter = await Chapter.findOne({_id: chapterId})
@@ -32,9 +34,12 @@ module.exports = {
       const chapterIds = []
       for (var i = 0; i < series.chapters.length; i++ ){
         const otherChapterIds = new ObjectId(series.chapters[i]);
-        const otherChapter = await Chapter.findOne({_id: otherChapterIds})
-        chapterTitles.push(otherChapter.chapter_title)
-        chapterIds.push(series.chapters[i])
+        // limit to published chapters only
+        const otherChapter = await Chapter.findOne({_id: otherChapterIds, publication_date: { $ne: unpublished }});
+        if(otherChapter){
+          chapterTitles.push(otherChapter.chapter_title)
+          chapterIds.push(series.chapters[i])
+        }
       }
       const chapterView = {
         chapter: chapter,
