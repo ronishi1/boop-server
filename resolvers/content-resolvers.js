@@ -515,6 +515,16 @@ module.exports = {
       );
       return true;
     },
+    increaseView: async (_, args, { req, res }) => {
+      const {contentID} = args;
+      const contentObjId = new ObjectId(contentID);
+      const content = await Content.findOne({_id:contentObjId});
+      let views = content.views + 1
+      await Content.updateOne({_id:contentObjId}, {
+        views: views
+      })
+      return true;
+    },
     addContentToReadList: async (_, args, { req,res }) => {
       const {contentID} = args;
       const contentObjId = new ObjectId(contentID);

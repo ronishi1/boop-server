@@ -131,6 +131,7 @@ const typeDefs = gql`
     deleteContent(contentID: ID): Boolean
     publishContent(contentID: ID): Boolean
     rateContent(contentID: ID, rating: Int): Boolean
+    increaseView(contentID: ID): Boolean
     addContentToReadList(contentID: ID): Boolean
     addContentToFavorites(contentID: ID): Boolean
     removeContentFromReadList(contentID: ID): Boolean
