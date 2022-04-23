@@ -121,6 +121,7 @@ const typeDefs = gql`
     getMyContent: [Content]
     getStoryboard(storyboardID: ID): Storyboard
     getSearch(searchTerm: String): [ContentCard]
+    getUserPublished(username:String): [Content]
   }
   type Mutation {
     createContent(contentInput: ContentInput): ID

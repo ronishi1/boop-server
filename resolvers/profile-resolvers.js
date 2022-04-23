@@ -9,29 +9,8 @@ module.exports = {
       const { username } = args;
       // const objId = new ObjectId(_id);
       const user = await User.findOne({username:username});
-      console.log(user);
       // STRIP USER OBJECT POTENTIALLY BUT ONLY NECSESARY FIELDS MAY BE GRABBED AUTOMATICALLY
       return user;
-    },
-    getUserPublished: async(_, args, {req}) => {
-      const { _id } = args;
-      const userObjId = new ObjectId(_id);
-      const user = await User.findOne({_id:userObjId});
-      const userContent = await Content.find({_id: {$in: user.user_content}, publication_date: { $ne: new Date(null)} });
-      let userWorks = userContent.map((content) => {
-        return {title: content.series_title,cover_image: content.cover_image};
-      });
-      return userWorks;
-    },
-    getUserFavorites: async(_, args, {req}) => {
-      const { _id } = args;
-      const userObjId = new ObjectId(_id);
-      const user = await User.findOne({_id:userObjId});
-      const userFavorites = await Content.find({_id: {$in: user.favorites}});
-      let userFavoriteWorks = userFavorites.map((content) => {
-        return {title: content.series_title,cover_image: content.cover_image};
-      });
-      return userFavoriteWorks;
     },
     getUserActivityFeed: async(_, args, {req}) => {
       const { _id } = args;

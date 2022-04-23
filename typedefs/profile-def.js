@@ -22,8 +22,6 @@ const typeDefs = gql`
   }
   type Query {
     getUserProfile(username: String): Profile
-    getUserPublished(_id:ID): [WorkCard]
-    getUserFavorites(_id:ID): [WorkCard]
     getUserActivityFeed(_id:ID): [Activity]
   }
   type Mutation {

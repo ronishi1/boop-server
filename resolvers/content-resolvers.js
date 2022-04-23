@@ -212,6 +212,22 @@ module.exports = {
       }
       return contents;
     },
+    getUserPublished: async (_,args) => {
+      const {username} = args;
+      const user = await User.findOne({username:username})
+      const userContentIDs = user.user_content;
+      let contents = []
+      for(const contentID of userContentIDs) {
+        let contentId = new ObjectId(contentID);
+        const content = await(Content.findOne({_id:contentId}));
+        let temp = new Date(null);
+        let temp2 = new Date(content.publication_date);
+        if(temp.getTime() != temp2.getTime()){
+          contents.push(content);
+        }
+      }
+      return contents;
+    },
     getStoryboard: async (_,args) => {
       const {storyboardID} = args
       const storyboardId = new ObjectId(storyboardID);
