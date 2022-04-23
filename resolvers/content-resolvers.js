@@ -114,7 +114,7 @@ module.exports = {
         }
         else {
           let temp = user.read_list.filter(item => item !== contentID);
-          await User.updateOne({username:username},{favorites:temp})
+          await User.updateOne({username:username},{read_list:temp})
         }
       }
       return contentCards;
