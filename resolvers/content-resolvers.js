@@ -621,9 +621,14 @@ module.exports = {
       const contentObjId = new ObjectId(chapter.series_id)
       const content = await Content.findOne({_id:contentObjId})
 
+      let temp = new Date(chapter.publication_date);
+      let temp2 = new Date(null);
+      if(temp.getTime() != temp2.getTime()){
+        content.num_chapters--;
+      }
       // Remove the chapter from the content
       content.chapters = content.chapters.filter(chapter => chapter.toString() !== chapterID)
-      await Content.updateOne({_id: contentObjId}, {chapters:content.chapters})
+      await Content.updateOne({_id: contentObjId}, {chapters:content.chapters,num_chapters:content.num_chapters})
 
       // Delete the actual chapter
       await Chapter.deleteOne({_id: chapterObjId})
@@ -636,7 +641,9 @@ module.exports = {
       const chapter = await Chapter.findOne({_id:chapterObjId});
       chapter.publication_date = Date.now()
       await Chapter.updateOne({_id: chapterObjId}, {publication_date: chapter.publication_date})
-
+      let content = await Content.findOne({_id:chapter.series_id});
+      content.num_chapters++;
+      await Content.updateOne({_id:chapter.series_id},{num_chapters:content.num_chapters});
       return true;
     },
     addPage: async (_, args, { req, res }) => {
