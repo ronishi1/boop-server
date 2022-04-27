@@ -43,10 +43,13 @@ const typeDefs = gql`
     category: Category
   }
   type ForumTopicPost{
+    _id: ID
     title: String
     author: String
     author_name: String
     timestamp: DateTime
+    linked_title: String
+    linked_image: String
   }
   type Link {
     title: String

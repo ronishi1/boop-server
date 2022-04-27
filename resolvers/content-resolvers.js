@@ -319,7 +319,7 @@ module.exports = {
         content: discussionContent,
         tags: ["Discussion"],
         linked_content: contentId,
-        linked_title:'',
+        linked_title:contentInput.series_title,
         linked_image:'',
         author: autoModID,
         author_name: "AutoModerator",
@@ -408,6 +408,11 @@ module.exports = {
       // Delete all relatedPosts from the unpublished forum Topic
       await ForumTopic.updateOne({_id: new ObjectId("6242239f4b2619473abf93b2")}, {$pull: {posts: {$in: relatedPosts}}})
 
+      let temp = new Date(content.publication_date);
+      let temp2 = new Date(null);
+      if(temp.getTime() == temp2.getTime()){
+        await ForumPost.deleteOne({_id:content.discussion_post})
+      }
       // Remove the post from the topic
       // const topic = await ForumTopic.findOne({_id:post.topic});
       // topic.posts = topic.posts.filter(p => p.toString() !== post._id.toString());
@@ -437,8 +442,10 @@ module.exports = {
         let temp = groups[groups.length-1].split(".");
         cloudinary.uploader.destroy(temp[0]);
         console.log(temp);
-
       }
+      const foundPost = await ForumPost.findOne({_id:foundContent.discussion_post});
+      console.log(foundPost);
+      await ForumPost.updateOne({_id:foundContent.discussion_post},{linked_image:url})
       console.log("POST DESTROY");
       const updatedCoverImage = await Content.updateOne({_id: contentObjId}, {cover_image: url})
       return true
