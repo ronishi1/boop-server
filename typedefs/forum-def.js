@@ -50,6 +50,9 @@ const typeDefs = gql`
     timestamp: DateTime
     linked_title: String
     linked_image: String
+    tags: [String]
+    num_replies: Int
+    replies: [ForumReply]
   }
   type Link {
     title: String
