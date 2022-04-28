@@ -46,11 +46,25 @@ module.exports = {
       const posts = await ForumPost.find().sort({timestamp:1});
       return posts;
     },
-    getTopicPosts: async (_,args) => {
+    getTopic: async (_,args) => {
       const id = new ObjectId(args.topicId);
       //find all forum posts whose topic fields match the provided ForumTopic id
-      const forumTopicPosts = ForumPost.find({topic:id});
-      return forumTopicPosts;
+      const forumTopic = await ForumTopic.findOne({_id:id});
+      let posts = [];
+      console.log(forumTopic);
+      for(const topicPost of forumTopic.posts){
+        let post = await ForumPost.findOne({_id:topicPost});
+        posts.push(post);
+      }
+      let topic = {
+        _id: forumTopic._id,
+        name: forumTopic.name,
+        posts: posts,
+        description: forumTopic.description,
+        category: forumTopic.category
+      }
+      console.log(topic);
+      return topic;
     },
     getMostRepliedPosts: async () => {
       //get all posts sorted by num_replies in descending order

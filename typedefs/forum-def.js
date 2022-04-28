@@ -83,7 +83,7 @@ const typeDefs = gql`
     getPopularPosts: [ForumPost]
     getRecentPosts: [ForumPost]
     getOldestPosts: [ForumPost]
-    getTopicPosts(topicId: ID): [ForumPost]
+    getTopic(topicId: ID): ForumTopic
     getMostRepliedPosts: [ForumPost]
     getPost(postId: ID): ForumPost
     getMyPosts: [ManagementPost]
