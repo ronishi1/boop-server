@@ -664,6 +664,8 @@ module.exports = {
       })
       return true;
     },
+    // AS OF NOW SAVE PAGE IS SPECIFICALLY FOR COMICS,
+    //   PLANNING ON DOING THE JSON STUFF WITH COMIC SO I DONT WANT TO MESS WITH IT
     savePage: async (_, args, { req, res }) => {
       const { chapterID, pageNumber, url, pageJSON } = args;
       // Update the URL in the chapter Obj
@@ -704,6 +706,17 @@ module.exports = {
       }
       return true
 
+    },
+    saveText: async (_, args, { req, res }) => {
+      const { chapterID, pageJSON } = args;
+      let chapterObjId = new ObjectId(chapterID);
+      const chapter = await Chapter.findOne({_id: chapterObjId})
+      let chapterJSONS = chapter.page_JSONS;
+      chapterJSONS[0] = pageJSON
+      await Chapter.updateOne({_id: chapterObjId}, {
+        page_JSONS: chapterJSONS
+      });
+      return true
     },
     deletePage: async (_, args, { req, res }) => {
       const { chapterID, pageNumber } = args;

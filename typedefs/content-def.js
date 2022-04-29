@@ -143,6 +143,7 @@ const typeDefs = gql`
     addPage(chapterID: ID): Boolean
     savePage(chapterID: ID, pageNumber: Int, url: String, pageJSON: String): Boolean
     deletePage(chapterID: ID, pageNumber: Int): Boolean
+    saveText(chapterID: ID, pageJSON: String): Boolean
     createCharacter(storyboardID: ID,  characterInput: CharacterInput): ID
     editCharacter(storyboardID: ID, characterID: ID, characterInput: CharacterInput): ID
     deleteCharacter(storyboardID: ID, characterID: ID): Boolean
