@@ -19,10 +19,15 @@ const typeDefs = gql`
   type Activity {
     activity_type: String
     content_ID: ID
+    content_name: String
+    chapter_ID: ID
+    chapter_name: ID
+    timestamp: DateTime
+    _id: ID
   }
   type Query {
     getUserProfile(username: String): Profile
-    getUserActivityFeed(_id:ID): [Activity]
+    getUserActivityFeed(username: String): [Activity]
   }
   type Mutation {
     followUser(followID: ID!): Boolean

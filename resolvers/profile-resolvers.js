@@ -13,9 +13,8 @@ module.exports = {
       return user;
     },
     getUserActivityFeed: async(_, args, {req}) => {
-      const { _id } = args;
-      const userObjId = new ObjectId(_id);
-      const user = await User.findOne({_id:userObjId});
+      const { username} = args;
+      const user = await User.findOne({username:username});
       console.log(user.recent_activity);
       return user.recent_activity;
     }

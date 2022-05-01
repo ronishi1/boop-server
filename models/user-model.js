@@ -48,7 +48,10 @@ const userSchema = new Schema(
 		recent_activity: {type: [{
 			activity_type: {type: String, required: true},
 			content_ID: {type: ObjectId, required: true},
+			content_name: {type: String},
 			chapter_ID: {type: ObjectId},
+			chapter_name: {type: String},
+			timestamp: {type: Date}
 		}]},
 		replies_to_my_post: {type: [{
 			reply_ID: {type: ObjectId, required: true},

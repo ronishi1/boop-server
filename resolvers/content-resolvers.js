@@ -642,12 +642,42 @@ module.exports = {
       return true;
     },
     publishChapter: async (_, args, { req, res }) => {
+      const userId = new ObjectId(req.userId)
+      const user = await User.findOne({_id:userId});
       const { chapterID } = args;
       const chapterObjId = new ObjectId(chapterID);
       const chapter = await Chapter.findOne({_id:chapterObjId});
       chapter.publication_date = Date.now()
       await Chapter.updateOne({_id: chapterObjId}, {publication_date: chapter.publication_date})
       let content = await Content.findOne({_id:chapter.series_id});
+      let temp = new Date(content.publication_date);
+      let temp2 = new Date(null);
+      let activity_type = "";
+      if(content.content_type == "S"){
+        activity_type = "publish_story"
+      }
+      else {
+        activity_type = "publish_comic"
+      }
+      if(temp != temp2){
+        // Build the activity obj to store in the user and push it
+        let activityObj = {
+          activity_type:activity_type,
+          content_ID: content._id,
+          content_name: content.series_title,
+          chapter_ID: chapterID,
+          chapter_name: chapter.chapter_title,
+          timestamp: new Date()
+        }
+        // If there are more than 10 recent activities, then get rid of the oldest one
+        user.recent_activity.push(activityObj);
+        if(user.recent_activity.length > 5){
+          user.recent_activity.shift();
+        }
+        console.log(user.recent_activity);
+        await User.updateOne({_id: userId}, {recent_activity: user.recent_activity});
+
+      }
       content.num_chapters++;
       await Content.updateOne({_id:chapter.series_id},{num_chapters:content.num_chapters});
       return true;
