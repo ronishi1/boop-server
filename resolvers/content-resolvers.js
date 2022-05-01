@@ -615,8 +615,7 @@ module.exports = {
       const chapter = await Chapter.findOne({_id:chapterID});
       await Chapter.updateOne({_id:chapterID},
       {
-        chapter_title: chapter_title,
-        publication_date: new Date.now()
+        chapter_title: chapter_title
       });
       return chapter._id.toString();
     },
