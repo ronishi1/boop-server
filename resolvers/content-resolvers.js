@@ -602,11 +602,9 @@ module.exports = {
       })
 
       await chapterObj.save()
-      let num_chapters = content.num_chapters + 1
       let chapters = content.chapters
       chapters.push(chapterId)
       await Content.updateOne({_id: contentObjId}, {
-        num_chapters: num_chapters,
         chapters: chapters
       })
 
