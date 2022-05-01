@@ -23,6 +23,9 @@ const forumPostSchema = new Schema(
 		linked_image: {
 			type: String,
 		},
+		linked_synopsis: {
+			type: String,
+		},
 		tags: {
 			type: [String],
 		},

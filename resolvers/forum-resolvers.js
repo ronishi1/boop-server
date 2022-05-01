@@ -112,6 +112,7 @@ module.exports = {
         linked_content: postInput.linked_content,
         linked_title: content.series_title,
         linked_image: content.cover_image,
+        linked_synopsis: content.synopsis,
         author: userId,
         author_name: foundUser.username,
         replies: [],
@@ -193,7 +194,6 @@ module.exports = {
       let activityObj = {
         activity_type:"reply",
         content_ID: postObjectId,
-        reply_ID: _id
       }
       // If there are more than 10 recent activities, then get rid of the oldest one
       user.recent_activity.push(activityObj);

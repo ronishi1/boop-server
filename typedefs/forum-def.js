@@ -5,8 +5,10 @@ const typeDefs = gql`
     _id: ID
     title: String
     content: String
-    linked_comic: ID
-    linked_story: ID
+    linked_content: ID
+    linked_title: String
+    linked_image: String
+    linked_synopsis: String
     tags: [String]
     author: ID
     author_name: String
