@@ -465,20 +465,40 @@ module.exports = {
 
       // Hard coded objectId for published discussion post topic section
       var topicId = null;
+      let activity_type = "";
       switch(content.content_type) {
         // Story Discussions
         case "S":
           topicId = new ObjectId("624218db4b2619473abf93ab");
+          activity_type = "publish_story"
           break;
         // Comic Discussions
         case "C":
           topicId = new ObjectId("624216a0dd90b5c46c5e24d0");
+          activity_type = "publish_comic"
           break;
         default:
           topicId = null;
       }
       // Invalid content_type
       if(topicId == null) return false;
+
+      let activityObj = {
+        activity_type:activity_type,
+        content_ID: content._id,
+        content_name: content.series_title,
+        timestamp: new Date()
+      }
+
+      const userId = new ObjectId(req.userId)
+      const user = await User.findOne({_id:userId});
+      // If there are more than 10 recent activities, then get rid of the oldest one
+      user.recent_activity.push(activityObj);
+      if(user.recent_activity.length > 5){
+        user.recent_activity.shift();
+      }
+      console.log(user.recent_activity);
+      await User.updateOne({_id: userId}, {recent_activity: user.recent_activity});
 
       // Save the forum post to the published works topic
       const topic = await ForumTopic.findOne({_id:topicId});
@@ -653,10 +673,10 @@ module.exports = {
       let temp2 = new Date(null);
       let activity_type = "";
       if(content.content_type == "S"){
-        activity_type = "publish_story"
+        activity_type = "publish_story_chapter"
       }
       else {
-        activity_type = "publish_comic"
+        activity_type = "publish_comic_chapter"
       }
       if(temp != temp2){
         // Build the activity obj to store in the user and push it

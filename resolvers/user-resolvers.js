@@ -27,6 +27,11 @@ module.exports = {
             return true;
           }
           return false;
+        },
+        getFollowedActivity: async(_,args, {req}) => {
+          userId = new ObjectId(req.userId)
+          const user = await User.findOne({_id:userId});
+          
         }
     },
     Mutation: {

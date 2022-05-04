@@ -17,6 +17,24 @@ module.exports = {
       const user = await User.findOne({username:username});
       console.log(user.recent_activity);
       return user.recent_activity;
+    },
+    getFollowedActivity: async(_,args, {req}) => {
+      userId = new ObjectId(req.userId)
+      const user = await User.findOne({_id:userId});
+      let activities = [];
+      for(const followedUser of user.following) {
+        let followedUserID = new ObjectId(followedUser);
+        const followedUserObj = await User.findOne({_id:followedUserID})
+        followedUserObj.recent_activity.forEach((activity) => {
+          activities.push({
+            username: followedUserObj.username,
+            activity: activity,
+            _id: activity._id
+          })
+        })
+      }
+      activities.sort((a,b) => b.activity.timestamp - a.activity.timestamp);
+      return activities;
     }
   },
   Mutation: {
