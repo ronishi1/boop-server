@@ -312,7 +312,7 @@ module.exports = {
       // Hard coded objectId for unpublished discussion post topic section
       const topicId = new ObjectId("6242239f4b2619473abf93b2");
       // Hard coded user id for automoderator
-      const autoModID = new ObjectId("62421d2581c236eea8dd011f");
+      const autoModID = new ObjectId("62722ac6b8f4b29994be230e");
       const forumPost = new ForumPost ({
         _id: forumId,
         title: discussionTitle,
