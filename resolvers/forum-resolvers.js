@@ -191,9 +191,11 @@ module.exports = {
       await ForumPost.updateOne({_id:postObjectId},{replies:foundPost.replies,num_replies:foundPost.num_replies});
 
       // Build the activity obj to store in the user and push it
+      // content_ID represents the id of the reply not the post
+      // postId will be provided in relevant functions
       let activityObj = {
         activity_type:"reply",
-        content_ID: postObjectId,
+        content_ID: _id,
       }
       // If there are more than 10 recent activities, then get rid of the oldest one
       user.recent_activity.push(activityObj);
@@ -213,12 +215,14 @@ module.exports = {
         timestamp: timestamp
       }
       // If there are more than 10 recent replies, then get rid of the oldest one
-      postAuthor.replies_to_my_post.push(authorReplyObj);
-      if(postAuthor.replies_to_my_post.length > 10){
-        postAuthor.replies_to_my_post.shift();
-      }
-      await User.updateOne({_id:foundPost.author},{replies_to_my_post:postAuthor.replies_to_my_post});
-
+      if(postAuthor !== null){
+        postAuthor.replies_to_my_post.push(authorReplyObj);
+        if(postAuthor.replies_to_my_post.length > 10){
+          postAuthor.replies_to_my_post.shift();
+        }
+        await User.updateOne({_id:foundPost.author},{replies_to_my_post:postAuthor.replies_to_my_post});
+      };
+      
       return postID;
     },
     editReply: async (_, args, { req,res }) => {
@@ -239,7 +243,7 @@ module.exports = {
 
       // Removing the reply from the user's recent activity
       const foundUser = await User.findOne({_id:userObjId});
-      foundUser.recent_activity = foundUser.recent_activity.filter(activity => activity.reply_ID.toString() !== replyID);
+      foundUser.recent_activity = foundUser.recent_activity.filter(activity => activity.content_ID.toString() !== replyID);
       await User.updateOne({_id:userObjId},{recent_activity:foundUser.recent_activity});
 
       // Removing the reply from the post
@@ -250,8 +254,11 @@ module.exports = {
 
       // Removing the reply from the author's list of replies to their post
       const postAuthor = await User.findOne({_id:foundPost.author});
-      postAuthor.replies_to_my_post = postAuthor.replies_to_my_post.filter(reply => reply.reply_ID.toString() !== replyID);
-      await User.updateOne({_id:foundPost.author},{replies_to_my_post:postAuthor.replies_to_my_post});
+      if(postAuthor){
+        postAuthor.replies_to_my_post = postAuthor.replies_to_my_post.filter(reply => reply.reply_ID.toString() !== replyID);
+        await User.updateOne({_id:foundPost.author},{replies_to_my_post:postAuthor.replies_to_my_post});
+      }
+
       return true;
     }
 
