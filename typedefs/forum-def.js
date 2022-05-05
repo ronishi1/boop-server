@@ -32,6 +32,7 @@ const typeDefs = gql`
     timestamp: DateTime
   }
   type ForumReply {
+    _id: ID
     author: String
     author_name: String
     content: String
