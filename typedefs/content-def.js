@@ -108,6 +108,17 @@ const typeDefs = gql`
     notes: String
     plot_point_image: String
   }
+  type SearchResult {
+    content_ID: ID
+    content_title: String
+    content_image: String
+    content_info: String
+    content_author: String
+    content_author_name: String
+    content_type: String
+    content_timestamp: DateTime
+    _id: ID
+  }
   type Query {
     getContentInfo(contentID: ID): Content
     getContentChapter(chapterID: ID): Chapter
@@ -121,7 +132,7 @@ const typeDefs = gql`
     getFilteredContent(genres: [String], releaseYears: [Int], rating: Int, contentTypes: [String]): [ContentCard]
     getMyContent: [Content]
     getStoryboard(storyboardID: ID): Storyboard
-    getSearch(searchTerm: String): [ContentCard]
+    getSearch(searchTerm: String): [SearchResult]
     getUserPublished(username:String): [Content]
   }
   type Mutation {

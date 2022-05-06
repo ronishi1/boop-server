@@ -240,9 +240,40 @@ module.exports = {
       return storyboard;
     },
     getSearch: async (_, args) => {
-      const {searchTerm} = args
-      const searchedContent = await Content.find({series_title: {$regex: searchTerm, $options: "i"}})
-      return searchedContent
+      const {searchTerm} = args;
+      console.log(searchTerm);
+      let results = [];
+      const searchedContent = await Content.find({series_title: {$regex: searchTerm, $options: "i"}});
+      searchedContent.forEach((content)  => {
+        let temp = {
+          content_ID: content._id,
+          content_title: content.series_title,
+          content_image: content.cover_image,
+          content_info: content.synopsis,
+          content_author_name: content.author_username,
+          content_author: content.author,
+          content_type: content.content_type,
+          content_timestamp: content.publication_date,
+          _id: content._id
+        }
+        results.push(temp);
+      })
+      const searchedPosts = await ForumPost.find({title: {$regex: searchTerm, $options: "i"}})
+      searchedPosts.forEach((post) => {
+        let temp = {
+          content_ID: post._id,
+          content_title: post.title,
+          content_image: post.linked_image,
+          content_info: post.content,
+          content_author_name: post.author_name,
+          content_author: post.author,
+          content_type: "F",
+          content_timestamp: post.timestamp,
+          _id: post._id
+        }
+        results.push(temp);
+      })
+      return results;
     }
 
   },
