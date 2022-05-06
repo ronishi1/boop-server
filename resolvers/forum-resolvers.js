@@ -195,7 +195,7 @@ module.exports = {
       // postId will be provided in relevant functions
       let activityObj = {
         activity_type:"reply",
-        content_ID: _id,
+        content_ID: postObjectId,
       }
       // If there are more than 10 recent activities, then get rid of the oldest one
       user.recent_activity.push(activityObj);
@@ -242,9 +242,9 @@ module.exports = {
       const userObjId = new ObjectId(req.userId);
 
       // Removing the reply from the user's recent activity
-      const foundUser = await User.findOne({_id:userObjId});
-      foundUser.recent_activity = foundUser.recent_activity.filter(activity => activity.content_ID.toString() !== replyID);
-      await User.updateOne({_id:userObjId},{recent_activity:foundUser.recent_activity});
+      // const foundUser = await User.findOne({_id:userObjId});
+      // foundUser.recent_activity = foundUser.recent_activity.filter(activity => activity.content_ID.toString() !== replyID);
+      // await User.updateOne({_id:userObjId},{recent_activity:foundUser.recent_activity});
 
       // Removing the reply from the post
       const foundPost = await ForumPost.findOne({_id:postObjectId});
