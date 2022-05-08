@@ -1,6 +1,7 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const mongoose = require('mongoose');
 const User = require('../models/user-model');
+const Content = require('../models/content-model')
 const ForumPost = require('../models/forum-post-model');
 const ForumTopic = require('../models/forum-topic-model');
 const cloudinary = require('cloudinary').v2
@@ -98,18 +99,61 @@ module.exports = {
       const foundUser = await User.findOne({_id:userId});
       foundUser.forum_posts.push(_id);
       await User.updateOne({_id:userId},{forum_posts:foundUser.forum_posts});
-      const content = await Content.findOne({_id: new ObjectId(linked_content)})
+      // const content = await Content.findOne({_id: new ObjectId(linked_content)})
+      let content = ""
+      if (args.forumPost.linked_content == null) {
+        content = {
+          _id: null,
+          series_title: null,
+          cover_image: null,
+          synopsis: "No content linked"
+        }
+      }
+      else {
+        content = await Content.findOne({series_title: args.forumPost.linked_content});
+      }
+      
 
       // Build out forum post object to push to DB
       let postInput = args.forumPost;
       let timestamp = Date.now();
-      const topicObjID = new ObjectId(postInput.topic_ID);
+      let topicId = ""
+      switch(postInput.topic) {
+        case "Comic Recommendations":
+          topicId = "6240df65172c648d223659cf"
+          break;
+        case "Comic Discussions":
+          topicId = "624216a0dd90b5c46c5e24d0"
+          break
+        case "Comic Upcoming Releases":
+          topicId = "624217bddd90b5c46c5e24d1"
+          break
+        case "Story Recommendations":
+          topicId = "624217ffdd90b5c46c5e24d3"
+          break
+        case "Story Discussions":
+          topicId = "624218db4b2619473abf93ab"
+          break
+        case "Story Upcoming Releases":
+          topicId = "624218f04b2619473abf93ac"
+          break
+        case "Community Announcements":
+          topicId = "6242195e4b2619473abf93ae"
+          break
+        case "Casual Discussion":
+          topicId = "6242197c4b2619473abf93af"
+          break
+        case "Games, Music, and Entertainment":
+          topicId = "624219954b2619473abf93b0"
+          break
+      }
+      const topicObjID = new ObjectId(topicId);
       const forumPost = new ForumPost ({
         _id: _id,
         title: postInput.title,
         content: postInput.content,
         tags: postInput.tags,
-        linked_content: postInput.linked_content,
+        linked_content: content._id,
         linked_title: content.series_title,
         linked_image: content.cover_image,
         linked_synopsis: content.synopsis,
@@ -124,7 +168,7 @@ module.exports = {
       await forumPost.save();
 
 
-      // Find the topic and add the forum post to its list of posts and push it
+      // // Find the topic and add the forum post to its list of posts and push it
       const foundTopic = await ForumTopic.findOne({_id:topicObjID});
       foundTopic.posts.push(forumPost._id);
       await ForumTopic.updateOne({_id:topicObjID},{posts: foundTopic.posts});
@@ -133,9 +177,9 @@ module.exports = {
     },
     editPost: async (_, args, { req,res }) => {
       // Update the post with updated content and tags
-      const {postID, content, tags} = args;
+      const {postID, title, content, tags} = args;
       const postObjectId = new ObjectId(postID);
-      await ForumPost.updateOne({_id:postObjectId},{content: content,tags: tags});
+      await ForumPost.updateOne({_id:postObjectId},{title: title, content: content, tags: tags});
       return postID;
     },
     deletePost: async (_, args, { req,res }) => {

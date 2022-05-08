@@ -21,6 +21,9 @@ const typeDefs = gql`
   type ManagementPost {
     _id: ID
     title: String
+    content: String
+    linked_content: ID
+    linked_image: String
     timestamp: DateTime
     tags: [String]
   }
@@ -68,8 +71,8 @@ const typeDefs = gql`
     title: String
     content: String
     tags: [String]
-    linked_content: ID
-    topic_ID: ID
+    linked_content: String
+    topic: String
   }
   enum Category {
     General
@@ -78,7 +81,7 @@ const typeDefs = gql`
   }
   type Mutation {
     createPost(forumPost: ForumPostInput): ID
-    editPost(postID: ID, content:String, tags: [String]): ID
+    editPost(postID: ID, title: String, content: String, tags: [String]): ID
     deletePost(postID: ID): Boolean
     createReply(postID: ID, content: String): ID
     editReply(postID: ID, content: String, replyID: ID): ID
