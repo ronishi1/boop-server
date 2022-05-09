@@ -22,6 +22,7 @@ const typeDefs = gql`
     _id: ID
     title: String
     content: String
+    linked_title: String
     linked_content: ID
     linked_image: String
     timestamp: DateTime
@@ -97,6 +98,7 @@ const typeDefs = gql`
     getPost(postId: ID): ForumPost
     getMyPosts: [ManagementPost]
     getRepliesToMyPost: [ManagementReply]
+    getSeriesTitles(seriesTitle: String): [String]
   }
 `;
 

@@ -87,6 +87,15 @@ module.exports = {
       const userId = new ObjectId(req.userId);
       const foundUser = await User.findOne({_id: userId});
       return foundUser.replies_to_my_post;
+    },
+    getSeriesTitles: async (_, args, { req,res }) => {
+      const { seriesTitle } = args;
+      let results = [];
+      const searchedContent = await Content.find({series_title: {$regex: seriesTitle, $options: "i"}});
+      searchedContent.forEach((content) => {
+        results.push(content.series_title)
+      })
+      return results;
     }
   },
   Mutation: {
