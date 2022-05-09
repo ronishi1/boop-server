@@ -12,8 +12,33 @@ module.exports = {
   Query: {
     getContentInfo: async (_, args) => {
       const {contentID} = args;
-      const contentId = new ObjectId(contentID);
-      const content = await Content.findOne({_id: contentId})
+      let content = ""
+      if (contentID !== "123456789012345678901234") {
+        const contentId = new ObjectId(contentID);
+        content = await Content.findOne({_id: contentId})
+      }
+      else {
+        content = new Content({
+          _id: new ObjectId("123456789012345678901234"),
+          series_title: "Unlinked Post",
+          author: new ObjectId("123456789012345678901234"),
+          author_username: "Unlinked Post",
+          synopsis: "Unlinked Post",
+          genres: [],
+          num_chapters: 0,
+          chapters: [],
+          views: 0,
+          discussion_post: new ObjectId("123456789012345678901234"),
+          current_rating: 5.0,
+          num_of_ratings: 0,
+          total_ratings: 0,
+          publication_date: new Date(),
+          completed: false,
+          cover_image: "Unlinked Post",
+          storyboard: new ObjectId("123456789012345678901234"),
+          content_type: "C"
+        })
+      }
       return content;
     },
     getContentChapter: async (_, args) => {

@@ -110,7 +110,7 @@ module.exports = {
       await User.updateOne({_id:userId},{forum_posts:foundUser.forum_posts});
       // const content = await Content.findOne({_id: new ObjectId(linked_content)})
       let content = ""
-      if (args.forumPost.linked_content == null) {
+      if (args.forumPost.linked_content === 'Enter Series Title To Link') {
         content = {
           _id: null,
           series_title: null,
@@ -206,7 +206,7 @@ module.exports = {
 
       // Remove the post from the author's list of forum posts and also update the replies
       const foundUser = await User.findOne({_id:foundPost.author});
-      foundUser.forum_posts.filter(p => p.toString !== postObjectId.toString());
+      foundUser.forum_posts.filter(p => p.toString() !== postObjectId.toString());
       foundUser.replies_to_my_post = foundUser.replies_to_my_post.filter(reply => reply.post.toString() !== postID);
       await User.updateOne({_id:foundPost.author},{forum_posts: foundUser.forum_posts,replies_to_my_post:foundUser.replies_to_my_post});
 
