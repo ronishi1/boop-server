@@ -175,11 +175,11 @@ module.exports = {
         timestamp: new Date()
       }
       // If there are more than 10 recent activities, then get rid of the oldest one
-      user.recent_activity.push(activityObj);
-      if(user.recent_activity.length > 5){
-        user.recent_activity.shift();
+      foundUser.recent_activity.push(activityObj);
+      if(foundUser.recent_activity.length > 5){
+        foundUser.recent_activity.shift();
       }
-      await User.updateOne({_id: userId}, {recent_activity: user.recent_activity});
+      await User.updateOne({_id: userId}, {recent_activity: foundUser.recent_activity});
 
       // // Find the topic and add the forum post to its list of posts and push it
       const foundTopic = await ForumTopic.findOne({_id:topicObjID});
