@@ -121,7 +121,7 @@ module.exports = {
       else {
         content = await Content.findOne({series_title: args.forumPost.linked_content});
       }
-      
+
 
       // Build out forum post object to push to DB
       let postInput = args.forumPost;
@@ -176,6 +176,19 @@ module.exports = {
       });
       await forumPost.save();
 
+
+      let activityObj = {
+        activity_type:"create",
+        content_ID: _id,
+        content_name: postInput.title,
+        timestamp: new Date()
+      }
+      // If there are more than 10 recent activities, then get rid of the oldest one
+      user.recent_activity.push(activityObj);
+      if(user.recent_activity.length > 5){
+        user.recent_activity.shift();
+      }
+      await User.updateOne({_id: userId}, {recent_activity: user.recent_activity});
 
       // // Find the topic and add the forum post to its list of posts and push it
       const foundTopic = await ForumTopic.findOne({_id:topicObjID});
@@ -249,10 +262,12 @@ module.exports = {
       let activityObj = {
         activity_type:"reply",
         content_ID: postObjectId,
+        content_name: foundPost.title,
+        timestamp: new Date()
       }
       // If there are more than 10 recent activities, then get rid of the oldest one
       user.recent_activity.push(activityObj);
-      if(user.recent_activity.length > 10){
+      if(user.recent_activity.length > 5){
         user.recent_activity.shift();
       }
       await User.updateOne({_id: userId}, {recent_activity: user.recent_activity});
@@ -275,7 +290,7 @@ module.exports = {
         }
         await User.updateOne({_id:foundPost.author},{replies_to_my_post:postAuthor.replies_to_my_post});
       };
-      
+
       return postID;
     },
     editReply: async (_, args, { req,res }) => {
