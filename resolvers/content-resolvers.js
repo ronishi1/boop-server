@@ -299,8 +299,36 @@ module.exports = {
         results.push(temp);
       })
       return results;
-    }
+    },
+    getLink: async (_, args) => {
+      const unpublished = new Date(0);
+      const query = {
 
+        $and : [
+          {"publication_date": {$ne: unpublished}}
+        ]
+      }
+      const { seriesTitle } = args;
+      let results = [];
+      const searchedContent = await Content.find({
+        series_title: {$regex: seriesTitle, $options: "i",},
+        $and : [
+          {"publication_date": {$ne: unpublished}}
+        ]
+      });
+      searchedContent.forEach((content) => {
+        let id = new ObjectId();
+        results.push({
+          _id: id,
+          content_ID: content._id,
+          content_title: content.series_title,
+          content_image: content.cover_image,
+          content_type: content.content_type,
+          author_username: content.author_username,
+        });
+      })
+      return results;
+    },
   },
   Mutation: {
     createContent: async (_, args, { req,res }) => {
