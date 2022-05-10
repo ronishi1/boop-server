@@ -119,6 +119,14 @@ const typeDefs = gql`
     content_timestamp: DateTime
     _id: ID
   }
+  type LinkResult {
+    _id: ID
+    content_ID: ID
+    content_title: String
+    content_image: String
+    content_type: ContentType
+    author_username: String
+  }
   type Query {
     getContentInfo(contentID: ID): Content
     getContentChapter(chapterID: ID): Chapter
@@ -134,6 +142,7 @@ const typeDefs = gql`
     getStoryboard(storyboardID: ID): Storyboard
     getSearch(searchTerm: String): [SearchResult]
     getUserPublished(username:String): [Content]
+    getLink(seriesTitle: String): [LinkResult]
   }
   type Mutation {
     createContent(contentInput: ContentInput): ID

@@ -98,7 +98,6 @@ const typeDefs = gql`
     getPost(postId: ID): ForumPost
     getMyPosts: [ManagementPost]
     getRepliesToMyPost: [ManagementReply]
-    getSeriesTitles(seriesTitle: String): [String]
   }
 `;
 
