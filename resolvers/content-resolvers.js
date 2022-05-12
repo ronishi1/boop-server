@@ -804,10 +804,24 @@ module.exports = {
       let chapterObjId = new ObjectId(chapterID);
       const chapter = await Chapter.findOne({_id: chapterObjId})
       let chapterJSONS = chapter.page_JSONS;
+      
       if(chapter.page_JSONS.length < pageNumber){
-        chapterJSONS.push(pageJSON)
+        let pageJSONS = chapter.page_JSONS
+        while (pageJSONS.length < pageNumber) {
+          pageJSONS.push("Unsaved JSON")
+        }
+        pageJSONS[pageNumber-1] = pageJSON
+        await Chapter.updateOne({_id: chapterObjId}, {
+          page_JSONS: pageJSONS
+        })
       }
-      else chapterJSONS[pageNumber-1] = pageJSON;
+      else {
+        let pageJSONS = chapter.page_JSONS;
+        pageJSONS[pageNumber-1] = pageJSON;
+        await Chapter.updateOne({_id: chapterObjId}, {
+          page_JSONS: pageJSONS
+        })
+      }
       await Chapter.findByIdAndUpdate(chapterObjId, {page_JSONS:chapterJSONS});
       // In the case that the image is there for the first time, need to append the image url
       if (chapter.page_images.length < pageNumber) {
