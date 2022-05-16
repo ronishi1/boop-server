@@ -39,7 +39,16 @@ module.exports = {
     },
     getRecentPosts: async () => {
       //get list of top 5 newest posts
-      const posts = await ForumPost.find().sort({timestamp:-1}).limit(5);
+      let posts = await ForumPost.find().sort({timestamp:-1}).limit(5);
+      console.log(posts);
+      console.log("lol")
+      posts = posts.filter((post) => {
+        console.log(post);
+        console.log(post.topic.toString());
+        return post.topic.toString() != "6242239f4b2619473abf93b2"}
+      );
+      console.log(posts);
+      console.log("lol");
       return posts;
     },
     getOldestPosts: async () => {
